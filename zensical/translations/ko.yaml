@@ -1,0 +1,9 @@
+---
+configuration:
+  log_level:
+    name: 로그 레벨
+    description: >-
+      애드온 자체 로그(파일 감시 이벤트, 빌드 상태, 동기화 오류)의
+      출력 임계값. 기본값은 `info`, 모든 파일 이벤트를 보고 싶으면
+      `debug`, 실패 알림만 받고 싶으면 `error`. Zensical CLI 자체에는
+      `--verbose` / `--quiet` 플래그가 없어 빌드 출력은 영향받지 않습니다.

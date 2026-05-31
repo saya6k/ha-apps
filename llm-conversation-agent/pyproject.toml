@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ha-llm-conversation-agent"
+version = "1.14.5"
+description = "Wyoming conversation agent for Home Assistant, backed by any OpenAI-compatible LLM"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "ha-llm-conversation-agent contributors" }]
+keywords = ["home-assistant", "wyoming", "conversation", "assist", "llm", "openai"]
+
+dependencies = [
+    "wyoming>=1.9,<2",
+    "httpx>=0.28,<0.29",
+    "mcp>=1.27,<2",
+    "prometheus_client>=0.21,<1",
+    "Jinja2>=3.1,<4",
+    "PyYAML>=6,<7",
+]
+
+[project.scripts]
+wyoming-llm-agent = "wyoming_llm_agent.__main__:run"
+
+[tool.setuptools]
+packages = ["wyoming_llm_agent"]

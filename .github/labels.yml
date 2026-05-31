@@ -1,0 +1,64 @@
+# Source of truth for repository labels. Synced to GitHub by
+# .github/workflows/labels.yml using EndBug/label-sync.
+#
+# Change here, commit, merge → labels appear/update on GitHub.
+# Anything not in this file gets deleted on sync.
+
+# --- Add-on scope ---
+- name: "addon:llm-conversation-agent"
+  color: "0E8A16"
+  description: "Affects llm-conversation-agent"
+- name: "addon:rethink"
+  color: "0E8A16"
+  description: "Affects rethink"
+- name: "addon:supertonic"
+  color: "0E8A16"
+  description: "Affects supertonic"
+- name: "addon:wardrowbe"
+  color: "0E8A16"
+  description: "Affects wardrowbe"
+- name: "addon:zensical"
+  color: "0E8A16"
+  description: "Affects zensical"
+- name: "addon:repo"
+  color: "0E8A16"
+  description: "Affects repository-wide tooling (.github, root docs)"
+
+# --- Conventional Commit type ---
+- name: "type:feat"
+  color: "a2eeef"
+  description: "New feature"
+- name: "type:fix"
+  color: "d73a4a"
+  description: "Bug fix"
+- name: "type:docs"
+  color: "0075ca"
+  description: "Documentation only"
+- name: "type:chore"
+  color: "cccccc"
+  description: "Tooling / chores"
+- name: "type:refactor"
+  color: "fbca04"
+  description: "Refactor with no functional change"
+- name: "type:perf"
+  color: "f9d0c4"
+  description: "Performance improvement"
+- name: "type:ci"
+  color: "ededed"
+  description: "CI / build pipeline"
+
+# --- Triage state ---
+- name: "needs:triage"
+  color: "e4e669"
+  description: "Awaiting maintainer triage"
+- name: "needs:repro"
+  color: "e4e669"
+  description: "Needs a reproduction or more info from reporter"
+
+# --- Release-please managed (do not rename) ---
+- name: "autorelease: pending"
+  color: "ededed"
+  description: "release-please: PR open, awaiting merge"
+- name: "autorelease: tagged"
+  color: "ededed"
+  description: "release-please: tagged and released"

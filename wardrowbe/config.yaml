@@ -1,0 +1,78 @@
+name: Wardrowbe
+version: "1.4.0"
+slug: wardrowbe
+description: >-
+  Self-hosted AI-powered wardrobe management.
+  Snap photos of your clothes, get AI-tagged details,
+  and receive daily outfit suggestions based on weather and occasion.
+url: https://github.com/Anyesh/wardrowbe
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+host_network: false
+map:
+  - addon_config:rw
+  - data:rw
+  - media:rw
+  - share:rw
+# Keep HA add-on snapshots small. Paths are relative to /data/.
+# - postgres/**: PostgreSQL cluster (use /share/wardrowbe/backups/ pg_dump exports instead)
+# - redis/**:    Redis AOF/RDB cache (rebuilt on next start)
+backup_exclude:
+  - "postgres/**"
+  - "redis/**"
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: Wardrowbe web UI
+options:
+  postgres_user: wardrobe
+  postgres_password: wardrobe
+  postgres_db: wardrobe
+  secret_key: ""
+  nextauth_secret: ""
+  dev_login: true
+  ai_base_url: "http://homeassistant.local:11434/v1"
+  ai_api_key: ""
+  ai_vision_model: "gemma3:latest"
+  ai_text_model: "gemma3:latest"
+  oidc_issuer_url: ""
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_mobile_client_id: ""
+  external_url: ""
+  ntfy_server: ""
+  ntfy_token: ""
+  mattermost_webhook_url: ""
+  backup_enabled: true
+  backup_retention_days: 7
+  backup_hour: 3
+schema:
+  postgres_user: str
+  postgres_password: password
+  postgres_db: str
+  secret_key: password?
+  nextauth_secret: password?
+  dev_login: bool
+  ai_base_url: str
+  ai_api_key: str?
+  ai_vision_model: str
+  ai_text_model: str
+  oidc_issuer_url: str?
+  oidc_client_id: str?
+  oidc_client_secret: str?
+  oidc_mobile_client_id: str?
+  external_url: str?
+  ntfy_server: str?
+  ntfy_token: str?
+  mattermost_webhook_url: str?
+  backup_enabled: bool
+  backup_retention_days: int(0,365)
+  backup_hour: int(0,23)
+homeassistant_api: false
+hassio_api: false
+hassio_role: default
+watchdog: "http://[HOST]:[PORT:8099]/api/v1/health"

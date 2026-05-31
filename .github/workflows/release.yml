@@ -1,0 +1,32 @@
+---
+name: Release
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Only one release run at a time — release-please does not handle racing
+# pushes well; later runs supersede earlier ones.
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json
+          # Default GITHUB_TOKEN is fine — repo-scoped, with the permissions
+          # block above. If you want release-please-created PRs to themselves
+          # trigger CI, swap in a PAT here.
+          token: ${{ secrets.GITHUB_TOKEN }}

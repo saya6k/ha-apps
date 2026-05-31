@@ -1,0 +1,67 @@
+#!/usr/bin/with-contenv bash
+# Daily pg_dump → /share/wardrowbe/backups/, prune to BACKUP_RETENTION_DAYS.
+# Upstream wardrowbe has no built-in backup; this is the packaging layer's
+# answer for users who want their wardrobe DB to survive an addon reset.
+
+BACKUP_DIR="/share/wardrowbe/backups"
+RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
+DUMP_HOUR="${BACKUP_HOUR:-3}"
+
+if [ "${BACKUP_ENABLED:-true}" != "true" ]; then
+  echo "[backup] disabled via config — sleeping"
+  exec sleep infinity
+fi
+
+mkdir -p "$BACKUP_DIR"
+echo "[backup] enabled (retention=${RETENTION_DAYS}d, daily at ${DUMP_HOUR}:00)"
+
+# Wait for postgres before entering the schedule loop.
+for _ in $(seq 1 120); do
+  pg_isready -h 127.0.0.1 -p "${POSTGRES_PORT}" -q 2>/dev/null && break
+  sleep 1
+done
+
+while true; do
+  # Seconds until next DUMP_HOUR:00 (today if not yet passed, else tomorrow).
+  now_hms="$(date +%H:%M:%S)"
+  now_secs="$(echo "$now_hms" | awk -F: '{print $1*3600 + $2*60 + $3}')"
+  target_secs=$((DUMP_HOUR * 3600))
+  if [ "$target_secs" -le "$now_secs" ]; then
+    sleep_secs=$((86400 - now_secs + target_secs))
+  else
+    sleep_secs=$((target_secs - now_secs))
+  fi
+  echo "[backup] next dump in ${sleep_secs}s"
+  sleep "$sleep_secs"
+
+  if ! pg_isready -h 127.0.0.1 -p "${POSTGRES_PORT}" -q 2>/dev/null; then
+    echo "[backup] postgres not ready — skipping this cycle"
+    continue
+  fi
+
+  ts="$(date +%Y%m%dT%H%M%S)"
+  out="${BACKUP_DIR}/wardrowbe-${ts}.sql.gz"
+  tmp="${out}.tmp"
+  echo "[backup] dumping → ${out}"
+
+  # pg_dump as postgres (trust on Unix socket per pg_hba.conf).
+  # gzip runs as the s6 user (root); resulting file is root-owned.
+  if su-exec postgres pg_dump -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" 2>/tmp/backup.err \
+       | gzip > "$tmp"; then
+    mv "$tmp" "$out"
+    size="$(du -h "$out" | cut -f1)"
+    echo "[backup] OK (${size})"
+  else
+    rm -f "$tmp"
+    echo "[backup] FAILED — pg_dump stderr:"
+    sed 's/^/[backup]   /' /tmp/backup.err
+  fi
+  rm -f /tmp/backup.err
+
+  # Prune backups older than RETENTION_DAYS. Best-effort; never crash the loop.
+  if [ "$RETENTION_DAYS" -gt 0 ]; then
+    deleted="$(find "${BACKUP_DIR}" -maxdepth 1 -name 'wardrowbe-*.sql.gz' \
+                 -mtime "+${RETENTION_DAYS}" -print -delete 2>/dev/null | wc -l)"
+    [ "$deleted" -gt 0 ] && echo "[backup] pruned ${deleted} old dump(s)"
+  fi
+done

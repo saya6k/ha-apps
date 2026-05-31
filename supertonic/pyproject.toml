@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wyoming-supertonic"
+version = "2.0.0"
+description = "Wyoming protocol server for Supertonic text-to-speech (MNN backend)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "ha-supertonic contributors" }]
+keywords = ["home-assistant", "wyoming", "tts", "supertonic", "supertone", "mnn"]
+
+dependencies = [
+    "wyoming>=1.5,<2",
+    "sentence-stream>=1.0.4",
+    "numpy<2.0",
+    # 0.2.0+ (with v3 + lang= support) — installed from git in the Dockerfile
+    # until upstream publishes a release. The image installs this package with
+    # --no-deps so the version spec here is informational.
+    "supertonic-mnn",
+]
+
+[project.scripts]
+wyoming-supertonic = "wyoming_supertonic.__main__:run"
+
+[tool.setuptools]
+packages = ["wyoming_supertonic"]

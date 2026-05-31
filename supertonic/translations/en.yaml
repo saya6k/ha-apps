@@ -1,0 +1,68 @@
+---
+configuration:
+  language:
+    name: Default language
+    description: >-
+      Language used when a Wyoming client does not specify one. Supertonic
+      supports 31 languages — pick from the dropdown. Languages are listed by
+      their native name (한국어, 日本語, Deutsch, …) ordered by ISO 639-1 code.
+      Per-request language sent by the client (e.g. Home Assistant Assist)
+      always wins; this is only the fallback.
+  speed:
+    name: Speed
+    description: >-
+      Speech speed multiplier. 1.0 is default; lower values are slower, higher
+      values are faster.
+  steps:
+    name: Denoising steps
+    description: >-
+      Number of flow-matching denoising steps per chunk. 2–3 is fastest but
+      can sound rough; 4 is a good quality/speed balance; 6–10 is slightly
+      smoother but proportionally slower (each step runs the vector
+      estimator over the entire latent again).
+  model_version:
+    name: Model version
+    description: >-
+      Which Supertonic model to load. "v3" supports all 31 languages and
+      is the recommended default. "v2" supports only English, Korean,
+      Spanish, Portuguese and French but has a slightly smaller graph and
+      may be marginally faster on weak hardware.
+  warmup_voices:
+    name: Warm-up voices
+    description: >-
+      Voices to pre-load and warm up at container start. Each entry adds
+      a few seconds of startup time but makes the first synth request for
+      that voice instant. Leave with just M1 if you only use one voice.
+      An empty list disables warm-up entirely (slow first request).
+  threads:
+    name: CPU threads
+    description: >-
+      Number of CPU threads MNN is allowed to use. Leave unset to auto-detect
+      (uses all physical cores). Set to a positive integer to override; values
+      higher than the core count usually hurt performance.
+  precision:
+    name: Model precision
+    description: >-
+      Numerical precision of the MNN model weights. Leave unset for "auto",
+      which inspects /proc/cpuinfo and picks int8 on CPUs with AVX-VNNI
+      (Intel 12th gen+, AMD Zen 4+) or NEON SDOT (Pi 5, Cortex-A75+);
+      fp16 on ARM with FEAT_FP16 only; fp32 otherwise. Override only if
+      you have measured a specific setting to be faster on your CPU.
+  mnn_memory:
+    name: MNN memory mode
+    description: >-
+      How aggressively MNN caches intermediate tensors. Leave unset for
+      "normal" (balanced default). "low" minimises RAM at the cost of more
+      recomputation; "high" trades extra RAM for speed.
+  no_streaming:
+    name: Disable streaming
+    description: >-
+      If enabled, audio is only returned once the full request is synthesized
+      instead of streaming sentence by sentence. Leave unset to keep streaming on.
+  debug_logging:
+    name: Debug logging
+    description: >-
+      Print DEBUG-level messages to the app log. Leave unset for normal
+      INFO-level logging.
+network:
+  10209/tcp: Supertonic Wyoming Protocol

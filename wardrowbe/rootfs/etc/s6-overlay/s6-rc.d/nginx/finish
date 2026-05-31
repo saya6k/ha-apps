@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+exitcode="${1:-0}"
+signal="${2:-0}"
+echo "[nginx] stopped (exit=${exitcode}, signal=${signal})"
+exit 0

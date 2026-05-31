@@ -1,0 +1,16 @@
+---
+# Rules that don't fit HA add-on Dockerfiles (Alpine / Debian base images,
+# `BUILD_FROM` ARG indirection, bashio-based RUN blocks, etc.). Mirrored
+# from alexbelgium/hassio-addons and the official hassio-addons/workflows
+# default set.
+ignored:
+  - DL3002  # Last USER should not be root (HA add-ons run as root by design)
+  - DL3006  # Always tag the version (BUILD_FROM ARG provides the tag)
+  - DL3007  # Using latest tag (same — BUILD_FROM resolves at build time)
+  - DL3008  # Pin apt-get versions (HA Debian base bumps mid-stream)
+  - DL3009  # Delete apt-get lists after install (HA base handles this)
+  - DL3018  # Pin apk versions (Alpine package bumps)
+
+# Treat everything not ignored above as an error in CI. The lint-dockerfile
+# job in ci.yml uses failure-threshold: warning to soften this — adjust
+# there, not here.

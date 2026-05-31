@@ -1,0 +1,21 @@
+---
+default: true
+
+# Long lines are normal in CHANGELOG/DOCS prose.
+MD013: false
+
+# Inline HTML is used in AGENTS.md (badges, anchors) and shipped DOCS.md.
+MD033: false
+
+# Multiple H1s appear naturally in HA-rendered CHANGELOG.md (one per version).
+MD025: false
+
+# First line need not be a heading — release-please prepends sections.
+MD041: false
+
+# We use 2-space unordered list indentation.
+MD007:
+  indent: 2
+
+# Bare URLs are fine in CHANGELOG bullets.
+MD034: false

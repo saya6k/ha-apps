@@ -1,0 +1,110 @@
+---
+configuration:
+  postgres_user:
+    name: PostgreSQL 사용자
+    description: >-
+      wardrowbe 데이터베이스의 롤 이름. 첫 실행 시 없으면 자동 생성됩니다.
+      변경하려면 클러스터를 초기화해야 하므로 기본값 사용을 권장합니다.
+  postgres_password:
+    name: PostgreSQL 비밀번호
+    description: >-
+      위 롤의 비밀번호. 컨테이너 내부 루프백 연결에만 사용되지만, 운영
+      자격증명을 그대로 붙여넣지 마세요.
+  postgres_db:
+    name: PostgreSQL 데이터베이스 이름
+    description: >-
+      첫 실행 시 생성될 데이터베이스 이름. 기본값 "wardrobe"가 무난합니다.
+  secret_key:
+    name: 백엔드 시크릿 키
+    description: >-
+      FastAPI 백엔드의 JWT 서명 비밀키. 비워두면 자동 생성 후
+      `/config/.secret_key`에 저장됩니다(권장). dev_login 모드에서는 명시
+      값이 없을 때 upstream 기본값을 사용합니다.
+  nextauth_secret:
+    name: NextAuth 시크릿
+    description: >-
+      Next.js 프론트엔드 세션 암호화 키. 비워두면 자동 생성 후
+      `/config/.nextauth_secret`에 저장됩니다. 재시작 사이에 일관성이
+      유지되어야 사용자 로그인이 풀리지 않습니다.
+  dev_login:
+    name: 개발용 로그인(비밀번호 없음)
+    description: >-
+      OIDC 없이 임의의 이메일/이름으로 로그인 허용. HA ingress 뒤에 있으면
+      안전합니다(HA 자체 로그인 통과 필요). OIDC 항목을 모두 채우면 자동
+      비활성화됩니다.
+  ai_base_url:
+    name: AI 기본 URL
+    description: >-
+      이미지 태깅(비전)과 의상 추천(텍스트)에 사용되는 OpenAI 호환 API
+      엔드포인트. 기본값은 HA 호스트의 로컬 Ollama
+      (`http://homeassistant.local:11434/v1`)를 가리킵니다.
+  ai_api_key:
+    name: AI API 키
+    description: >-
+      위 엔드포인트용 API 키. Ollama는 비워두고, OpenAI 등 호스팅 제공자를
+      쓸 때 입력하세요.
+  ai_vision_model:
+    name: 비전 모델
+    description: >-
+      옷 사진을 태깅하는 멀티모달 모델. AI 엔드포인트에서 사용 가능해야
+      합니다. 기본값 `gemma3:latest`는 `ollama pull gemma3`로 받습니다.
+  ai_text_model:
+    name: 텍스트 모델
+    description: >-
+      의상 추천에 쓰이는 텍스트 모델. 비전 모델과 같아도 됩니다.
+  oidc_issuer_url:
+    name: OIDC issuer URL
+    description: >-
+      OIDC 제공자 디스커버리 URL (예: `https://auth.example.com`). 아래의
+      클라이언트 ID와 함께 설정하면 OIDC 모드로 전환되며 dev_login이
+      자동 비활성화됩니다.
+  oidc_client_id:
+    name: OIDC 클라이언트 ID
+    description: >-
+      웹 앱용으로 OIDC 제공자에 등록된 클라이언트 ID. OIDC 모드 사용 시
+      필수.
+  oidc_client_secret:
+    name: OIDC 클라이언트 시크릿
+    description: >-
+      웹 클라이언트의 시크릿. confidential 클라이언트일 때 필요합니다.
+  oidc_mobile_client_id:
+    name: OIDC 모바일 클라이언트 ID
+    description: >-
+      wardrowbe 모바일 앱용 별도 public 클라이언트(PKCE, 시크릿 없음).
+      웹 UI만 쓰면 비워두세요.
+  external_url:
+    name: 외부 URL
+    description: >-
+      리버스 프록시를 통해 wardrowbe에 접근하는 공개 URL (예:
+      `https://wardrowbe.example.com`). OIDC 콜백이 동작하려면 필수입니다 —
+      HA ingress URL은 OIDC 리다이렉트 대상으로 사용할 수 없습니다.
+  ntfy_server:
+    name: ntfy.sh 서버 URL
+    description: >-
+      의상 추천 푸시 알림용 ntfy.sh 서버(선택). 사용하지 않으면 비워두세요.
+  ntfy_token:
+    name: ntfy.sh 토큰
+    description: >-
+      위 ntfy.sh 서버 인증 토큰(필요한 경우).
+  mattermost_webhook_url:
+    name: Mattermost 웹훅 URL
+    description: >-
+      Mattermost 인커밍 웹훅 URL(선택). 사용하지 않으면 비워두세요.
+  backup_enabled:
+    name: 일일 DB 백업
+    description: >-
+      켜면 매일 한 번 PostgreSQL을 dump해서
+      `/share/wardrowbe/backups/wardrowbe-<timestamp>.sql.gz`로 저장합니다.
+      upstream wardrowbe 자체에는 백업 기능이 없고, 실제 PG 클러스터는
+      HA 부가기능 스냅샷에서 제외되므로 켜두는 것이 권장됩니다.
+  backup_retention_days:
+    name: 백업 보관 기간(일)
+    description: >-
+      이 일수보다 오래된 dump 파일은 자동 삭제됩니다. 0이면 삭제하지
+      않고 영구 보관.
+  backup_hour:
+    name: 백업 시각(0–23시, 컨테이너 시간대)
+    description: >-
+      일일 dump를 실행할 시각. 컨테이너 기본 시간대는 Asia/Seoul입니다.
+network:
+  8099/tcp: Wardrowbe 웹 UI (HA ingress로도 접근 가능)

@@ -1,0 +1,46 @@
+---
+version: 2.0.0
+slug: supertonic
+name: Supertonic
+description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
+url: https://github.com/vra/supertonic-mnn
+arch:
+  - amd64
+  - aarch64
+init: false
+discovery:
+  - wyoming
+backup_exclude:
+  - ".cache/**"
+map:
+  - share
+  - addon_config:rw
+options:
+  language: English
+  speed: 1.0
+  steps: 4
+  model_version: v3
+  warmup_voices:
+    - M1
+schema:
+  language: list(العربية|Български|Čeština|Dansk|Deutsch|Ελληνικά|English|Español|Eesti|Suomi|Français|हिन्दी|Hrvatski|Magyar|Bahasa Indonesia|Italiano|日本語|한국어|Lietuvių|Latviešu|Nederlands|Polski|Português|Română|Русский|Slovenčina|Slovenščina|Svenska|Türkçe|Українська|Tiếng Việt)
+  speed: float(0.5,2.0)
+  steps: int(1,30)
+  model_version: list(v2|v3)
+  warmup_voices:
+    - list(M1|M2|M3|M4|M5|F1|F2|F3|F4|F5)
+  # Optional advanced knobs. Empty by default — the Python argparse defaults
+  # in wyoming_supertonic/__main__.py kick in when these aren't set in the
+  # app options. The trailing '?' marks them optional in the HA schema.
+  threads: int(0,16)?
+  precision: list(auto|fp16|fp32|int8)?
+  mnn_memory: list(low|normal|high)?
+  no_streaming: bool?
+  debug_logging: bool?
+ports:
+  "10209/tcp": null
+ports_description:
+  "10209/tcp": Supertonic Wyoming Protocol
+homeassistant: 2023.8.0.dev20230718
+# Uncomment once a prebuilt image is published to GHCR via deploy.yaml.
+# image: ghcr.io/saya6k/{arch}-addon-supertonic

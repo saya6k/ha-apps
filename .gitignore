@@ -1,0 +1,54 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# uv / pip
+.uv_cache/
+pip-log.txt
+
+# Node (wardrowbe build artefacts shouldn't appear, but just in case)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Decision logs — every subproject's notes/ is local-only by convention.
+# Never link to notes/ from any shipped doc.
+notes/
+
+# Build / cache
+*.log
+*.tmp
+*.bak
+build/
+dist/
+
+# Repo / publish artefacts that should not be committed
+report/
+super-linter-output/

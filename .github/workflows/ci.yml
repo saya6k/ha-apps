@@ -1,0 +1,191 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Detect which add-on directories changed and emit a JSON array that
+  # downstream matrix jobs consume. We use paths-filter (not git diff) so
+  # the first-PR / force-push cases work without explicit fetch-depth
+  # juggling. The filter names must match the directory names exactly —
+  # they become matrix.addon values.
+  # ---------------------------------------------------------------------
+  changes:
+    name: Detect changed add-ons
+    runs-on: ubuntu-latest
+    outputs:
+      addons: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            llm-conversation-agent:
+              - 'llm-conversation-agent/**'
+            rethink:
+              - 'rethink/**'
+            supertonic:
+              - 'supertonic/**'
+            wardrowbe:
+              - 'wardrowbe/**'
+            zensical:
+              - 'zensical/**'
+
+  # ---------------------------------------------------------------------
+  # Official Home Assistant add-on lint — validates config.yaml schema,
+  # image references, slug rules, etc. This is the same check the HA
+  # store applies. Path input is the key to monorepo support.
+  # ---------------------------------------------------------------------
+  lint-addon:
+    name: Add-on lint (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Home Assistant Add-on Lint
+        uses: frenck/action-addon-linter@v2
+        with:
+          path: "./${{ matrix.addon }}"
+
+  # ---------------------------------------------------------------------
+  # yamllint over the changed add-on (its own config.yaml, build.yaml,
+  # translations/*.yaml, s6 yaml). The official reusable workflow runs
+  # this separately from the add-on linter, so we do too.
+  # ---------------------------------------------------------------------
+  lint-yaml:
+    name: yamllint (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: frenck/action-yamllint@v1
+        with:
+          path: ${{ matrix.addon }}
+
+  # ---------------------------------------------------------------------
+  # hadolint the add-on's Dockerfile. Match the official workflow's
+  # `failure-threshold: warning` so we don't fail on style nits.
+  # ---------------------------------------------------------------------
+  lint-dockerfile:
+    name: hadolint (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Dockerfile exists
+        id: dockerfile
+        run: |
+          if [ -f "${{ matrix.addon }}/Dockerfile" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping hadolint"
+          fi
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        if: steps.dockerfile.outputs.found == 'true'
+        with:
+          dockerfile: ${{ matrix.addon }}/Dockerfile
+          failure-threshold: warning
+
+  # ---------------------------------------------------------------------
+  # shellcheck the add-on's rootfs/ shell scripts (s6 run/finish files
+  # plus any *.sh under rootfs/). Cleanly skips add-ons without rootfs/.
+  # ---------------------------------------------------------------------
+  lint-shell:
+    name: shellcheck (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect shell scripts
+        id: collect
+        run: |
+          set -euo pipefail
+          mapfile -t FILES < <(find "${{ matrix.addon }}/rootfs" \
+            -type f \( -name '*.sh' -o -name 'run' -o -name 'finish' \) 2>/dev/null || true)
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No shell scripts under ${{ matrix.addon }}/rootfs"
+          else
+            printf '%s\n' "${FILES[@]}" > /tmp/shellcheck-targets
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: shellcheck
+        if: steps.collect.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+          mapfile -t FILES < /tmp/shellcheck-targets
+          docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable \
+            --severity=warning --shell=bash "${FILES[@]}"
+
+  # ---------------------------------------------------------------------
+  # Single required-status-check for branch protection. Passes if every
+  # downstream lint succeeded OR was cleanly skipped because no add-on
+  # directory changed in this push.
+  # ---------------------------------------------------------------------
+  ci-ok:
+    name: CI passed
+    if: always()
+    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all lint jobs succeeded (or cleanly skipped)
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.changes.result }}" != "success" ]; then
+            echo "changes job did not succeed: ${{ needs.changes.result }}"
+            exit 1
+          fi
+          for result in \
+            "${{ needs.lint-addon.result }}" \
+            "${{ needs.lint-yaml.result }}" \
+            "${{ needs.lint-dockerfile.result }}" \
+            "${{ needs.lint-shell.result }}"; do
+            case "$result" in
+              success|skipped) ;;
+              *) echo "downstream lint failed: $result"; exit 1 ;;
+            esac
+          done

@@ -1,0 +1,10 @@
+build_from:
+  aarch64: ghcr.io/home-assistant/aarch64-base:latest
+  amd64: ghcr.io/home-assistant/amd64-base:latest
+args:
+  WARDROWBE_VERSION: wardrowbe-v1.2.5
+labels:
+  org.opencontainers.image.title: "Home Assistant Add-on: Wardrowbe"
+  org.opencontainers.image.description: "Self-hosted AI-powered wardrobe management"
+  org.opencontainers.image.source: "https://github.com/Anyesh/wardrowbe"
+  org.opencontainers.image.licenses: "MIT"

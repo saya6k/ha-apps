@@ -1,0 +1,116 @@
+---
+configuration:
+  postgres_user:
+    name: PostgreSQL user
+    description: >-
+      Role name for the wardrowbe database. Created on first run if missing.
+      Change requires resetting the cluster — easier to leave at default.
+  postgres_password:
+    name: PostgreSQL password
+    description: >-
+      Password for the role above. Internal-only (loopback connection), but
+      do not paste production credentials here.
+  postgres_db:
+    name: PostgreSQL database name
+    description: >-
+      Database name created on first run. Default "wardrobe" is fine.
+  secret_key:
+    name: Backend secret key
+    description: >-
+      JWT signing secret for the FastAPI backend. Leave blank to
+      auto-generate and persist into `/config/.secret_key` (recommended).
+      In dev-login mode the upstream default is used unless you set this
+      explicitly.
+  nextauth_secret:
+    name: NextAuth secret
+    description: >-
+      Session encryption secret for the Next.js frontend. Leave blank to
+      auto-generate and persist into `/config/.nextauth_secret`. Keep this
+      stable across restarts or every user gets logged out.
+  dev_login:
+    name: Dev login (no password)
+    description: >-
+      Accept any email/name without an OIDC provider. Safe behind HA ingress
+      because HA already requires login. Auto-disabled when OIDC is fully
+      configured below.
+  ai_base_url:
+    name: AI base URL
+    description: >-
+      OpenAI-compatible API endpoint for vision (image tagging) and text
+      (outfit recommendations). Default points at a local Ollama instance on
+      the HA host (`http://homeassistant.local:11434/v1`).
+  ai_api_key:
+    name: AI API key
+    description: >-
+      API key for the endpoint above. Leave blank for Ollama; required for
+      OpenAI / hosted providers.
+  ai_vision_model:
+    name: Vision model
+    description: >-
+      Multimodal model used to tag clothing photos. Must be available on the
+      AI endpoint. Default `gemma3:latest` works on Ollama with `ollama pull
+      gemma3`.
+  ai_text_model:
+    name: Text model
+    description: >-
+      Text model used for outfit recommendations. Can be the same as the
+      vision model.
+  oidc_issuer_url:
+    name: OIDC issuer URL
+    description: >-
+      Discovery URL of your OIDC provider (e.g. `https://auth.example.com`).
+      When set together with the client ID below, the addon switches to
+      OIDC mode and disables dev login automatically.
+  oidc_client_id:
+    name: OIDC client ID
+    description: >-
+      Client ID registered with your OIDC provider for the web app.
+      Required for OIDC mode.
+  oidc_client_secret:
+    name: OIDC client secret
+    description: >-
+      Client secret for the web client. Required for confidential clients.
+  oidc_mobile_client_id:
+    name: OIDC mobile client ID
+    description: >-
+      Separate public OIDC client (PKCE, no secret) for the wardrowbe mobile
+      app. Optional — leave blank if you only use the web UI.
+  external_url:
+    name: External URL
+    description: >-
+      Public URL where wardrowbe is reachable through your reverse proxy
+      (e.g. `https://wardrowbe.example.com`). Required for OIDC callbacks
+      to work — HA ingress URLs can't be used as OIDC redirect targets.
+  ntfy_server:
+    name: ntfy.sh server URL
+    description: >-
+      Optional ntfy.sh server for outfit-suggestion push notifications.
+      Leave blank to disable.
+  ntfy_token:
+    name: ntfy.sh token
+    description: >-
+      Bearer token for the ntfy.sh server above if required.
+  mattermost_webhook_url:
+    name: Mattermost webhook URL
+    description: >-
+      Optional Mattermost incoming webhook for notifications. Leave blank
+      to disable.
+  backup_enabled:
+    name: Daily DB backup
+    description: >-
+      When on, the addon dumps the PostgreSQL database once per day into
+      `/share/wardrowbe/backups/wardrowbe-<timestamp>.sql.gz`. Recommended —
+      upstream wardrowbe has no built-in backup, and the live PG cluster is
+      excluded from HA add-on snapshots.
+  backup_retention_days:
+    name: Backup retention (days)
+    description: >-
+      Dumps older than this many days are deleted. 0 disables pruning
+      (keep forever).
+  backup_hour:
+    name: Backup hour (0–23, container TZ)
+    description: >-
+      Hour of day when the daily dump runs. Container timezone is
+      Asia/Seoul unless you've overridden it.
+network:
+  8099/tcp: Wardrowbe web UI (also exposed via HA ingress)

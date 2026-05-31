@@ -1,0 +1,60 @@
+---
+configuration:
+  language:
+    name: 기본 언어
+    description: >-
+      Wyoming 클라이언트가 언어를 지정하지 않을 때 사용할 기본 언어.
+      드롭다운에서 선택하세요 (Supertonic은 31개 언어 지원).
+      각 언어는 자국어 표기(한국어, 日本語, Deutsch …)로 ISO 639-1 코드
+      순서로 정렬돼 있습니다. 클라이언트(예: Home Assistant Assist)가 요청마다
+      보내는 언어가 우선이며, 이 설정은 폴백 값입니다.
+  speed:
+    name: 속도
+    description: >-
+      말하기 속도 배수. 1.0이 기본값이며, 값이 낮을수록 느리고 높을수록 빠릅니다.
+  steps:
+    name: 디노이징 스텝
+    description: >-
+      청크당 flow-matching 디노이징 반복 횟수. 2~3은 가장 빠르지만 음질이 거칠 수 있고,
+      4가 품질과 속도의 균형이 좋습니다. 6~10은 약간 더 매끄러운 대신 비례해서 느려집니다
+      (각 스텝마다 vector estimator가 전체 latent를 다시 처리합니다).
+  model_version:
+    name: 모델 버전
+    description: >-
+      불러올 Supertonic 모델 버전. "v3"는 31개 언어를 모두 지원하며 권장 기본값입니다.
+      "v2"는 영어, 한국어, 스페인어, 포르투갈어, 프랑스어 5개 언어만 지원하지만
+      그래프가 조금 더 작아서 저사양 하드웨어에서 미세하게 빠를 수 있습니다.
+  warmup_voices:
+    name: 워밍업 보이스
+    description: >-
+      컨테이너 시작 시 미리 로드해 워밍업할 보이스 목록. 각 항목마다 시작 시간이 몇 초 늘어나지만,
+      해당 보이스의 첫 합성 요청이 즉시 처리됩니다. 하나의 보이스만 사용한다면 M1만 남겨두세요.
+      빈 목록으로 두면 워밍업이 완전히 비활성화됩니다 (첫 요청이 느려집니다).
+  threads:
+    name: CPU 스레드
+    description: >-
+      MNN이 사용할 CPU 스레드 수. 비워두면 자동 감지 (모든 물리 코어 사용).
+      양의 정수로 지정하면 강제 설정. 코어 수보다 많이 설정하면 오히려 성능이 떨어집니다.
+  precision:
+    name: 모델 정밀도
+    description: >-
+      MNN 모델 가중치의 수치 정밀도. 비워두면 "auto"가 됩니다 — /proc/cpuinfo를 검사해
+      AVX-VNNI(Intel 12세대+, AMD Zen 4+)나 NEON SDOT(Pi 5, Cortex-A75+) 지원 CPU에서는 int8을,
+      FEAT_FP16만 있는 ARM에서는 fp16을, 그 외엔 fp32를 자동 선택합니다.
+      특정 설정이 본인 CPU에서 더 빠르다는 것을 측정으로 확인했을 때만 수동 변경하세요.
+  mnn_memory:
+    name: MNN 메모리 모드
+    description: >-
+      MNN이 중간 텐서를 얼마나 적극적으로 캐싱할지 설정. 비워두면 "normal" (균형 잡힌 기본값).
+      "low"는 RAM을 절약하지만 재계산이 많고, "high"는 RAM을 더 쓰는 대신 속도가 빠릅니다.
+  no_streaming:
+    name: 스트리밍 비활성화
+    description: >-
+      활성화하면 문장 단위 스트리밍을 끄고 전체 합성 후 한 번에 오디오를 반환합니다.
+      비워두면 스트리밍이 켜진 상태로 유지됩니다.
+  debug_logging:
+    name: 디버그 로깅
+    description: >-
+      앱 로그에 DEBUG 레벨 메시지를 출력합니다. 비워두면 일반 INFO 레벨 로깅입니다.
+network:
+  10209/tcp: Supertonic Wyoming 프로토콜

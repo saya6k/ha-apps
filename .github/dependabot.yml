@@ -1,0 +1,20 @@
+---
+version: 2
+
+updates:
+  # Keep our own workflows' action SHAs fresh. The hassio-addons/workflows
+  # reusable workflows are pinned by SHA inside each subproject's Dockerfile
+  # references — those are not GitHub Actions and dependabot does NOT update
+  # them automatically.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - "type:ci"
+      - "addon:repo"
+    commit-message:
+      prefix: "ci"
+      include: scope

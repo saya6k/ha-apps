@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest a new capability or improvement for one of the add-ons.
+title: "[feat]: "
+labels:
+  - "type:feat"
+  - "needs:triage"
+body:
+  - type: dropdown
+    id: addon
+    attributes:
+      label: Add-on
+      description: Which add-on does this affect?
+      options:
+        - llm-conversation-agent
+        - rethink
+        - supertonic
+        - wardrowbe
+        - zensical
+        - repository tooling (CI / docs / labels)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What use case is currently painful or impossible?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like the add-on to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing workarounds, related projects, or other approaches you've tried.

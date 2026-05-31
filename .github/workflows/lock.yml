@@ -1,0 +1,27 @@
+---
+name: Lock threads
+
+# yamllint disable-line rule:truthy
+on:
+  schedule:
+    - cron: "32 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: lock-threads
+
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v5
+        with:
+          issue-inactive-days: "30"
+          pr-inactive-days: "7"
+          issue-lock-reason: resolved
+          pr-lock-reason: resolved
+          process-only: "issues, prs"

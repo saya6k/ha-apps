@@ -1,0 +1,32 @@
+# Auto-applied PR labels based on changed paths.
+# Consumed by actions/labeler@v5 — schema requires every rule under
+# changed-files, never a bare glob list.
+
+"addon:llm-conversation-agent":
+  - changed-files:
+      - any-glob-to-any-file: "llm-conversation-agent/**"
+
+"addon:rethink":
+  - changed-files:
+      - any-glob-to-any-file: "rethink/**"
+
+"addon:supertonic":
+  - changed-files:
+      - any-glob-to-any-file: "supertonic/**"
+
+"addon:wardrowbe":
+  - changed-files:
+      - any-glob-to-any-file: "wardrowbe/**"
+
+"addon:zensical":
+  - changed-files:
+      - any-glob-to-any-file: "zensical/**"
+
+"addon:repo":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "README.md"
+          - "AGENTS.md"
+          - "CLAUDE.md"
+          - "repository.yaml"

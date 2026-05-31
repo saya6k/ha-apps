@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "simple",
+  "include-component-in-tag": true,
+  "include-v-in-tag": true,
+  "separate-pull-requests": true,
+  "pull-request-title-pattern": "chore(${component}): release ${version}",
+  "changelog-sections": [
+    {"type": "feat",     "section": "Features"},
+    {"type": "fix",      "section": "Bug Fixes"},
+    {"type": "perf",     "section": "Performance"},
+    {"type": "revert",   "section": "Reverts"},
+    {"type": "docs",     "section": "Documentation"},
+    {"type": "refactor", "section": "Code Refactoring"},
+    {"type": "build",    "section": "Build System"},
+    {"type": "ci",       "section": "CI"},
+    {"type": "chore",    "section": "Chores", "hidden": true},
+    {"type": "test",     "section": "Tests",  "hidden": true},
+    {"type": "style",    "section": "Style",  "hidden": true}
+  ],
+  "packages": {
+    "llm-conversation-agent": {
+      "component": "llm-conversation-agent",
+      "package-name": "llm-conversation-agent",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
+    "rethink": {
+      "component": "rethink",
+      "package-name": "rethink",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
+      ]
+    },
+    "supertonic": {
+      "component": "supertonic",
+      "package-name": "supertonic",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
+    "wardrowbe": {
+      "component": "wardrowbe",
+      "package-name": "wardrowbe",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
+      ]
+    },
+    "zensical": {
+      "component": "zensical",
+      "package-name": "zensical",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
+      ]
+    }
+  }
+}

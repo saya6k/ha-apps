@@ -1,0 +1,40 @@
+# Default: normalize line endings to LF on commit, native on checkout.
+* text=auto eol=lf
+
+# Shell scripts MUST be LF — Windows-checked-out CRLF breaks bash, s6
+# (run/finish), and bashio. Match Home Assistant base image expectations.
+*.sh        text eol=lf
+*.bash      text eol=lf
+run         text eol=lf
+finish      text eol=lf
+up          text eol=lf
+down        text eol=lf
+
+# Common text formats — explicit so editors don't auto-normalize differently.
+*.py        text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.toml      text eol=lf
+*.txt       text eol=lf
+Dockerfile  text eol=lf
+
+# Binary assets — never touch.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.webp      binary
+*.svg       text eol=lf
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.zip       binary
+*.tar       binary
+*.tar.gz    binary
+*.tgz       binary
+*.onnx      binary
+*.gguf      binary
+*.mnn       binary

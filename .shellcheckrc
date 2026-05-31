@@ -1,0 +1,10 @@
+# shellcheck rc — applied by CI's lint-shell job and by local shellcheck runs.
+# Keep this list small; prefer fixing the script over disabling globally.
+
+# SC2002: "Useless cat" — bashio scripts pipe `cat /data/options.json | jq ...`
+# all over the place, matching the upstream HA add-on docs idiom. Allowed.
+disable=SC2002
+
+# SC1091: "Not following sourced file" — s6 / bashio source files outside the
+# repo at runtime (e.g. /usr/lib/bashio/bashio.sh). Allowed.
+disable=SC1091

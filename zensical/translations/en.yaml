@@ -1,0 +1,10 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Verbosity threshold for the add-on's own log lines (file watcher
+      events, build status, sync errors). `info` is the default; raise
+      to `debug` to see every file-event burst, drop to `error` when
+      you only want failure notices. The underlying Zensical CLI has no
+      `--verbose` / `--quiet` flags, so its build output isn't affected.

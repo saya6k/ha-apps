@@ -1,0 +1,41 @@
+This add-on bundles brand assets and software from Supertone Inc.
+
+icon.png  — copied from supertone-inc/supertonic-py:
+              docs/assets/images/logo_square.png
+logo.png  — copied from supertone-inc/supertonic-py:
+              docs/assets/images/logo_wide.png
+
+Both assets are distributed under the MIT License.
+
+  Copyright (c) 2025 Supertone Inc.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+Upstream LICENSE: https://github.com/supertone-inc/supertonic-py/blob/main/LICENSE
+
+────────────────────────────────────────────────────────────────────────────
+
+The Supertonic inference model and runtime libraries used by this add-on:
+
+  * https://github.com/supertone-inc/supertonic        (MIT, © 2025 Supertone Inc.)
+  * https://github.com/supertone-inc/supertonic-py     (MIT, © 2025 Supertone Inc.)
+  * https://github.com/vra/supertonic-mnn              (see repository for license)
+
+are integrated by reference (installed at image build time); this repository
+does not redistribute their source code.
