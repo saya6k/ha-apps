@@ -28,12 +28,21 @@ RUN \
         python3 \
         python3-pip \
         git \
+        patchelf \
     && pip3 install --no-cache-dir \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
         "wyoming==1.7.2" \
         "sentence-stream" \
         "num2words" \
-        "numpy"
+        "numpy" \
+    # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
+    # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack
+    # marker. Newer loaders reject it at import ("cannot enable executable
+    # stack ... Invalid argument"). MNN never executes from the stack, so
+    # clearing the flag is safe. No-op on the aarch64 wheel (already RW).
+    && patchelf --clear-execstack \
+        /usr/local/lib/python3.*/dist-packages/_mnncengine*.so \
+        /usr/local/lib/python3.*/dist-packages/_tools*.so
 
 # Our Wyoming bridge. pip's PEP 517 build isolation pulls setuptools/wheel into
 # a throwaway env, so we never install them into /usr/local — nothing extra
