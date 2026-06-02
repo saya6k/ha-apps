@@ -3,7 +3,7 @@
 # amd64 / aarch64 automatically. Debian (glibc) is required: MNN / numpy ship
 # manylinux wheels that don't run on the Alpine (musl) default base. The CI
 # builder may still override BUILD_FROM; the default keeps local builds working.
-ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:bookworm
+ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:trixie
 
 # ---- builder: install the Python deps (needs git + pip), discarded after ----
 FROM ${BUILD_FROM} AS builder
@@ -28,21 +28,19 @@ RUN \
         python3 \
         python3-pip \
         git \
-    && pip3 install --no-cache-dir -U setuptools wheel \
     && pip3 install --no-cache-dir \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
         "wyoming==1.7.2" \
         "sentence-stream" \
         "num2words" \
-        "numpy<2.0"
+        "numpy"
 
-# Our Wyoming bridge. Drop the build-only setuptools/wheel afterwards so they
-# don't ride along in the COPY of /usr/local into the runtime stage (nothing
-# here imports them at runtime; verified by import smoke test).
+# Our Wyoming bridge. pip's PEP 517 build isolation pulls setuptools/wheel into
+# a throwaway env, so we never install them into /usr/local — nothing extra
+# rides along in the COPY of /usr/local into the runtime stage.
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_supertonic/ /usr/src/app/wyoming_supertonic/
-RUN pip3 install --no-cache-dir --no-deps /usr/src/app \
-    && pip3 uninstall -y setuptools wheel
+RUN pip3 install --no-cache-dir --no-deps /usr/src/app
 
 # ---- final: runtime only — no pip, no setuptools, no git, no build tooling ----
 FROM ${BUILD_FROM}

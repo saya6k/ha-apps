@@ -100,7 +100,7 @@ sharing the same deps.
 ```bash
 # one-time
 uv venv .venv --python 3.12
-uv pip install 'wyoming>=1.5,<2' 'sentence-stream>=1.0.4' 'numpy<2.0'
+uv pip install 'wyoming>=1.5,<2' 'sentence-stream>=1.0.4' 'numpy'
 # note: `supertonic-mnn` is NOT installed locally — it isn't on PyPI
 # and the Dockerfile pulls it from a pinned git SHA. Local venv is for
 # import / syntax / handler.py edits only; engine.py end-to-end testing

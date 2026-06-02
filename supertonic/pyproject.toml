@@ -15,7 +15,7 @@ keywords = ["home-assistant", "wyoming", "tts", "supertonic", "supertone", "mnn"
 dependencies = [
     "wyoming>=1.5,<2",
     "sentence-stream>=1.0.4",
-    "numpy<2.0",
+    "numpy",
     # 0.2.0+ (with v3 + lang= support) — installed from git in the Dockerfile
     # until upstream publishes a release. The image installs this package with
     # --no-deps so the version spec here is informational.
