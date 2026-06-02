@@ -14,7 +14,9 @@ ORT/OpenVINO stack is gone — see CHANGELOG before reintroducing any of it.
 ## Layout
 
 ```
-config.yaml / build.yaml / Dockerfile   app packaging
+config.yaml / Dockerfile                app packaging (base image is pinned
+                                        in the Dockerfile FROM — build.yaml
+                                        is retired since Supervisor 2026.04.0)
 pyproject.toml                          our bridge package metadata
 wyoming_supertonic/
   __main__.py    argparse + server

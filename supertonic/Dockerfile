@@ -1,5 +1,12 @@
-ARG BUILD_FROM
-FROM ${BUILD_FROM}
+# Base image is set here (build.yaml is retired since Supervisor 2026.04.0).
+# The generic, un-prefixed tag is a multi-arch manifest — BuildKit resolves
+# amd64 / aarch64 automatically. Debian (glibc) is required: MNN / numpy ship
+# manylinux wheels that don't run on the Alpine (musl) default base. The CI
+# builder may still override BUILD_FROM; the default keeps local builds working.
+ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:bookworm
+
+# ---- builder: install the Python deps (needs git + pip), discarded after ----
+FROM ${BUILD_FROM} AS builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -18,11 +25,8 @@ ARG SUPERTONIC_MNN_REF=ce5d7b25e2581293cd9d4ac0a462ac6e5e7d1cd0
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
-        netcat-traditional \
         python3 \
         python3-pip \
-        libsndfile1 \
-        ca-certificates \
         git \
     && pip3 install --no-cache-dir -U setuptools wheel \
     && pip3 install --no-cache-dir \
@@ -30,16 +34,40 @@ RUN \
         "wyoming==1.7.2" \
         "sentence-stream" \
         "num2words" \
-        "numpy<2.0" \
-    && apt-get purge -y --auto-remove git \
-    && rm -rf /var/lib/apt/lists/* /root/.cache
+        "numpy<2.0"
 
-# Our Wyoming bridge.
+# Our Wyoming bridge. Drop the build-only setuptools/wheel afterwards so they
+# don't ride along in the COPY of /usr/local into the runtime stage (nothing
+# here imports them at runtime; verified by import smoke test).
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_supertonic/ /usr/src/app/wyoming_supertonic/
-RUN pip3 install --no-cache-dir --no-deps /usr/src/app
+RUN pip3 install --no-cache-dir --no-deps /usr/src/app \
+    && pip3 uninstall -y setuptools wheel
 
-WORKDIR /
+# ---- final: runtime only — no pip, no setuptools, no git, no build tooling ----
+FROM ${BUILD_FROM}
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ENV HF_HUB_DISABLE_TELEMETRY=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        netcat-traditional \
+        python3 \
+        libsndfile1 \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python deps + our bridge, built in the builder stage. /usr/local is where
+# pip (with PIP_BREAK_SYSTEM_PACKAGES) writes packages and console scripts;
+# Debian's site.py keeps /usr/local/lib/pythonX.Y/dist-packages on sys.path,
+# so `python3 -m wyoming_supertonic` resolves without a local pip install.
+COPY --from=builder /usr/local /usr/local
+
 COPY rootfs /
 
 RUN chmod +x \
