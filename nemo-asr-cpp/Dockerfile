@@ -1,0 +1,104 @@
+# Debian (glibc) base — we compile libparakeet + ggml from source and link the
+# stock libstdc++/libgomp. The generic tag is a multi-arch manifest; BuildKit
+# resolves amd64 / aarch64 and the build runs natively per arch in the HA
+# builder, so the compiled libs match the target CPU.
+ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:trixie
+
+# Pin upstream parakeet.cpp (ggml comes in via its submodule). Bump this to
+# follow upstream — there are no release tags, so we pin a commit SHA. GGML
+# NATIVE is OFF for a portable build (ggml still picks AVX2/NEON kernels at
+# runtime), matching mudler's published CPU image.
+ARG PARAKEET_REF=e270af73b94c9a5c37ec516230219ed4580e1db6
+
+# ---- builder: compile libparakeet.so (+ ggml) from source, then discard tooling ----
+FROM ${BUILD_FROM} AS builder
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ARG PARAKEET_REF
+
+RUN \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        cmake \
+        ninja-build \
+        build-essential \
+        ca-certificates
+
+WORKDIR /src
+RUN git init -q . \
+    && git remote add origin https://github.com/mudler/parakeet.cpp.git \
+    && git fetch --depth 1 --recurse-submodules origin "${PARAKEET_REF}" \
+    && git checkout -q FETCH_HEAD \
+    && git submodule update --init --recursive --depth 1
+
+# Shared library + flat C API only (no CLI, no tests). GGML_NATIVE=OFF for
+# portability; GGML_BLAS=OFF / METAL=OFF to keep the runtime dep list to just
+# libggml*. Install to /opt/parakeet.
+RUN cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/parakeet \
+        -DPARAKEET_SHARED=ON \
+        -DPARAKEET_BUILD_CLI=OFF \
+        -DPARAKEET_BUILD_TESTS=OFF \
+        -DGGML_NATIVE=OFF \
+        -DGGML_METAL=OFF \
+        -DGGML_BLAS=OFF \
+    && cmake --build build -j \
+    && cmake --install build \
+    # The install may not place ggml's own shared libs; gather every built .so.
+    && mkdir -p /opt/parakeet/lib \
+    && find build -name '*.so*' -type f -exec cp -a {} /opt/parakeet/lib/ \;
+
+# ---- builder-py: install Python deps + our bridge ----
+FROM ${BUILD_FROM} AS builder-py
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ENV PIP_BREAK_SYSTEM_PACKAGES=1 PYTHONDONTWRITEBYTECODE=1
+WORKDIR /usr/src/app
+RUN \
+    apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-pip \
+    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub" "numpy"
+COPY pyproject.toml /usr/src/app/
+COPY wyoming_nemo_asr_cpp/ /usr/src/app/wyoming_nemo_asr_cpp/
+RUN pip3 install --no-cache-dir --no-deps /usr/src/app
+
+# ---- runtime ----
+FROM ${BUILD_FROM}
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HF_HUB_DISABLE_TELEMETRY=1
+
+# libgomp1: ggml OpenMP threads. libstdc++6: C++ runtime for libparakeet/ggml.
+RUN \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 \
+        libgomp1 \
+        libstdc++6 \
+        ca-certificates \
+        netcat-traditional \
+    && rm -rf /var/lib/apt/lists/*
+
+# parakeet.cpp shared libs (libparakeet + libggml*) -> default loader path.
+COPY --from=builder /opt/parakeet/lib/ /usr/local/lib/
+RUN ldconfig
+
+# Python deps + our bridge.
+COPY --from=builder-py /usr/local /usr/local
+
+COPY rootfs /
+
+RUN chmod +x \
+    /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/run \
+    /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/finish \
+    /etc/s6-overlay/s6-rc.d/discovery/run
+
+HEALTHCHECK --start-period=10m \
+    CMD echo '{ "type": "describe" }' \
+        | nc -w 1 localhost 10360 \
+        | grep -qi "nemo" \
+        || exit 1

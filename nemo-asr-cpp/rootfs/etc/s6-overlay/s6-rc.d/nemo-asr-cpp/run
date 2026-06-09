@@ -1,0 +1,22 @@
+#!/command/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Start the NeMo ASR (cpp) Wyoming service — parakeet.cpp (ggml) via ctypes.
+# ==============================================================================
+
+# GGUF model downloads to the persistent /data volume (not the image).
+export HOME=/data
+mkdir -p /data/models
+
+flags=()
+bashio::config.has_value 'language'     && flags+=('--language'     "$(bashio::config 'language')")
+bashio::config.has_value 'quantization' && flags+=('--quantization' "$(bashio::config 'quantization')")
+bashio::config.has_value 'hf_token'     && flags+=('--hf-token'     "$(bashio::config 'hf_token')")
+bashio::config.true 'debug_logging'     && flags+=('--debug')
+
+# Quote the array so flag values containing spaces (e.g. "Bahasa Indonesia")
+# stay one argument each.
+exec python3 -m wyoming_nemo_asr_cpp \
+    --uri 'tcp://0.0.0.0:10360' \
+    "${flags[@]}"

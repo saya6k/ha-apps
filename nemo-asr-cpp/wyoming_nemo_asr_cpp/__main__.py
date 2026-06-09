@@ -1,0 +1,142 @@
+"""Entry point: python -m wyoming_nemo_asr_cpp ...
+
+Downloads the chosen GGUF quant, loads it once into a resident parakeet.cpp
+context, warms up, then serves the Wyoming ASR protocol.
+"""
+from __future__ import annotations
+
+import argparse
+import asyncio
+import logging
+import os
+import signal
+from functools import partial
+
+from . import __version__
+from . import models
+from .const import DEFAULT_PORT, GGUF_REPO, LANGUAGES, LIB_DIR, MODEL_DIR
+
+_LOGGER = logging.getLogger(__name__)
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog="wyoming_nemo_asr_cpp")
+    parser.add_argument("--uri", default=f"tcp://0.0.0.0:{DEFAULT_PORT}")
+    parser.add_argument("--lib-dir", default=LIB_DIR)
+    parser.add_argument("--model-dir", default=MODEL_DIR)
+    parser.add_argument("--gguf-repo", default=GGUF_REPO)
+    parser.add_argument("--quantization", default="q4_k")
+    parser.add_argument("--language", default=None)
+    parser.add_argument("--hf-token", default=os.environ.get("HF_TOKEN", ""))
+    parser.add_argument("--zeroconf", nargs="?", const="nemo-asr-cpp", default=None)
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--app-version", action="version", version=__version__)
+    return parser.parse_args()
+
+
+def _build_info() -> "Info":
+    from wyoming.info import AsrModel, AsrProgram, Attribution, Info
+
+    attr = Attribution(
+        name="parakeet.cpp (ggml) / NVIDIA Nemotron ASR",
+        url="https://github.com/mudler/parakeet.cpp",
+    )
+    return Info(
+        asr=[
+            AsrProgram(
+                name="NeMo ASR (cpp)",
+                description="NVIDIA Nemotron streaming ASR on ggml (parakeet.cpp)",
+                attribution=attr,
+                installed=True,
+                version=__version__,
+                supports_transcript_streaming=False,
+                models=[
+                    AsrModel(
+                        name="nemotron-3.5-asr-streaming-0.6b",
+                        description="Multilingual streaming Conformer-Transducer (GGUF)",
+                        attribution=attr,
+                        installed=True,
+                        version=None,
+                        languages=list(LANGUAGES),
+                    )
+                ],
+            )
+        ],
+    )
+
+
+async def main() -> None:
+    args = _parse_args()
+    args.hf_token = (args.hf_token or "").strip()
+    logging.basicConfig(
+        level=logging.DEBUG if args.debug else logging.INFO,
+        format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
+        datefmt="%H:%M:%S",
+    )
+    _LOGGER.info(
+        "Booting wyoming_nemo_asr_cpp %s (quant=%s, lang=%s)",
+        __version__, args.quantization, args.language,
+    )
+
+    from .engine import ParakeetASR
+
+    try:
+        gguf = models.ensure_gguf(
+            args.quantization, args.model_dir, repo=args.gguf_repo,
+            token=args.hf_token,
+        )
+        engine = ParakeetASR(args.lib_dir, gguf)
+        engine.warmup(args.language)
+    except Exception as err:  # noqa: BLE001 - any setup failure -> graceful stop
+        _LOGGER.error("Model setup failed: %s", err)
+        _LOGGER.error(
+            "Check the quant name, hf_token, disk space, and that libparakeet.so "
+            "+ ggml libs are in --lib-dir. Shutting down."
+        )
+        if args.debug:
+            _LOGGER.exception("Full traceback (debug):")
+        raise SystemExit(1)
+
+    wyoming_info = _build_info()
+
+    from wyoming.server import AsyncServer, AsyncTcpServer
+
+    server = AsyncServer.from_uri(args.uri)
+    if args.zeroconf:
+        if not isinstance(server, AsyncTcpServer):
+            raise ValueError("Zeroconf requires a tcp:// uri")
+        try:
+            from wyoming.zeroconf import HomeAssistantZeroconf
+
+            tcp: AsyncTcpServer = server
+            await HomeAssistantZeroconf(
+                name=args.zeroconf, port=tcp.port, host=tcp.host
+            ).register_server()
+        except ImportError:
+            _LOGGER.warning("Zeroconf requested but wyoming[zeroconf] not installed")
+
+    _LOGGER.info("Ready (uri=%s)", args.uri)
+
+    from .handler import ParakeetEventHandler
+
+    server_task = asyncio.create_task(
+        server.run(partial(ParakeetEventHandler, wyoming_info, args, engine))
+    )
+    loop = asyncio.get_running_loop()
+    loop.add_signal_handler(signal.SIGINT, server_task.cancel)
+    loop.add_signal_handler(signal.SIGTERM, server_task.cancel)
+    try:
+        await server_task
+    except asyncio.CancelledError:
+        _LOGGER.info("Server stopped")
+
+
+def run() -> None:
+    asyncio.run(main())
+
+
+if __name__ == "__main__":
+    try:
+        run()
+    except KeyboardInterrupt:
+        pass

@@ -1,0 +1,35 @@
+---
+version: 0.1.0
+slug: nemo-asr-cpp
+name: NeMo ASR (cpp)
+stage: stable
+description: Fast speech-to-text over Wyoming — NVIDIA Nemotron ASR on ggml (parakeet.cpp)
+url: https://github.com/mudler/parakeet.cpp
+arch:
+  - amd64
+  - aarch64
+init: false
+discovery:
+  - wyoming
+backup_exclude:
+  - "models/**"
+options:
+  language: Auto
+  quantization: q4_k
+  hf_token: ""
+  debug_logging: false
+schema:
+  # Native-name dropdown; keep in lockstep with const.LANGUAGE_CHOICES. Auto =
+  # model auto-detect. HA does not translate list() values.
+  language: list(Auto|English|Español|中文|हिन्दी|العربية|Français|Deutsch|日本語|Русский|Português|한국어|Italiano|Nederlands|Polski|Türkçe|Українська|Română|Čeština|Magyar|Ελληνικά|Svenska|Dansk|Suomi|Norsk|Slovenčina|Hrvatski|Български|Lietuvių|Latviešu|Eesti|Slovenščina|ไทย|Tiếng Việt|Bahasa Indonesia|Bahasa Melayu|עברית)
+  # GGUF weight precision. q4_k = smallest/fastest (default), f16 = best quality.
+  quantization: list(q4_k|q5_k|q6_k|q8_0|f16)
+  hf_token: password?
+  debug_logging: bool?
+ports:
+  "10360/tcp": null
+ports_description:
+  "10360/tcp": NeMo ASR (cpp) Wyoming Protocol
+homeassistant: 2023.8.0.dev20230718
+# Uncomment once a prebuilt image is published to GHCR.
+# image: ghcr.io/saya6k/{arch}-addon-nemo-asr-cpp

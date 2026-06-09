@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wyoming-nemo-asr-cpp"
+version = "0.1.0"
+description = "Wyoming STT bridge for NeMo/Parakeet ASR on ggml (parakeet.cpp C API)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "ha-nemo-asr-cpp contributors" }]
+keywords = ["home-assistant", "wyoming", "stt", "asr", "nemotron", "parakeet", "ggml"]
+
+dependencies = [
+    "wyoming>=1.9,<2",
+    "huggingface_hub",
+    "numpy",
+    # libparakeet (+ ggml) is built from source in the Dockerfile and called
+    # via ctypes — there is no Python package for it.
+]
+
+[project.scripts]
+wyoming-nemo-asr-cpp = "wyoming_nemo_asr_cpp.__main__:run"
+
+[tool.setuptools]
+packages = ["wyoming_nemo_asr_cpp"]

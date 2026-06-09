@@ -1,0 +1,22 @@
+---
+configuration:
+  language:
+    name: Fallback language
+    description: >-
+      Language used when the Home Assistant voice pipeline doesn't send one.
+      "Auto" lets the model detect the language. The per-request language from
+      the pipeline always takes priority over this fallback.
+  quantization:
+    name: Model quantization
+    description: >-
+      GGUF weight precision of the downloaded model. q4_k = smallest/fastest and
+      lowest RAM (default); f16 = best quality but ~4x larger. Changing this
+      re-downloads the model on next start.
+  hf_token:
+    name: HuggingFace token
+    description: >-
+      Optional access token for gated/private model repos and to lift anonymous
+      download rate limits. Leave empty for public models.
+  debug_logging:
+    name: Debug logging
+    description: Enable verbose logging for troubleshooting.
