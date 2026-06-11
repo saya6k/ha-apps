@@ -12,6 +12,18 @@ configuration:
       GGUF weight precision of the downloaded model. q4_k = smallest/fastest and
       lowest RAM (default); f16 = best quality but ~4x larger. Changing this
       re-downloads the model on next start.
+  hotwords:
+    name: Hotwords (vocabulary biasing)
+    description: >-
+      Phrases to bias recognition toward — one per item (room names, entity
+      names, people). Useful for known vocabulary the model otherwise mishears.
+      Best-effort greedy biasing; it can only flip near-ties.
+  hotword_boost:
+    name: Hotword boost
+    description: >-
+      Advanced. Strength of the hotword bias (logit bonus per token). Default 2.
+      Higher pushes harder toward hotwords, but values above ~3 can destabilize
+      decoding and cause garbled output.
   hf_token:
     name: HuggingFace token
     description: >-

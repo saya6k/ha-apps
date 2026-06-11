@@ -10,13 +10,18 @@ export HOME=/data
 mkdir -p /data/models
 
 flags=()
-bashio::config.has_value 'language'     && flags+=('--language'     "$(bashio::config 'language')")
-bashio::config.has_value 'quantization' && flags+=('--quantization' "$(bashio::config 'quantization')")
-bashio::config.has_value 'hf_token'     && flags+=('--hf-token'     "$(bashio::config 'hf_token')")
-bashio::config.true 'debug_logging'     && flags+=('--debug')
+bashio::config.has_value 'language'      && flags+=('--language'      "$(bashio::config 'language')")
+bashio::config.has_value 'quantization'  && flags+=('--quantization'  "$(bashio::config 'quantization')")
+bashio::config.has_value 'hotword_boost' && flags+=('--hotword-boost' "$(bashio::config 'hotword_boost')")
+bashio::config.has_value 'hf_token'      && flags+=('--hf-token'      "$(bashio::config 'hf_token')")
+bashio::config.true 'debug_logging'      && flags+=('--debug')
 
-# Quote the array so flag values containing spaces (e.g. "Bahasa Indonesia")
-# stay one argument each.
+# Hotwords are a YAML list; join into one newline-separated --hotwords value.
+hotwords=$(jq -r '(.hotwords // []) | join("\n")' /data/options.json 2>/dev/null || echo "")
+[ -n "${hotwords}" ] && flags+=('--hotwords' "${hotwords}")
+
+# Quote the array so flag values containing spaces (e.g. "Bahasa Indonesia",
+# multi-line --hotwords) stay one argument each.
 exec python3 -m wyoming_nemo_asr_cpp \
     --uri 'tcp://0.0.0.0:10360' \
     "${flags[@]}"

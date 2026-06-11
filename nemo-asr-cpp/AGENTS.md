@@ -14,10 +14,10 @@ model on onnxruntime): ggml is ~1.4× faster on CPU and the q4_k GGUF is ~720 MB
 (vs ~1.5 GB) — chosen for resource-limited HAOS (N100, Pi 4/5).
 
 Same model → same Korean/40-locale support and (near-)identical transcripts.
-**No hotword biasing here** (parakeet.cpp has none upstream) — that lives in the
-`nemotron-asr` (onnxruntime) add-on. If upstream adds it, we inherit it by
-bumping `PARAKEET_REF`. **We do not fork parakeet.cpp** — we track upstream and
-call its flat C API.
+**Hotword biasing is a vendored patch** (`patches/0001-rnnt-hotword-biasing.patch`,
+applied by the Dockerfile after checkout — upstream parakeet.cpp has none).
+**We do not fork parakeet.cpp** — we track upstream and call its flat C API;
+the patch is the one deliberate, upstream-PR-shaped exception (see below).
 
 ## Git / repo tracking
 
@@ -31,12 +31,16 @@ under the `nemo-asr-cpp` scope like its siblings.
 ```
 config.yaml / Dockerfile        packaging; Dockerfile BUILDS libparakeet.so + ggml
                                 from mudler/parakeet.cpp source (ARG PARAKEET_REF)
+patches/                        vendored upstream patches, `git apply`'d in the
+                                builder stage right after checkout
 pyproject.toml                  bridge package metadata
 wyoming_nemo_asr_cpp/
   __main__.py   download GGUF -> load model ONCE -> warmup -> serve
   engine.py     ctypes wrapper over parakeet.cpp's flat C API (parakeet_capi.h)
   handler.py    Wyoming ASR; buffer utterance, transcribe on AudioStop
   models.py     hf_hub_download one GGUF quant into /data/models
+  tokenizer.py  hotword phrase -> token ids (greedy match over the GGUF's
+                embedded vocab via the `gguf` package; no extra downloads)
   const.py      port, lib/model dirs, language dropdown, quant list
 rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
 ```
@@ -55,6 +59,23 @@ rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
 - **Threads:** the C API exposes no thread setter; ggml uses all cores (right
   for these 4-core hosts). Don't add a `num_threads` option that can't take
   effect.
+- **Hotword biasing (vendored patch, C ABI v5).** The patch adds
+  `parakeet_capi_set_hotwords(ctx, ids, lens, n_phrases, boost)` — token-id
+  sequences, set once at boot, applies to every transcribe. The bridge
+  tokenizes phrases against the GGUF's embedded vocab
+  (`parakeet.tokenizer.pieces`, same index order as the logits). The GGUF has
+  no SentencePiece scores, so exact unigram segmentation is impossible —
+  instead each phrase is registered as **up to two greedy variants**
+  (boundary-marker and marker-less): whichever matches the model's actual
+  emission stream does the biasing, the other is inert. Two sharp edges,
+  both verified empirically: (1) a leading bare `▁` token is dropped —
+  boosting that ubiquitous token as a phrase start destabilizes decoding at
+  boost ≥ ~4 (degenerate repetition loops); (2) without the marker-less
+  variant, unigram-vs-greedy divergence ('▁'+'일' vs '▁일') silently disables
+  a phrase. Default boost 2.0 — validated to fix real misrecognitions with
+  multiple simultaneous Korean hotwords and no EN regression.
+  `engine._set_hotwords` degrades gracefully (warn + ignore) when the lib
+  reports ABI < 5, so an unpatched lib still boots.
 
 ## Build (Dockerfile)
 
@@ -71,10 +92,17 @@ rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
 ## Pins & cache
 
 - `PARAKEET_REF` in `Dockerfile` = the upstream commit. Bump to update.
+  **Bumping re-applies `patches/*.patch`** — `git apply` fails the build
+  loudly if upstream drifted under a patch; rebase the patch against the new
+  REF (it is kept upstream-PR-shaped: regenerate with `git diff` from a
+  patched checkout). If upstream ships hotword biasing itself, delete the
+  patch + the Dockerfile apply step and re-point `engine.py` at the upstream
+  API if it differs.
 - GGUF cached at `/data/models/nemotron-3.5-asr-streaming-0.6b-<quant>.gguf`
   (`backup_exclude: ["models/**"]`). Changing `quantization` re-downloads.
-- C ABI is versioned (`parakeet_capi_abi_version()`, currently 4). If a
-  `PARAKEET_REF` bump changes the ABI, update `engine.py` signatures.
+- C ABI is versioned (`parakeet_capi_abi_version()`; upstream 4, **5 with the
+  hotword patch**). If a `PARAKEET_REF` bump changes the ABI, update
+  `engine.py` signatures and the patch's ABI define.
 
 ## Sanity checks before PR
 

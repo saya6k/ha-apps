@@ -16,6 +16,8 @@ dependencies = [
     "wyoming>=1.9,<2",
     "huggingface_hub",
     "numpy",
+    # Reads the vocab pieces embedded in the GGUF for hotword tokenization.
+    "gguf",
     # libparakeet (+ ggml) is built from source in the Dockerfile and called
     # via ctypes — there is no Python package for it.
 ]

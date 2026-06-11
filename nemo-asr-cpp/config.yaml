@@ -16,6 +16,7 @@ backup_exclude:
 options:
   language: Auto
   quantization: q4_k
+  hotwords: []
   hf_token: ""
   debug_logging: false
 schema:
@@ -24,6 +25,12 @@ schema:
   language: list(Auto|English|Español|中文|हिन्दी|العربية|Français|Deutsch|日本語|Русский|Português|한국어|Italiano|Nederlands|Polski|Türkçe|Українська|Română|Čeština|Magyar|Ελληνικά|Svenska|Dansk|Suomi|Norsk|Slovenčina|Hrvatski|Български|Lietuvių|Latviešu|Eesti|Slovenščina|ไทย|Tiếng Việt|Bahasa Indonesia|Bahasa Melayu|עברית)
   # GGUF weight precision. q4_k = smallest/fastest (default), f16 = best quality.
   quantization: list(q4_k|q5_k|q6_k|q8_0|f16)
+  # Phrases to bias recognition toward (vendored decoder patch; see DOCS).
+  hotwords:
+    - str?
+  # Logit bonus per hotword token (advanced). Values above ~3 can destabilize
+  # decoding; the leading-space token is already stripped as a guard.
+  hotword_boost: float(0,10)?
   hf_token: password?
   debug_logging: bool?
 ports:

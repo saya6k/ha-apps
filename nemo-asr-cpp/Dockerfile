@@ -32,6 +32,13 @@ RUN git init -q . \
     && git checkout -q FETCH_HEAD \
     && git submodule update --init --recursive --depth 1
 
+# Vendored patches (e.g. hotword biasing, C ABI v5) — upstream-PR-shaped; when
+# upstream ships the feature, delete the patch + this step and bump
+# PARAKEET_REF. `git apply` fails loudly if a REF bump breaks a patch.
+COPY patches/ /tmp/patches/
+RUN git apply --stat /tmp/patches/*.patch \
+    && git apply /tmp/patches/*.patch
+
 # Shared library + flat C API only (no CLI, no tests). GGML_NATIVE=OFF for
 # portability; GGML_BLAS=OFF / METAL=OFF to keep the runtime dep list to just
 # libggml*. Install to /opt/parakeet.
@@ -59,7 +66,7 @@ WORKDIR /usr/src/app
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends python3 python3-pip \
-    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub" "numpy"
+    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub" "numpy" "gguf"
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_nemo_asr_cpp/ /usr/src/app/wyoming_nemo_asr_cpp/
 RUN pip3 install --no-cache-dir --no-deps /usr/src/app

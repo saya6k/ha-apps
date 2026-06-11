@@ -20,14 +20,23 @@ First boot compiles nothing on your device — the add-on image already contains
 | --------------- | ------- | ----------- |
 | `language`      | Auto    | Fallback language (native-name dropdown) when the pipeline doesn't send one. `Auto` = model auto-detect. Per-request language always wins. |
 | `quantization`  | q4_k    | GGUF weight precision: `q4_k` (smallest/fastest) → `f16` (best quality). Changing re-downloads the model. |
+| `hotwords`      | []      | Phrases to bias recognition toward — one per item (room names, entity names, people). |
+| `hotword_boost` | 2       | Advanced. Bias strength (logit bonus per token). Values above ~3 can destabilize decoding. |
 | `hf_token`      | (empty) | HuggingFace token for gated/private repos. |
 | `debug_logging` | false   | Verbose logging. |
+
+## Hotwords
+
+List phrases the model should prefer when the audio is ambiguous — names of
+rooms, devices, or people it otherwise mishears. Biasing is best-effort: it
+nudges the greedy decoder at near-ties, it cannot force words that weren't
+spoken. Keep the boost at the default unless a hotword still loses; raising it
+past ~3 trades accuracy everywhere else and can garble output.
 
 ## vs. the Nemotron ASR add-on
 
 Same model, different runtime. This one (ggml) is faster on CPU and lighter on
-RAM/disk; the **Nemotron ASR** add-on (onnxruntime) adds **hotword biasing**.
-Run whichever fits — or both, on different ports.
+RAM/disk. Run whichever fits — or both, on different ports.
 
 ## Performance
 

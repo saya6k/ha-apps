@@ -1,0 +1,287 @@
+Hotword (contextual) biasing for the RNN-T greedy decoder.
+
+Vendored patch against mudler/parakeet.cpp @ e270af73 (PARAKEET_REF in the
+Dockerfile). Applied by the Dockerfile builder stage with `git apply` right
+after checkout. Adds `parakeet_capi_set_hotwords(ctx, ids, lens, n, boost)`
+(token-id sequences; the Python bridge tokenizes) and bumps the C ABI 4 -> 5.
+
+Upstream-PR-shaped on purpose: when (a version of) this lands upstream,
+delete this file, drop the `git apply` line, bump PARAKEET_REF, and re-point
+engine.py at the upstream API if it differs.
+
+diff --git a/include/parakeet_capi.h b/include/parakeet_capi.h
+index b082455..956c998 100644
+--- a/include/parakeet_capi.h
++++ b/include/parakeet_capi.h
+@@ -212,6 +212,16 @@ char* parakeet_capi_stream_finalize_json(parakeet_stream* s);
+ // Free a streaming session. Safe on NULL.
+ void parakeet_capi_stream_free(parakeet_stream* s);
+ 
++// Set hotword (contextual) biasing for subsequent transcribe_* calls on `ctx`.
++// Each of `n_phrases` phrases is a token-id sequence (tokenize the phrase text
++// with the model's tokenizer first): `ids` is the concatenation of all phrases'
++// token ids and `lens[i]` is the number of tokens in phrase i. During RNN-T
++// greedy decode, `boost` is added to the logit of any token that starts or
++// continues a phrase, nudging the argmax toward known vocabulary. boost == 0 or
++// n_phrases == 0 clears biasing. No-op on a NULL ctx. (Added in ABI v5.)
++void parakeet_capi_set_hotwords(parakeet_ctx* ctx, const int* ids,
++                                const int* lens, int n_phrases, float boost);
++
+ // Free a string previously returned by parakeet_capi_transcribe_* /
+ // parakeet_capi_stream_*. Safe on NULL.
+ void parakeet_capi_free_string(char* s);
+diff --git a/src/hotwords.hpp b/src/hotwords.hpp
+new file mode 100644
+index 0000000..ef8e534
+--- /dev/null
++++ b/src/hotwords.hpp
+@@ -0,0 +1,19 @@
++#pragma once
++#include <cstdint>
++#include <vector>
++
++namespace pk {
++
++// Contextual (hotword) biasing for the RNN-T greedy decoder. Each phrase is a
++// token-id sequence (the caller tokenizes the phrase text with the model's
++// tokenizer and passes ids via the C API). During greedy decode, a fixed
++// `boost` is added to the logit of any token that would start a phrase or
++// continue an active partial match, nudging the argmax toward known vocabulary.
++// boost == 0 or no phrases -> no biasing.
++struct HotwordBias {
++    std::vector<std::vector<int32_t>> phrases;
++    float boost = 0.0f;
++    bool active() const { return boost != 0.0f && !phrases.empty(); }
++};
++
++} // namespace pk
+diff --git a/src/model.cpp b/src/model.cpp
+index 7cd9093..23ac59e 100644
+--- a/src/model.cpp
++++ b/src/model.cpp
+@@ -79,7 +79,8 @@ static void maybe_apply_prompt(const ModelLoader& loader, std::vector<float>& en
+ // into a transcript. Mirrors the tail of transcribe_16k exactly.
+ static std::string decode_enc_out(const ModelLoader& loader,
+                                   const std::vector<float>& enc_out,
+-                                  int d_model, int Tout, bool use_tdt) {
++                                  int d_model, int Tout, bool use_tdt,
++                                  const HotwordBias* hw = nullptr) {
+     const ParakeetConfig& cfg = loader.config();
+     if (use_tdt) {
+         std::vector<float> enc_row((size_t)Tout * d_model);
+@@ -95,7 +96,8 @@ static std::string decode_enc_out(const ModelLoader& loader,
+                              cfg.tdt_durations, (int)cfg.blank_id, max_symbols);
+         else
+             ids = rnnt_greedy(pred, joint, enc_row, Tout, d_model,
+-                              (int)cfg.blank_id, max_symbols);
++                              (int)cfg.blank_id, max_symbols,
++                              /*tokens=*/nullptr, /*hw=*/hw);
+         return detokenize(loader.tokenizer_pieces(), ids);
+     } else {
+         CTCDecoder ctc(loader);
+@@ -157,7 +159,7 @@ std::string Model::transcribe_16k(const std::vector<float>& pcm16k,
+     const bool use_tdt = (decoder == Decoder::kTDT)
+         || (decoder == Decoder::kDefault && arch_prefers_tdt(cfg.arch));
+ 
+-    return decode_enc_out(loader_, enc_out, d_model, Tout, use_tdt);
++    return decode_enc_out(loader_, enc_out, d_model, Tout, use_tdt, &hotwords_);
+ }
+ 
+ // Max mel frames per encoder pass before the first subsampling conv output
+diff --git a/src/model.hpp b/src/model.hpp
+index 30adeaa..c76b50f 100644
+--- a/src/model.hpp
++++ b/src/model.hpp
+@@ -2,6 +2,7 @@
+ #include "parakeet.h"          // pk::Decoder
+ #include "model_loader.hpp"
+ #include "transcription.hpp"   // pk::Transcription
++#include "hotwords.hpp"        // pk::HotwordBias
+ 
+ #include <memory>
+ #include <string>
+@@ -90,6 +91,15 @@ public:
+     // pk::StreamingSession (and a MelFrontend) over the same load-once model.
+     const ModelLoader& loader() const { return loader_; }
+ 
++    // Set hotword (contextual) biasing applied during RNN-T greedy decode.
++    // Each phrase is a token-id sequence (caller tokenizes the text). A `boost`
++    // is added to the logit of tokens that start/continue a phrase. boost == 0
++    // or no phrases disables it. Applies to subsequent transcribe calls.
++    void set_hotwords(std::vector<std::vector<int32_t>> phrases, float boost) {
++        hotwords_.phrases = std::move(phrases);
++        hotwords_.boost = boost;
++    }
++
+     // Non-copyable (owns the GGUF mapping).
+     Model(const Model&) = delete;
+     Model& operator=(const Model&) = delete;
+@@ -116,6 +126,7 @@ private:
+         const std::string& target_lang = "") const;
+ 
+     ModelLoader loader_;
++    HotwordBias hotwords_;
+ };
+ 
+ } // namespace pk
+diff --git a/src/parakeet_capi.cpp b/src/parakeet_capi.cpp
+index 01de213..1e4c1c7 100644
+--- a/src/parakeet_capi.cpp
++++ b/src/parakeet_capi.cpp
+@@ -24,7 +24,7 @@
+ //     surface per-word timestamps (start/end/conf) plus frame_sec alongside the
+ //     newly-finalized text + eou flag, and a "frame_sec" field added to the
+ //     transcribe_*_json documents. Original entry points unchanged.
+-#define PARAKEET_CAPI_ABI_VERSION 4
++#define PARAKEET_CAPI_ABI_VERSION 5
+ 
+ // The opaque context: a loaded model plus a buffer for the last error message.
+ struct parakeet_ctx {
+@@ -685,6 +685,25 @@ extern "C" void parakeet_capi_stream_free(parakeet_stream* s) {
+     delete s;  // safe on nullptr
+ }
+ 
++extern "C" void parakeet_capi_set_hotwords(parakeet_ctx* ctx, const int* ids,
++                                           const int* lens, int n_phrases,
++                                           float boost) {
++    if (!ctx || !ctx->model) return;
++    std::vector<std::vector<int32_t>> phrases;
++    if (ids && lens && n_phrases > 0 && boost != 0.0f) {
++        phrases.reserve((size_t)n_phrases);
++        size_t off = 0;
++        for (int i = 0; i < n_phrases; ++i) {
++            const int L = lens[i];
++            if (L > 0) {
++                phrases.emplace_back(ids + off, ids + off + L);
++                off += (size_t)L;
++            }
++        }
++    }
++    ctx->model->set_hotwords(std::move(phrases), boost);
++}
++
+ extern "C" void parakeet_capi_free_string(char* s) {
+     std::free(s);
+ }
+diff --git a/src/rnnt.cpp b/src/rnnt.cpp
+index 3c32517..d16d720 100644
+--- a/src/rnnt.cpp
++++ b/src/rnnt.cpp
+@@ -20,9 +20,11 @@ std::vector<int32_t> rnnt_decode_frames(const PredictionNet& pred, const Joint&
+                                         RnntDecodeState& st,
+                                         int blank_id, int max_symbols,
+                                         std::vector<int32_t>* emit_frames,
+-                                        std::vector<TokenInfo>* tokens) {
++                                        std::vector<TokenInfo>* tokens,
++                                        const HotwordBias* hw) {
+     assert((int)enc_frames.size() == (size_t)Tnew * enc_hidden);
+     assert(joint.num_durations() == 0);
++    const bool hw_on = hw && hw->active();
+ 
+     const int V_plus      = joint.V_plus();   // vocab + 1 (incl. blank), no durations
+     const int token_count = V_plus;           // argmax over the full output vector
+@@ -76,6 +78,19 @@ std::vector<int32_t> rnnt_decode_frames(const PredictionNet& pred, const Joint&
+             joint.step_logits(enc_proj.data() + (size_t)t * H,
+                               g.data(), (int)g.size(), logits);
+ 
++            // Hotword biasing: add `boost` to the logit of any token that starts
++            // a hotword phrase or continues an active partial match, so a near
++            // tie resolves toward known vocabulary. No-op when biasing is off.
++            if (hw_on) {
++                for (const auto& ph : hw->phrases)
++                    if (!ph.empty() && ph[0] >= 0 && ph[0] < token_count)
++                        logits[ph[0]] += hw->boost;
++                for (const auto& am : st.hot_active) {
++                    const int32_t nxt = hw->phrases[am.first][am.second];
++                    if (nxt >= 0 && nxt < token_count) logits[nxt] += hw->boost;
++                }
++            }
++
+             const int k = decode_argmax(logits.data(), token_count);
+ 
+             // Blank -> stop emitting at this frame and advance time.
+@@ -97,6 +112,22 @@ std::vector<int32_t> rnnt_decode_frames(const PredictionNet& pred, const Joint&
+             st.state = out_state;
+             st.have_token = true;
+             g_valid = false;   // committed state advanced -> recompute g next step
++            // Advance hotword matches on the emitted token: continue active ones
++            // that match k, (re)start any phrase whose first token is k. Blank
++            // frames don't emit, so matches persist across them untouched.
++            if (hw_on) {
++                std::vector<std::pair<int32_t, int32_t>> nxt;
++                for (const auto& am : st.hot_active) {
++                    const auto& ph = hw->phrases[am.first];
++                    if (ph[am.second] == k && am.second + 1 < (int)ph.size())
++                        nxt.emplace_back(am.first, am.second + 1);
++                }
++                for (int p = 0; p < (int)hw->phrases.size(); ++p) {
++                    const auto& ph = hw->phrases[p];
++                    if (ph.size() > 1 && ph[0] == k) nxt.emplace_back(p, 1);
++                }
++                st.hot_active.swap(nxt);
++            }
+             emitted += 1;
+         }
+ 
+@@ -110,14 +141,15 @@ std::vector<int32_t> rnnt_decode_frames(const PredictionNet& pred, const Joint&
+ std::vector<int32_t> rnnt_greedy(const PredictionNet& pred, const Joint& joint,
+                                  const std::vector<float>& enc, int T, int enc_hidden,
+                                  int blank_id, int max_symbols,
+-                                 std::vector<TokenInfo>* tokens) {
++                                 std::vector<TokenInfo>* tokens,
++                                 const HotwordBias* hw) {
+     // The whole-encoder greedy decode is exactly the stateful stepper driven
+     // once over all T frames from a fresh state (the loop carries nothing but
+     // RnntDecodeState across frames, so chunking is irrelevant to the result).
+     RnntDecodeState st = rnnt_decode_init(pred);
+     if (tokens) tokens->clear();
+     rnnt_decode_frames(pred, joint, enc, T, enc_hidden, st, blank_id, max_symbols,
+-                       /*emit_frames=*/nullptr, tokens);
++                       /*emit_frames=*/nullptr, tokens, hw);
+     return st.hyp;
+ }
+ 
+diff --git a/src/rnnt.hpp b/src/rnnt.hpp
+index 241497d..9eaef31 100644
+--- a/src/rnnt.hpp
++++ b/src/rnnt.hpp
+@@ -2,8 +2,10 @@
+ #include "prediction.hpp"
+ #include "joint.hpp"
+ #include "decode_types.hpp"
++#include "hotwords.hpp"
+ #include <vector>
+ #include <cstdint>
++#include <utility>
+ 
+ namespace pk {
+ 
+@@ -49,7 +51,8 @@ namespace pk {
+ std::vector<int32_t> rnnt_greedy(const PredictionNet& pred, const Joint& joint,
+                                  const std::vector<float>& enc, int T, int enc_hidden,
+                                  int blank_id, int max_symbols,
+-                                 std::vector<TokenInfo>* tokens = nullptr);
++                                 std::vector<TokenInfo>* tokens = nullptr,
++                                 const HotwordBias* hw = nullptr);
+ 
+ // Carried RNN-T greedy decoding state, so the per-frame loop can be driven
+ // INCREMENTALLY (the encoder frames arrive in chunks but the decoder must NOT
+@@ -69,6 +72,9 @@ struct RnntDecodeState {
+     int32_t   last_token = -1; // last EMITTED token (-1 sentinel: nothing yet → SOS)
+     bool      have_token = false; // have we emitted any token (false → use SOS)
+     std::vector<int32_t> hyp;  // accumulated emitted token ids (across all chunks)
++    // Active hotword partial matches: (phrase index, matched-prefix length).
++    // Carried across frames/chunks like the rest of the decode state.
++    std::vector<std::pair<int32_t, int32_t>> hot_active;
+ };
+ 
+ // Initialise a fresh decode state (zeroed prediction-net LSTM state, SOS).
+@@ -99,6 +105,7 @@ std::vector<int32_t> rnnt_decode_frames(const PredictionNet& pred, const Joint&
+                                         RnntDecodeState& st,
+                                         int blank_id, int max_symbols,
+                                         std::vector<int32_t>* emit_frames = nullptr,
+-                                        std::vector<TokenInfo>* tokens = nullptr);
++                                        std::vector<TokenInfo>* tokens = nullptr,
++                                        const HotwordBias* hw = nullptr);
+ 
+ } // namespace pk

@@ -27,6 +27,17 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--gguf-repo", default=GGUF_REPO)
     parser.add_argument("--quantization", default="q4_k")
     parser.add_argument("--language", default=None)
+    parser.add_argument(
+        "--hotwords",
+        default="",
+        help="Newline-separated phrases to bias recognition toward.",
+    )
+    parser.add_argument(
+        "--hotword-boost",
+        type=float,
+        default=2.0,
+        help="Logit bonus per hotword token during greedy decode.",
+    )
     parser.add_argument("--hf-token", default=os.environ.get("HF_TOKEN", ""))
     parser.add_argument("--zeroconf", nargs="?", const="nemo-asr-cpp", default=None)
     parser.add_argument("--debug", action="store_true")
@@ -85,7 +96,11 @@ async def main() -> None:
             args.quantization, args.model_dir, repo=args.gguf_repo,
             token=args.hf_token,
         )
-        engine = ParakeetASR(args.lib_dir, gguf)
+        hotwords = [w.strip() for w in args.hotwords.split("\n") if w.strip()]
+        engine = ParakeetASR(
+            args.lib_dir, gguf,
+            hotwords=hotwords, hotword_boost=args.hotword_boost,
+        )
         engine.warmup(args.language)
     except Exception as err:  # noqa: BLE001 - any setup failure -> graceful stop
         _LOGGER.error("Model setup failed: %s", err)
