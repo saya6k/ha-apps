@@ -10,7 +10,7 @@ export HOME=/data
 mkdir -p /data/models
 
 flags=()
-bashio::config.has_value 'language'      && flags+=('--language'      "$(bashio::config 'language')")
+bashio::config.has_value 'model'         && flags+=('--model'         "$(bashio::config 'model')")
 bashio::config.has_value 'quantization'  && flags+=('--quantization'  "$(bashio::config 'quantization')")
 bashio::config.has_value 'hotword_boost' && flags+=('--hotword-boost' "$(bashio::config 'hotword_boost')")
 bashio::config.has_value 'hf_token'      && flags+=('--hf-token'      "$(bashio::config 'hf_token')")

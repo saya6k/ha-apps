@@ -1,4 +1,4 @@
-"""Download one GGUF quant of the Nemotron streaming model from HuggingFace."""
+"""Download one GGUF quant of the selected model from HuggingFace."""
 from __future__ import annotations
 
 import logging
@@ -11,10 +11,14 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def ensure_gguf(
-    quant: str, base_dir: str, repo: str = GGUF_REPO, token: Optional[str] = None
+    basename: str,
+    quant: str,
+    base_dir: str,
+    repo: str = GGUF_REPO,
+    token: Optional[str] = None,
 ) -> str:
-    """Download `nemotron-3.5-...-<quant>.gguf` into base_dir if absent; return path."""
-    fname = GGUF_FILE.format(quant=quant)
+    """Download `<basename>-<quant>.gguf` into base_dir if absent; return path."""
+    fname = GGUF_FILE.format(basename=basename, quant=quant)
     dest = os.path.join(base_dir, fname)
     if os.path.isfile(dest) and os.path.getsize(dest) > 0:
         _LOGGER.info("Model already present: %s", dest)

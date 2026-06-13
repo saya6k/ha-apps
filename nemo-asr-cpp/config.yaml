@@ -3,7 +3,7 @@ version: 0.1.0
 slug: nemo-asr-cpp
 name: NeMo ASR (cpp)
 stage: stable
-description: Fast speech-to-text over Wyoming — NVIDIA Nemotron ASR on ggml (parakeet.cpp)
+description: Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron ASR on ggml (parakeet.cpp)
 url: https://github.com/mudler/parakeet.cpp
 arch:
   - amd64
@@ -14,15 +14,17 @@ discovery:
 backup_exclude:
   - "models/**"
 options:
-  language: Auto
+  model: Nemotron 3.5 Streaming 0.6b
   quantization: q4_k
   hotwords: []
   hf_token: ""
   debug_logging: false
 schema:
-  # Native-name dropdown; keep in lockstep with const.LANGUAGE_CHOICES. Auto =
-  # model auto-detect. HA does not translate list() values.
-  language: list(Auto|English|Español|中文|हिन्दी|العربية|Français|Deutsch|日本語|Русский|Português|한국어|Italiano|Nederlands|Polski|Türkçe|Українська|Română|Čeština|Magyar|Ελληνικά|Svenska|Dansk|Suomi|Norsk|Slovenčina|Hrvatski|Български|Lietuvių|Latviešu|Eesti|Slovenščina|ไทย|Tiếng Việt|Bahasa Indonesia|Bahasa Melayu|עברית)
+  # Model dropdown; keep in lockstep with const.MODELS. Every model is a
+  # streaming RNN-T transducer with hotword-boost support.
+  model: list(Nemotron 3.5 Streaming 0.6b)
+  # No `language` option: the model auto-detects, and the Wyoming pipeline's
+  # per-request language (the pipeline's configured STT language) always wins.
   # GGUF weight precision. q4_k = smallest/fastest (default), f16 = best quality.
   quantization: list(q4_k|q5_k|q6_k|q8_0|f16)
   # Phrases to bias recognition toward (vendored decoder patch; see DOCS).

@@ -1,11 +1,14 @@
 ---
 configuration:
-  language:
-    name: Fallback language
+  model:
+    name: Model
     description: >-
-      Language used when the Home Assistant voice pipeline doesn't send one.
-      "Auto" lets the model detect the language. The per-request language from
-      the pipeline always takes priority over this fallback.
+      Which ASR model to download and run. Every model here is streaming with
+      hotword-boost support. Currently "Nemotron 3.5 Streaming 0.6b"
+      (multilingual, 40+ locales) is the only supported model — more NeMo
+      streaming models may be added later. The language comes from the Home
+      Assistant voice pipeline; no language option is needed. Changing this
+      downloads the new model on next start.
   quantization:
     name: Model quantization
     description: >-

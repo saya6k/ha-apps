@@ -6,14 +6,35 @@ edit `AGENTS.md`, the symlink follows.
 
 ## What this is
 
-A Home Assistant add-on running **NVIDIA Nemotron 3.5 Streaming ASR (0.6B)** as
-a Wyoming **speech-to-text** service, on the **ggml** runtime via
+A Home Assistant add-on for **streaming, hotword-boosted** speech-to-text over
+Wyoming, running NVIDIA NeMo streaming ASR on the **ggml** runtime via
 [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp) (C++/GGUF). It's
-the **fast/light** sibling of the `nemotron-asr` add-on (which runs the same
-model on onnxruntime): ggml is ~1.4× faster on CPU and the q4_k GGUF is ~720 MB
+the **fast/light** sibling of the `nemotron-asr` add-on (which runs Nemotron on
+onnxruntime): ggml is ~1.4× faster on CPU and the q4_k GGUF is ~720 MB
 (vs ~1.5 GB) — chosen for resource-limited HAOS (N100, Pi 4/5).
 
-Same model → same Korean/40-locale support and (near-)identical transcripts.
+The add-on's identity is **streaming + hotword boost**, so every entry in the
+`model` dropdown (`const.MODELS`) is a streaming RNN-T transducer our vendored
+hotword patch can bias. Current models: **Nemotron 3.5 Streaming 0.6b**
+(multilingual, the only entry; same Korean/40-locale support as `nemotron-asr`).
+parakeet.cpp auto-detects the architecture from the GGUF and `decoder=0` picks
+the right head, so the engine is model-agnostic — `ModelSpec` flags
+(`multilingual`, `hotwords`) only drive UX/metadata.
+
+There is **no `language` option**: the model auto-detects and the Wyoming
+pipeline's per-request language (`Transcribe.language`, set to the pipeline's
+STT language) is passed straight through (`handler.py`), so a fallback knob was
+redundant. The full locale list is still advertised in the Wyoming `Info` for
+the multilingual model.
+
+An English-specific **Nemotron-Speech-Streaming-En-0.6b** is wanted but **not
+yet shipped**: the only GGUF (`m1el/nemotron-speech-streaming-0.6B-gguf`,
+MIT) is converted for a *different* runtime (`library_name: nemotron-asr.cpp`)
+with an incompatible quant scheme (`Q4_0/Q8_0/f32`, `-v0.1.` infix, separate HF
+repo). Adding it needs per-model `repo`/quant handling in `const.MODELS` +
+`models.ensure_gguf`, and a `docker build` smoke test to confirm our
+parakeet.cpp build can even load it. Blocked on that verification.
+
 **Hotword biasing is a vendored patch** (`patches/0001-rnnt-hotword-biasing.patch`,
 applied by the Dockerfile after checkout — upstream parakeet.cpp has none).
 **We do not fork parakeet.cpp** — we track upstream and call its flat C API;
@@ -38,10 +59,10 @@ wyoming_nemo_asr_cpp/
   __main__.py   download GGUF -> load model ONCE -> warmup -> serve
   engine.py     ctypes wrapper over parakeet.cpp's flat C API (parakeet_capi.h)
   handler.py    Wyoming ASR; buffer utterance, transcribe on AudioStop
-  models.py     hf_hub_download one GGUF quant into /data/models
+  models.py     hf_hub_download <basename>-<quant>.gguf into /data/models
   tokenizer.py  hotword phrase -> token ids (greedy match over the GGUF's
                 embedded vocab via the `gguf` package; no extra downloads)
-  const.py      port, lib/model dirs, language dropdown, quant list
+  const.py      port, lib/model dirs, MODELS registry, language dropdown, quants
 rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
 ```
 
@@ -122,3 +143,6 @@ rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
   for no CPU benefit here.
 - The model is **NVIDIA Open Model License**; parakeet.cpp code is MIT. Honor
   both if this is ever published.
+- `icon.png` / `logo.png` use Google's Material Icons **record_voice_over**
+  glyph (Apache-2.0), recoloured to green `#76B900`; the logo adds a "NeMo ASR
+  (cpp)" wordmark. Add an Apache-2.0 NOTICE/attribution when publishing.

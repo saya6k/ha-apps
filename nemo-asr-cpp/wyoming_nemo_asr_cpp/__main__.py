@@ -14,7 +14,16 @@ from functools import partial
 
 from . import __version__
 from . import models
-from .const import DEFAULT_PORT, GGUF_REPO, LANGUAGES, LIB_DIR, MODEL_DIR
+from .const import (
+    DEFAULT_MODEL,
+    DEFAULT_PORT,
+    GGUF_REPO,
+    LANGUAGES,
+    LIB_DIR,
+    MODEL_DIR,
+    ModelSpec,
+    resolve_model,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +34,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--lib-dir", default=LIB_DIR)
     parser.add_argument("--model-dir", default=MODEL_DIR)
     parser.add_argument("--gguf-repo", default=GGUF_REPO)
+    parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--quantization", default="q4_k")
     parser.add_argument("--language", default=None)
     parser.add_argument(
@@ -45,30 +55,32 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _build_info() -> "Info":
+def _build_info(model_label: str, spec: ModelSpec) -> "Info":
     from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 
     attr = Attribution(
-        name="parakeet.cpp (ggml) / NVIDIA Nemotron ASR",
+        name="parakeet.cpp (ggml) / NVIDIA NeMo ASR",
         url="https://github.com/mudler/parakeet.cpp",
     )
+    # English-only Parakeet models ignore the language prompt; advertise en only.
+    langs = list(LANGUAGES) if spec.multilingual else ["en"]
     return Info(
         asr=[
             AsrProgram(
                 name="NeMo ASR (cpp)",
-                description="NVIDIA Nemotron streaming ASR on ggml (parakeet.cpp)",
+                description="NVIDIA NeMo ASR on ggml (parakeet.cpp)",
                 attribution=attr,
                 installed=True,
                 version=__version__,
                 supports_transcript_streaming=False,
                 models=[
                     AsrModel(
-                        name="nemotron-3.5-asr-streaming-0.6b",
-                        description="Multilingual streaming Conformer-Transducer (GGUF)",
+                        name=spec.basename,
+                        description=model_label,
                         attribution=attr,
                         installed=True,
                         version=None,
-                        languages=list(LANGUAGES),
+                        languages=langs,
                     )
                 ],
             )
@@ -84,19 +96,27 @@ async def main() -> None:
         format="%(asctime)s %(levelname)s:%(name)s:%(message)s",
         datefmt="%H:%M:%S",
     )
+    spec = resolve_model(args.model)
     _LOGGER.info(
-        "Booting wyoming_nemo_asr_cpp %s (quant=%s, lang=%s)",
-        __version__, args.quantization, args.language,
+        "Booting wyoming_nemo_asr_cpp %s (model=%s, quant=%s)",
+        __version__, args.model, args.quantization,
     )
 
     from .engine import ParakeetASR
 
     try:
         gguf = models.ensure_gguf(
-            args.quantization, args.model_dir, repo=args.gguf_repo,
-            token=args.hf_token,
+            spec.basename, args.quantization, args.model_dir,
+            repo=args.gguf_repo, token=args.hf_token,
         )
         hotwords = [w.strip() for w in args.hotwords.split("\n") if w.strip()]
+        if hotwords and not spec.hotwords:
+            _LOGGER.warning(
+                "Model '%s' has no hotword-biasing decoder; ignoring %d hotword(s). "
+                "Use a Nemotron / RNN-T model for hotword support.",
+                args.model, len(hotwords),
+            )
+            hotwords = []
         engine = ParakeetASR(
             args.lib_dir, gguf,
             hotwords=hotwords, hotword_boost=args.hotword_boost,
@@ -112,7 +132,7 @@ async def main() -> None:
             _LOGGER.exception("Full traceback (debug):")
         raise SystemExit(1)
 
-    wyoming_info = _build_info()
+    wyoming_info = _build_info(args.model, spec)
 
     from wyoming.server import AsyncServer, AsyncTcpServer
 

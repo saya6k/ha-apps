@@ -1,7 +1,7 @@
 # Home Assistant App: NeMo ASR (cpp)
 
-Fast multilingual speech-to-text over Wyoming — NVIDIA Nemotron streaming ASR on
-the ggml runtime (parakeet.cpp).
+Streaming multilingual speech-to-text with hotword boosting over Wyoming —
+NVIDIA Nemotron streaming ASR on the ggml runtime (parakeet.cpp).
 
 ## Installation
 
@@ -18,7 +18,7 @@ First boot compiles nothing on your device — the add-on image already contains
 
 | Option          | Default | Description |
 | --------------- | ------- | ----------- |
-| `language`      | Auto    | Fallback language (native-name dropdown) when the pipeline doesn't send one. `Auto` = model auto-detect. Per-request language always wins. |
+| `model`         | Nemotron 3.5 Streaming 0.6b | ASR model to run. **Nemotron 3.5 Streaming 0.6b** — multilingual (40+ locales), streaming, hotword-capable. **Currently the only supported model**; more NeMo streaming models may be added later. Changing re-downloads. |
 | `quantization`  | q4_k    | GGUF weight precision: `q4_k` (smallest/fastest) → `f16` (best quality). Changing re-downloads the model. |
 | `hotwords`      | []      | Phrases to bias recognition toward — one per item (room names, entity names, people). |
 | `hotword_boost` | 2       | Advanced. Bias strength (logit bonus per token). Values above ~3 can destabilize decoding. |
@@ -32,6 +32,12 @@ rooms, devices, or people it otherwise mishears. Biasing is best-effort: it
 nudges the greedy decoder at near-ties, it cannot force words that weren't
 spoken. Keep the boost at the default unless a hotword still loses; raising it
 past ~3 trades accuracy everywhere else and can garble output.
+
+## Language
+
+There is no language option — the model auto-detects, and the language from
+your Home Assistant voice pipeline (its configured STT language) is passed
+through and always used when present.
 
 ## vs. the Nemotron ASR add-on
 
