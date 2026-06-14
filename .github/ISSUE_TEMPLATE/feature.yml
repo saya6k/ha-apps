@@ -12,8 +12,11 @@ body:
       description: Which add-on does this affect?
       options:
         - llm-conversation-agent
+        - nemo-asr-cpp
+        - nemotron-asr
         - rethink
         - supertonic
+        - voiceprint
         - wardrowbe
         - zensical
         - repository tooling (CI / docs / labels)

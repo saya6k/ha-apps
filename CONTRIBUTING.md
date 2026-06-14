@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for considering a contribution. This is a Home Assistant add-on
-monorepo — five independent add-ons live under sibling directories, sharing
+monorepo — six independent add-ons live under sibling directories, sharing
 CI, release automation, and labels at the root. Per-add-on engineering
 details live in each subdirectory's `AGENTS.md`.
 
@@ -43,8 +43,9 @@ add a `BREAKING CHANGE:` footer. Either triggers a major bump.
 
 ### Allowed scopes
 
-`llm-conversation-agent` · `rethink` · `supertonic` · `wardrowbe` ·
-`zensical` · `repo` (for `.github/`, root docs, `repository.yaml`).
+`llm-conversation-agent` · `nemo-asr-cpp` · `nemotron-asr` · `rethink` ·
+`supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo` (for `.github/`,
+root docs, `repository.yaml`).
 
 Any other scope = release-please can't route the commit. If a change truly
 spans add-ons, split the PR.
@@ -67,8 +68,9 @@ BREAKING CHANGE: removes the `provider` option; users on 1.x must reconfigure.
 2. The `Release` workflow runs and release-please opens (or updates) a
    `chore(<addon>): release <ver>` PR per affected add-on.
 3. A maintainer reviews the release PR — the diff is auto-bumped
-   `config.yaml` / `CHANGELOG.md` / `version.txt` (and `pyproject.toml`
-   for `llm-conversation-agent` / `supertonic`).
+   `config.yaml` / `CHANGELOG.md` (and `pyproject.toml`
+   for `llm-conversation-agent` / `nemo-asr-cpp` / `nemotron-asr` / `supertonic` /
+   `voiceprint`).
 4. Merging that PR tags `<addon>-v<ver>` and creates a GitHub Release.
 
 Image build/publish to GHCR is currently manual — that's tracked as a

@@ -13,7 +13,8 @@ Desktop.ini
 
 # Editors / IDEs
 .idea/
-.vscode/
+# .vscode/ is committed (shared dev config + devcontainer task), like
+# alexbelgium/hassio-addons — not ignored.
 *.swp
 *.swo
 *~
@@ -38,9 +39,18 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# Decision logs — every subproject's notes/ is local-only by convention.
-# Never link to notes/ from any shipped doc.
-notes/
+# Agent dirs (.agents/): settings.local.json + decision logs, local-only by
+# convention. `.agents/skills/` is the one tracked exception. `.claude` is a
+# local symlink aliases -> .agents (.claude everywhere, plus .gemini at root,
+# point at .agents so the tools share .agents/skills/). Never link to .agents/
+# from any shipped doc.
+**/.agents/*
+!**/.agents/skills
+.claude
+.gemini
+# Track wardrowbe's .claude symlink so its tracked .agents/skills/ resolves
+# via .claude/skills/ (Claude Code's lookup path) on a fresh clone.
+!wardrowbe/.claude
 
 # Build / cache
 *.log
@@ -52,3 +62,14 @@ dist/
 # Repo / publish artefacts that should not be committed
 report/
 super-linter-output/
+
+# voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
+# hosted as a pinned release asset — never commit a local dev copy.
+/voiceprint/models/
+
+# Stage gating — only `stage: stable` add-ons are committed.
+# Experimental add-ons (per their config.yaml `stage:`) stay local-only;
+# delete the matching line here when an add-on is promoted to stable.
+/llm-conversation-agent/
+/rethink/
+/livekit-wakeword/

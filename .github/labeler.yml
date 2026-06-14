@@ -6,6 +6,14 @@
   - changed-files:
       - any-glob-to-any-file: "llm-conversation-agent/**"
 
+"addon:nemo-asr-cpp":
+  - changed-files:
+      - any-glob-to-any-file: "nemo-asr-cpp/**"
+
+"addon:nemotron-asr":
+  - changed-files:
+      - any-glob-to-any-file: "nemotron-asr/**"
+
 "addon:rethink":
   - changed-files:
       - any-glob-to-any-file: "rethink/**"
@@ -13,6 +21,10 @@
 "addon:supertonic":
   - changed-files:
       - any-glob-to-any-file: "supertonic/**"
+
+"addon:voiceprint":
+  - changed-files:
+      - any-glob-to-any-file: "voiceprint/**"
 
 "addon:wardrowbe":
   - changed-files:
