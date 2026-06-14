@@ -1,0 +1,24 @@
+#!/command/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Start the Voiceprint Wyoming STT proxy service.
+# Options are read straight from /data/options.json (works with and without
+# a running Supervisor, unlike bashio::config).
+# ==============================================================================
+declare -r options=/data/options.json
+
+flags=()
+threshold=$(jq -r '.threshold // empty' "${options}")
+[[ -n "${threshold}" ]] && flags+=('--threshold' "${threshold}")
+[[ "$(jq -r '.tag_speaker' "${options}")" == "true" ]] && flags+=('--tag-speaker')
+[[ "$(jq -r '.debug_logging' "${options}")" == "true" ]] && flags+=('--debug')
+[[ "$(jq -r '.require_match' "${options}")" == "false" ]] && flags+=('--no-require-match')
+# Fixed capture dir — keep in sync with const.CAPTURE_DIR.
+[[ "$(jq -r '.capture' "${options}")" == "true" ]] && { mkdir -p /share/voiceprint/_captures; flags+=('--capture'); }
+
+exec python3 -m wyoming_voiceprint \
+    --uri 'tcp://0.0.0.0:10350' \
+    --upstream-uri "$(jq -r '.upstream_uri' "${options}")" \
+    --enroll-dir /share/voiceprint \
+    "${flags[@]}"

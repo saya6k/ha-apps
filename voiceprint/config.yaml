@@ -1,0 +1,47 @@
+---
+version: 0.1.0
+slug: voiceprint
+name: Voiceprint
+stage: stable
+description: Speaker-verifying Wyoming STT proxy — only enrolled voices reach your speech-to-text
+url: https://github.com/saya6k/ha-apps
+arch:
+  - amd64
+  - aarch64
+init: false
+discovery:
+  - wyoming
+map:
+  # rw (not ro) so `capture: true` can write in-domain enrollment clips to
+  # /share; enrollment reads are otherwise the only /share access.
+  - share:rw
+options:
+  upstream_uri: "tcp://core-whisper:10300"
+  threshold: 0.5
+  require_match: true
+  tag_speaker: false
+  capture: false
+schema:
+  # Wyoming STT service that receives the (verified) audio. The proxy mirrors
+  # whatever languages this downstream ASR advertises (HA only offers the proxy
+  # to pipelines whose language it advertises).
+  upstream_uri: str
+  # Cosine similarity against enrolled voiceprints; raise to be stricter.
+  threshold: float(0,1)
+  # false = verify and log, but always forward the transcript.
+  require_match: bool
+  # Prefix transcripts with [speaker] for per-speaker automations.
+  tag_speaker: bool
+  # When on, dumps each received utterance to /share/voiceprint/_captures as a
+  # 16 kHz WAV (same audio path as live) for in-domain enrollment.
+  capture: bool
+  # Optional + absent from `options:` on purpose → hidden from the default UI
+  # form (defaults off); enable via the add-on's YAML config editor when needed.
+  debug_logging: bool?
+ports:
+  "10350/tcp": null
+ports_description:
+  "10350/tcp": Voiceprint Wyoming Protocol
+homeassistant: 2023.9.0.dev20230809
+# Uncomment once a prebuilt image is published to GHCR.
+# image: ghcr.io/saya6k/{arch}-addon-voiceprint

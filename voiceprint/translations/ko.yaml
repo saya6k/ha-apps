@@ -1,0 +1,34 @@
+---
+configuration:
+  upstream_uri:
+    name: 업스트림 STT 서비스
+    description: >-
+      오디오를 전달받을 Wyoming STT 서비스 주소입니다. 예:
+      tcp://core-whisper:10300, tcp://local-nemo-asr-cpp:10300. Home
+      Assistant의 STT는 업스트림 대신 이 애드온을 가리키게 설정하세요.
+  threshold:
+    name: 화자 검증 임계값
+    description: >-
+      등록된 보이스프린트와의 코사인 유사도 기준값입니다 (0–1). 기본 0.5.
+      다른 사람이 통과하면 높이고, 본인 명령이 거부되면 낮추세요.
+  require_match:
+    name: 화자 일치 필수
+    description: >-
+      켜면 등록된 화자와 일치하지 않는 오디오는 빈 전사를 반환합니다. 끄면
+      검증 결과만 기록하고 전사는 항상 전달합니다.
+  tag_speaker:
+    name: 전사에 화자 표시
+    description: >-
+      일치한 화자 이름을 전사 앞에 붙입니다. 예: "[john] 거실 불 켜".
+      화자별 자동화에 활용할 수 있습니다.
+  capture:
+    name: 등록용 오디오 캡처
+    description: >-
+      켜면 수신한 모든 발화를 /share/voiceprint/_captures 에 16 kHz WAV로
+      저장합니다 — 라이브 파이프라인이 보내는 바로 그 오디오라 같은 음향
+      도메인으로 등록됩니다(폴더는 자동 생성되며 화자로 등록되지 않음). 좋은
+      클립을 /share/voiceprint/<화자>/ 로 옮긴 뒤 끄세요(켜져 있는 동안 매
+      발화마다 쌓입니다).
+  debug_logging:
+    name: 디버그 로깅
+    description: 화자별 유사도 점수를 포함한 상세 로그를 출력합니다.

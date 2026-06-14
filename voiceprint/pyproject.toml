@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wyoming-voiceprint"
+version = "0.1.0"
+description = "Wyoming STT proxy with speaker verification (ha-voiceprint add-on bridge)"
+requires-python = ">=3.11"
+dependencies = [
+    "wyoming>=1.8,<2",
+    "numpy>=1.24",
+    "ai-edge-litert>=2,<3",
+    "kaldi-native-fbank>=1.20",
+]
+
+[tool.setuptools]
+packages = ["wyoming_voiceprint"]

@@ -1,0 +1,36 @@
+---
+configuration:
+  upstream_uri:
+    name: Upstream STT service
+    description: >-
+      Wyoming speech-to-text service that receives the audio, e.g.
+      tcp://core-whisper:10300 or tcp://local-nemo-asr-cpp:10300. Point Home
+      Assistant's STT at this add-on instead of the upstream.
+  threshold:
+    name: Verification threshold
+    description: >-
+      Cosine similarity against enrolled voiceprints required to accept a
+      speaker (0–1). Default 0.5. Raise it if strangers get through; lower it
+      if your own commands are rejected.
+  require_match:
+    name: Require speaker match
+    description: >-
+      When enabled, audio that matches no enrolled speaker returns an empty
+      transcript. Disable to verify and log only, always forwarding the
+      transcript.
+  tag_speaker:
+    name: Tag speaker in transcript
+    description: >-
+      Prefix transcripts with the matched speaker name, e.g. "[john] turn on
+      the lights", for per-speaker automations.
+  capture:
+    name: Capture audio for enrollment
+    description: >-
+      When on, saves every received utterance to /share/voiceprint/_captures as
+      a 16 kHz WAV — the exact audio the live pipeline sends, so clips enroll in
+      the same acoustic domain (the folder is auto-created and never enrolled as
+      a speaker). Move the good clips into /share/voiceprint/<speaker>/, then
+      turn this off (clips accumulate on every utterance while on).
+  debug_logging:
+    name: Debug logging
+    description: Enable verbose logging, including per-speaker similarity scores.
