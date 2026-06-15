@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.1...wardrowbe-v1.4.2) (2026-06-15)
+
+
+### Bug Fixes
+
+* **wardrowbe:** add HEALTHCHECK to restore health-based auto-restart ([cdbbd7f](https://github.com/saya6k/ha-apps/commit/cdbbd7f1a76521732530a5806805b0572f2c4044))
+
 ## [1.4.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.0...wardrowbe-v1.4.1) (2026-06-15)
 
 
