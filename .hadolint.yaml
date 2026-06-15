@@ -9,6 +9,7 @@ ignored:
   - DL3007  # Using latest tag (same — BUILD_FROM resolves at build time)
   - DL3008  # Pin apt-get versions (HA Debian base bumps mid-stream)
   - DL3009  # Delete apt-get lists after install (HA base handles this)
+  - DL3013  # Pin pip versions (deps come from pinned git SHAs / requirements)
   - DL3018  # Pin apk versions (Alpine package bumps)
 
 # Treat everything not ignored above as an error in CI. The lint-dockerfile
