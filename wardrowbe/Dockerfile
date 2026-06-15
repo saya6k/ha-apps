@@ -106,7 +106,7 @@ RUN apk add --no-cache \
 RUN mkdir -p \
       /app/backend \
       /app/frontend \
-      /data/photos \
+      /media/wardrowbe \
       /share/wardrowbe/backups \
       /data/redis \
       /var/lib/postgresql/data \

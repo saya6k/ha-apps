@@ -4,7 +4,7 @@ configuration:
     name: 업스트림 STT 서비스
     description: >-
       오디오를 전달받을 Wyoming STT 서비스 주소입니다. 예:
-      tcp://03f32180-nemo-asr-cpp:10360, tcp://core-whisper:10300. Home
+      tcp://core-whisper:10300, tcp://local-nemo-asr-cpp:10300. Home
       Assistant의 STT는 업스트림 대신 이 애드온을 가리키게 설정하세요.
   threshold:
     name: 화자 검증 임계값

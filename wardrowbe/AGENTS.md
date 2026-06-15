@@ -60,7 +60,7 @@ CI / build delegated to `hassio-addons/workflows` reusable workflows —
 | Mount | Path | In HA snapshot? |
 | --- | --- | --- |
 | `addon_config` | `/config/.*` (secrets) | yes (tiny) |
-| `data` | `/data/photos/` (clothing photos) | yes (can grow large) |
+| `addon_config` | `/config/photos/` (clothing photos) | yes (can grow large) |
 | `data` | `/data/postgres/data/`, `/data/redis/` | **excluded** (`backup_exclude`) |
 | `share` | `/share/wardrowbe/backups/` (daily `pg_dump`) | HA share snapshot |
 

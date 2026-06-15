@@ -121,7 +121,7 @@ The wardrowbe mobile app uses a **public OIDC client** (no secret, PKCE only).
 | HA Mount | Container Path | Purpose | In HA snapshot? |
 |---|---|---|:---:|
 | `addon_config` | `/config/.secret_key`, `.nextauth_secret` | Auto-generated secrets | ✅ (tiny) |
-| `data` | `/data/photos/` | **Clothing photos & thumbnails** | ✅ (in addon snapshot) |
+| `addon_config` | `/config/photos/` | **Clothing photos & thumbnails** | ✅ (in addon snapshot) |
 | `share` | `/share/wardrowbe/backups/` | DB backup exports (daily `pg_dump`) | HA share snapshot |
 | `data` | `/data/postgres/data/` | PostgreSQL cluster | ❌ excluded |
 | `data` | `/data/redis/` | Redis AOF + RDB | ❌ excluded |
@@ -130,7 +130,7 @@ Photos are **private to this addon** — they do *not* appear in the HA
 Media Browser. If you want them shared across HA, set up your own
 symlink under `/media/` manually.
 
-> ⚠️ Heads-up — photos sit under `/data/`, so they're included in every
+> ⚠️ Heads-up — photos sit in `addon_config`, so they're included in every
 > HA add-on snapshot. A wardrobe with a few hundred items can push snapshot
 > size into the hundreds of MB. If that matters to you, either snapshot
 > less often or move the photo dir manually (see `.agents/storage-layout.md`).
@@ -155,8 +155,8 @@ gunzip -c /share/wardrowbe/backups/wardrowbe-YYYYMMDDTHHMMSS.sql.gz \
 
 ### Migrating to a new HA instance
 
-1. Copy `/addon_configs/03f32180_wardrowbe/` → secrets, and `/data/photos/`
-   → all clothing photos
+1. Copy `/addon_configs/local_wardrowbe/` → secrets + all clothing photos
+   (under `photos/`)
 2. Copy a recent `wardrowbe-*.sql.gz` from `/share/wardrowbe/backups/`
 3. On the new HA, install the addon, then restore the SQL dump (see the
    "Backup size & DB dumps" section above for the restore command).

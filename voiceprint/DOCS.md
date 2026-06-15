@@ -16,7 +16,7 @@ transcript is replaced with an empty one — Home Assistant treats it as
 ## Setup
 
 1. Configure `upstream_uri` to point at your STT add-on
-   (e.g. `tcp://03f32180-nemo-asr-cpp:10360`).
+   (e.g. `tcp://core-whisper:10300`).
 2. In **Settings → Devices & Services → Wyoming Protocol**, add this add-on
    (port 10350) and select it as the STT engine of your Assist pipeline.
    The upstream STT stays installed but is no longer used directly.
@@ -49,7 +49,7 @@ unverified and logs a warning.
 
 | Option | Default | Description |
 |---|---|---|
-| `upstream_uri` | `tcp://03f32180-nemo-asr-cpp:10360` | Wyoming STT service to forward audio to (the downstream ASR) |
+| `upstream_uri` | `tcp://core-whisper:10300` | Wyoming STT service to forward audio to (the downstream ASR) |
 | `threshold` | `0.5` | Cosine similarity required to accept a speaker |
 | `require_match` | `true` | Reject unmatched audio (empty transcript) |
 | `tag_speaker` | `false` | Prefix transcripts with `[speaker]` |

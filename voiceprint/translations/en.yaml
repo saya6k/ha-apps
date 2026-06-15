@@ -4,8 +4,8 @@ configuration:
     name: Upstream STT service
     description: >-
       Wyoming speech-to-text service that receives the audio, e.g.
-      tcp://03f32180-nemo-asr-cpp:10360 or tcp://core-whisper:10300. Point
-      Home Assistant's STT at this add-on instead of the upstream.
+      tcp://core-whisper:10300 or tcp://local-nemo-asr-cpp:10300. Point Home
+      Assistant's STT at this add-on instead of the upstream.
   threshold:
     name: Verification threshold
     description: >-

@@ -6,7 +6,6 @@ description: >-
   AI-tagged details, and receive daily outfit suggestions based on weather and
   occasion.
 url: https://github.com/Anyesh/wardrowbe
-image: ghcr.io/saya6k/{arch}-addon-wardrowbe
 arch:
   - aarch64
   - amd64
@@ -16,6 +15,8 @@ map:
   - type: addon_config
     read_only: false
   - type: data
+    read_only: false
+  - type: media
     read_only: false
   - type: share
     read_only: false

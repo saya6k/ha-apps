@@ -6,7 +6,6 @@ description: >-
   Speaker-verifying Wyoming STT proxy — only enrolled voices reach your
   speech-to-text
 url: https://github.com/saya6k/ha-apps
-image: ghcr.io/saya6k/{arch}-addon-voiceprint
 arch:
   - amd64
   - aarch64
@@ -16,7 +15,7 @@ discovery:
 map:
   - share:rw
 options:
-  upstream_uri: tcp://03f32180-nemo-asr-cpp:10360
+  upstream_uri: tcp://core-whisper:10300
   threshold: 0.5
   require_match: true
   tag_speaker: false

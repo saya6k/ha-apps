@@ -3,7 +3,6 @@ slug: supertonic
 name: Supertonic
 description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
 url: https://github.com/vra/supertonic-mnn
-image: ghcr.io/saya6k/{arch}-addon-supertonic
 arch:
   - amd64
   - aarch64
