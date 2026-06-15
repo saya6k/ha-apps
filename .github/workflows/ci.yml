@@ -117,7 +117,7 @@ jobs:
             echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping hadolint"
           fi
 
-      - uses: hadolint/hadolint-action@v3.1.0
+      - uses: hadolint/hadolint-action@v3.3.0
         if: steps.dockerfile.outputs.found == 'true'
         with:
           dockerfile: ${{ matrix.addon }}/Dockerfile
