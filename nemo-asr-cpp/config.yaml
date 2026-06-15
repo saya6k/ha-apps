@@ -18,7 +18,6 @@ options:
   quantization: q4_k
   hotwords: []
   hf_token: ""
-  debug_logging: false
 schema:
   # Model dropdown; keep in lockstep with const.MODELS. Every model is a
   # streaming RNN-T transducer with hotword-boost support.
@@ -34,6 +33,8 @@ schema:
   # decoding; the leading-space token is already stripped as a guard.
   hotword_boost: float(0,10)?
   hf_token: password?
+  # Optional + absent from `options:` on purpose → hidden from the default UI
+  # form (defaults off); enable via the add-on's YAML config editor when needed.
   debug_logging: bool?
 ports:
   "10360/tcp": null
