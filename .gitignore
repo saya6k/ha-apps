@@ -74,6 +74,4 @@ super-linter-output/
 /llm-conversation-agent/
 /rethink/
 /livekit-wakeword/
-# nemotron-asr is deferred from the published store for now — delete this
-# line (and set/keep it stable) to publish it.
 /nemotron-asr/
