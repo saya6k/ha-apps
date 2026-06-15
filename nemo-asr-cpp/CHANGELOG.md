@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.2.0...nemo-asr-cpp-v0.3.0) (2026-06-15)
+
+
+### Features
+
+* **nemo-asr-cpp:** add chunk_size accuracy/speed option ([#13](https://github.com/saya6k/ha-apps/issues/13)) ([1d8f683](https://github.com/saya6k/ha-apps/commit/1d8f6833b78ecc021f521a4e208a7e356a3168e2))
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.1.0...nemo-asr-cpp-v0.2.0) (2026-06-15)
 
 
