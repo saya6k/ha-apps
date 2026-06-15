@@ -37,8 +37,11 @@ permissions:
   contents: read
   packages: write
 
+# Per-add-on group so different add-ons build in parallel; only repeat builds
+# of the *same* add-on queue. (ref-based grouping serialized everything since
+# every dispatch runs on main.)
 concurrency:
-  group: build-${{ github.ref }}
+  group: build-${{ github.event.inputs.addon || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
