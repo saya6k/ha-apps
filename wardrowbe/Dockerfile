@@ -147,3 +147,9 @@ RUN chmod a+x /etc/cont-init.d/*.sh \
  && find /etc/s6-overlay/s6-rc.d -type f -name type -exec chmod 644 {} \;
 
 WORKDIR /
+
+# Supervisor uses the container HEALTHCHECK for health-based auto-restart —
+# the replacement for the removed (deprecated) `watchdog:` config option. The
+# backend health endpoint is served through nginx on the web port 8099.
+HEALTHCHECK --start-period=3m --interval=30s --timeout=10s --retries=3 \
+    CMD curl -fsS http://127.0.0.1:8099/api/v1/health || exit 1
