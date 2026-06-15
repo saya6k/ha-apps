@@ -15,6 +15,7 @@ from functools import partial
 from . import __version__
 from . import models
 from .const import (
+    DEFAULT_CHUNK,
     DEFAULT_MODEL,
     DEFAULT_PORT,
     GGUF_REPO,
@@ -22,6 +23,7 @@ from .const import (
     LIB_DIR,
     MODEL_DIR,
     ModelSpec,
+    resolve_chunk,
     resolve_model,
 )
 
@@ -36,6 +38,12 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--gguf-repo", default=GGUF_REPO)
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--quantization", default="q4_k")
+    parser.add_argument(
+        "--chunk-size",
+        default=DEFAULT_CHUNK,
+        help="Streaming operating point (accuracy<->speed): larger = more "
+        "lookahead/accuracy, more compute. Patched into the GGUF att_context_right.",
+    )
     parser.add_argument("--language", default=None)
     parser.add_argument(
         "--hotwords",
@@ -98,8 +106,8 @@ async def main() -> None:
     )
     spec = resolve_model(args.model)
     _LOGGER.info(
-        "Booting wyoming_nemo_asr_cpp %s (model=%s, quant=%s)",
-        __version__, args.model, args.quantization,
+        "Booting wyoming_nemo_asr_cpp %s (model=%s, quant=%s, chunk=%s)",
+        __version__, args.model, args.quantization, args.chunk_size,
     )
 
     from .engine import ParakeetASR
@@ -109,6 +117,10 @@ async def main() -> None:
             spec.basename, args.quantization, args.model_dir,
             repo=args.gguf_repo, token=args.hf_token,
         )
+        # Apply the chunk-size dial by editing the GGUF's att_context_right KV in
+        # place (no re-download). No-ops safely on non-streaming models.
+        att_right = resolve_chunk(args.chunk_size)
+        models.set_att_context_right(gguf, att_right)
         hotwords = [w.strip() for w in args.hotwords.split("\n") if w.strip()]
         if hotwords and not spec.hotwords:
             _LOGGER.warning(

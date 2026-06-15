@@ -75,6 +75,19 @@ rootfs/.../s6-rc.d/             nemo-asr-cpp (longrun) + discovery (oneshot)
   `AudioStop`. The C API's live `stream_feed` works but chunked feeding produced
   token-boundary spacing artifacts and was slower; one buffered call matches the
   CLI output exactly. `supports_transcript_streaming=False`.
+- **`chunk_size` option = accuracy↔speed dial via a GGUF KV edit.** Nemotron's
+  cache-aware lookahead (right att-context) is the scalar GGUF KV
+  `parakeet.encoder.att_context_right`. The C++ loader (`model_loader.cpp`) reads
+  that scalar and the **offline** encoder applies the resulting chunked-limited
+  mask (`relpos_attention.cpp`; parity.md 5a confirms offline honors it), so it
+  changes our buffered transcript. `models.set_att_context_right()` patches that
+  4-byte INT32 KV in place at boot (no re-download/re-quant); `const.CHUNK_CHOICES`
+  maps the dropdown to `{0,3,6,13}` = 80/320/560/1120 ms (chunk = right+1, ms =
+  chunk×80). Shipped default is `att_context_right=3` (320 ms). Only the model's
+  **trained** presets are exposed — `att_context_presets` (`[[56,3],[56,0],[56,6],
+  [56,13]]`) is informational and not read by the loader; `[56,1]`=160 ms is not a
+  trained preset, so it's omitted. The `PARAKEET_ATT_CONTEXT` env var is a
+  *different* mechanism (symmetric long-audio OOM banding) — do not use it here.
 - **Language tags stripped.** The model emits inline `<ko-KR>` tags in the text;
   `engine._TAG_RE` removes them + collapses whitespace.
 - **Threads:** the C API exposes no thread setter; ggml uses all cores (right

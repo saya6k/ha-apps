@@ -43,6 +43,36 @@ def resolve_model(label: str | None) -> ModelSpec:
     """Map a dropdown label to its ModelSpec; fall back to the default."""
     return MODELS.get(label or DEFAULT_MODEL, MODELS[DEFAULT_MODEL])
 
+# Streaming operating point (accuracy <-> speed dial). For a cache-aware model
+# the right-context (lookahead) IS the dial: larger = more lookahead = more
+# accurate but more encoder work (also slightly higher RTF in our buffered path,
+# since the encoder does more steps). It is baked into the GGUF as the scalar KV
+# `parakeet.encoder.att_context_right`; we patch that KV in place at boot
+# (models.set_att_context_right) so switching needs no re-download/re-quant.
+# Only the model's TRAINED presets are exposed — Nemotron stores
+# `att_context_presets = [[56,3],[56,0],[56,6],[56,13]]`; the shipped scalar
+# default is [56,3] = 320ms, and [56,1]=160ms is NOT a trained preset so it is
+# omitted. chunk frames = right + 1; latency ms = chunk * 80.
+ATT_CONTEXT_RIGHT_KEY = "parakeet.encoder.att_context_right"
+
+CHUNK_CHOICES = [
+    ("80ms", 0),
+    ("320ms", 3),
+    ("560ms", 6),
+    ("1120ms", 13),
+]
+DEFAULT_CHUNK = "320ms"  # matches the shipped GGUF default (att_context_right=3)
+
+NAME_TO_ATT_RIGHT = {label: right for label, right in CHUNK_CHOICES}
+
+# Pipe-joined labels for the config.yaml `chunk_size: list(...)` schema.
+SCHEMA_CHUNKS = "|".join(label for label, _ in CHUNK_CHOICES)
+
+
+def resolve_chunk(label: str | None) -> int:
+    """Map a chunk-size dropdown label to its att_context_right; default if unknown."""
+    return NAME_TO_ATT_RIGHT.get(label or DEFAULT_CHUNK, NAME_TO_ATT_RIGHT[DEFAULT_CHUNK])
+
 # Home Assistant's voice pipeline sends 16 kHz mono 16-bit PCM.
 SAMPLE_RATE = 16000
 SAMPLE_WIDTH = 2

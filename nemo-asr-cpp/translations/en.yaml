@@ -15,6 +15,13 @@ configuration:
       GGUF weight precision of the downloaded model. q4_k = smallest/fastest and
       lowest RAM (default); f16 = best quality but ~4x larger. Changing this
       re-downloads the model on next start.
+  chunk_size:
+    name: Chunk size (accuracy vs speed)
+    description: >-
+      Streaming lookahead the model uses. Larger = more right-context = more
+      accurate, but a bit more compute (higher RTF); smaller = faster/less
+      accurate. 80ms (fastest) · 320ms (default) · 560ms · 1120ms (most
+      accurate). No re-download — applied to the existing model on next start.
   hotwords:
     name: Hotwords (vocabulary biasing)
     description: >-
