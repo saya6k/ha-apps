@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.0.0...supertonic-v2.0.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* **supertonic:** clear executable-stack flag on MNN x86_64 .so ([0fafddf](https://github.com/saya6k/ha-apps/commit/0fafddfe9cbb76e9df8e42314d8bfa665d977c47))
+
+
+### Build System
+
+* **supertonic:** multi-stage image and inline base, drop retired build.yaml ([f27c0e3](https://github.com/saya6k/ha-apps/commit/f27c0e372d0968989ed8ee6579a09534c264afe3))
+* **supertonic:** switch base image to Debian trixie, unpin numpy ([e81b444](https://github.com/saya6k/ha-apps/commit/e81b444b925ebf59696d933b2498a41816a44f80))
+
 ## 2.0.0
 
 - **Inference backend: ONNX Runtime / OpenVINO → MNN** (via
