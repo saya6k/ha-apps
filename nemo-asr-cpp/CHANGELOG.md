@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.1.0...nemo-asr-cpp-v0.2.0) (2026-06-15)
+
+
+### Features
+
+* **nemo-asr-cpp:** add hotword biasing via vendored parakeet.cpp patch ([eb28feb](https://github.com/saya6k/ha-apps/commit/eb28feb82e8351835760054f4c52f636d26b7deb))
+* **nemo-asr-cpp:** add icon and logo ([c8e44c7](https://github.com/saya6k/ha-apps/commit/c8e44c7f6abd0264fff2cb0620e40a7f0c7e18a6))
+* **nemo-asr-cpp:** add model selector, drop language option ([7655fa6](https://github.com/saya6k/ha-apps/commit/7655fa61643bb7c221586352695800636f98862c))
+* **nemo-asr-cpp:** add NeMo ASR (cpp) ggml/parakeet.cpp STT add-on ([b037404](https://github.com/saya6k/ha-apps/commit/b0374048fc46d2df248bfe91ac728d7544c48e36))
+
 ## 0.1.0
 
 - Initial scaffold. Wyoming **speech-to-text** add-on running NVIDIA Nemotron
