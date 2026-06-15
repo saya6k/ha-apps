@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.0.1...supertonic-v2.1.0) (2026-06-15)
+
+
+### Features
+
+* **supertonic:** take TTS language from the pipeline per request ([7f06db1](https://github.com/saya6k/ha-apps/commit/7f06db17d385328fdd4c6017fa080db45710dc1a))
+
 ## [2.0.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.0.0...supertonic-v2.0.1) (2026-06-15)
 
 
