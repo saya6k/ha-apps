@@ -1,9 +1,14 @@
 # Contributing
 
-Thanks for considering a contribution. This is a Home Assistant add-on
-monorepo — six independent add-ons live under sibling directories, sharing
-CI, release automation, and labels at the root. Per-add-on engineering
-details live in each subdirectory's `AGENTS.md`.
+This is a personal Home Assistant add-on monorepo. **Pull requests are
+accepted only from repository collaborators.** If you are not a
+collaborator, please don't open a PR — file an issue (bug report or
+feature request) instead, and it will be triaged there. The rest of this
+document is the workflow for collaborators.
+
+Several independent add-ons live under sibling directories, sharing CI,
+release automation, and labels at the root. Per-add-on engineering details
+live in each subdirectory's `AGENTS.md`.
 
 ## Before you open a PR
 
