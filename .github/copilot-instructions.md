@@ -58,12 +58,15 @@ subproject wins.
   instead `.github/copilot-instructions.md`, with `AGENTS.md`, `GEMINI.md`, and
   `CLAUDE.md` symlinked to it.
 - **`.agents/` is the per-project agent dir** (`settings.local.json` + decision
-  logs, gitignored, with `.agents/skills/` the one tracked exception).
-  Tool-named dirs are symlinks to it: `.claude/` in every subproject that has
-  one, and `.gemini/` at the **repo root** — so the tools share one
-  `.agents/skills/`. Mirrors the `CLAUDE.md`→`AGENTS.md` idea: one dir,
-  tool-named aliases point at it. (`.vscode/` is **not** an alias — it's the
-  committed VS Code dev config; see below.)
+  logs, gitignored). Tracked exceptions: the root `.agents/skills/` (shared
+  skills) and the root `.agents/settings.json` (shared project settings).
+  Tool-named dir aliases (`.claude/`, `.gemini/`) live **only at the repo
+  root**, symlinked to the root `.agents/` so the tools share one set of skills
+  and settings. Subprojects keep their own `.agents/` for decision logs but no
+  longer carry per-tool symlinks — skills/settings resolve from the root alias.
+  Mirrors the `CLAUDE.md`→`AGENTS.md` idea: one dir, tool-named aliases point at
+  it. (`.vscode/` is **not** an alias — it's the committed VS Code dev config;
+  see below.)
 - **Local dev runs in the HA add-on devcontainer.** `.devcontainer/` +
   `.vscode/` mirror `alexbelgium/hassio-addons`: open the repo in the
   `ghcr.io/home-assistant/devcontainer:2-addons` container, then run the
