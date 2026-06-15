@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.1.0...supertonic-v2.1.1) (2026-06-15)
+
+
+### Build System
+
+* **supertonic:** reference prebuilt public GHCR image ([c24ed8c](https://github.com/saya6k/ha-apps/commit/c24ed8c6c9a948227ae860f538d81f15d252dc47))
+
 ## [2.1.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.0.1...supertonic-v2.1.0) (2026-06-15)
 
 
