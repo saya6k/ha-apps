@@ -1,10 +1,7 @@
 {
-  "llm-conversation-agent": "1.14.4",
   "nemo-asr-cpp": "0.1.0",
-  "nemotron-asr": "0.1.0",
-  "rethink": "0.1.0",
   "supertonic": "2.0.0",
   "voiceprint": "0.1.0",
-  "wardrowbe": "1.4.1",
+  "wardrowbe": "1.4.0",
   "zensical": "0.1.0"
 }

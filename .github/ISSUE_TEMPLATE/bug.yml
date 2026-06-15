@@ -17,10 +17,7 @@ body:
       label: Add-on
       description: Which add-on is affected?
       options:
-        - llm-conversation-agent
         - nemo-asr-cpp
-        - nemotron-asr
-        - rethink
         - supertonic
         - voiceprint
         - wardrowbe

@@ -5,18 +5,9 @@
 # Anything not in this file gets deleted on sync.
 
 # --- Add-on scope ---
-- name: "addon:llm-conversation-agent"
-  color: "0E8A16"
-  description: "Affects llm-conversation-agent"
 - name: "addon:nemo-asr-cpp"
   color: "0E8A16"
   description: "Affects nemo-asr-cpp"
-- name: "addon:nemotron-asr"
-  color: "0E8A16"
-  description: "Affects nemotron-asr"
-- name: "addon:rethink"
-  color: "0E8A16"
-  description: "Affects rethink"
 - name: "addon:supertonic"
   color: "0E8A16"
   description: "Affects supertonic"
