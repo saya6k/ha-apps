@@ -1,6 +1,6 @@
 ---
 name: conventional-commit
-description: Writes and validates Conventional Commit messages for this monorepo so release-please routes each change to the right app CHANGELOG. Use whenever committing — it enforces `<type>(<scope>): subject` with an allowed scope and splits commits that span multiple apps.
+description: "Writes and validates Conventional Commit messages for this monorepo so release-please routes each change to the right app CHANGELOG. Use whenever committing — it enforces `<type>(<scope>): subject` with an allowed scope and splits commits that span multiple apps."
 ---
 
 # Conventional commit (release-please-aware)
