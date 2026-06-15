@@ -2,6 +2,7 @@
 version: 0.1.0
 slug: zensical
 name: Zensical
+stage: stable
 description: Render /config/docs/ as a Zensical site (Material for MkDocs successor), served via the ingress panel.
 url: https://github.com/saya6k/ha-mkdocs
 arch:

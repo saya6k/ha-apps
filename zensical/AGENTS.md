@@ -36,10 +36,22 @@ add-on was never shipped with `mkdocs.yml` support, so the codepath was
 removed in the same migration — `resolve-config.sh` only knows about
 `zensical.toml`.
 
+## Git / repo tracking
+
+Part of the `ha-apps` monorepo — one git repo at the root, no per-app
+`.git` checkouts. Tracking is **stage-gated** by the root `.gitignore`:
+only `stage: stable` add-ons are committed; experimental ones are
+gitignored and stay local-only. Promote one by setting `stage: stable`
+in `config.yaml`, deleting its line from the root `.gitignore`, then
+`git add` it.
+
+**This add-on:** tracked (`stage: stable` — promoted from experimental
+2026-06-03).
+
 ## Layout
 
 ```
-config.yaml / build.yaml / Dockerfile        add-on packaging
+config.yaml / Dockerfile                     add-on packaging (base+labels in Dockerfile; build.yaml removed — deprecated)
 requirements.txt                             zensical + pymdown stack pins
 rootfs/etc/nginx/http.d/default.conf         nginx server block (ingress-only)
 rootfs/etc/s6-overlay/s6-rc.d/               init-zensical + zensical-watcher + nginx
@@ -87,10 +99,10 @@ or `ha-wardrowbe` blindly; copy only what fits a stateless renderer.
 | `DOCS.md`          | User-facing layout + troubleshooting. HA renders it as the "Documentation" tab. | ≤ ~100 lines |
 | `AGENTS.md`        | This file — agent/dev guidance for the *current* code. Symlinked as `CLAUDE.md`. | ~100 lines |
 | `CHANGELOG.md`     | Per-version headline. HA renders this in the add-on UI. 5–15 lines per version. | — |
-| `notes/`           | Local dev decision logs / postmortems. **Gitignored** — never link from shipped docs. | free-form |
+| `.agents/`           | Local dev decision logs / postmortems. **Gitignored** — never link from shipped docs. | free-form |
 
 **CHANGELOG = what changed**, **AGENTS = current state**,
-**DOCS = user-visible behaviour**, **`notes/` = why**.
+**DOCS = user-visible behaviour**, **`.agents/` = why**.
 
 ## How the services chain together
 
@@ -121,9 +133,11 @@ The runtime renderer config is selected by `resolve-config.sh`:
 otherwise                    → /opt/zensical/zensical.toml (bundled).
 ```
 
-`init-zensical` seeds `/config/zensical.example.toml` on first start
-so users have a working starting point. We never seed
-`/config/zensical.toml` itself — the existence of that file is the
+`init-zensical` seeds `/config/zensical.example.toml` on the **first run
+only**, tracked by a marker at `/data/.zensical-example-seeded`. After
+that it's never recreated — so a user who doesn't want it can delete it
+and it stays gone (it previously reappeared on every start). We never
+seed `/config/zensical.toml` itself — the existence of that file is the
 user's signal that they want to take ownership.
 
 The watcher re-resolves on every rebuild, so creating, renaming, or
@@ -207,6 +221,9 @@ exposed to the host network.
   The presence of `zensical.toml` is how we detect that the user wants
   to override defaults; seeding it would force every user into
   "custom" mode and make the bundled defaults unreachable.
+- Don't revert the example seed to unconditional re-creation. It's
+  one-shot, guarded by `/data/.zensical-example-seeded`, so deleting the
+  example doesn't resurrect it on the next start.
 - Don't drop the `effective-config.py` rewrite step. Without it,
   user-written `docs_dir = "docs"` in `/config/zensical.toml` would
   resolve against the wrong root (the source file's directory rather
@@ -249,9 +266,13 @@ exposed to the host network.
   on the Alpine HA base is fast and does not need a Rust toolchain. If
   Zensical ever stops shipping these wheels, we have to install Rust at
   build time — the image cost roughly doubles.
-- **Python ≥3.10** required by Zensical. Alpine 3.19's `python3` is
-  3.11.x, which satisfies that. Confirm again if we bump the Alpine
-  base.
+- **Python ≥3.10** required by Zensical. The base is pinned to Alpine
+  `3.21` (`python3` 3.12.x) — bumped from 3.19 on 2026-06-03 because the
+  multi-arch `base:3.19` tag doesn't exist and `build.yaml` (which carried
+  the old per-arch 3.19 pin) is deprecated. Wheel-safe: the zensical wheel
+  is `cp310-abi3` and pymdown is pure-Python, so neither cares about the
+  3.11→3.12 change (verified by a local build). Confirm again on any
+  further base bump.
 - `HEALTHCHECK` probes the ingress port; nginx returning 200 on
   `/index.html` proves both init and serve worked.
 - `image:` line in `config.yaml` is staged-commented; uncomment once
@@ -281,8 +302,11 @@ exposed to the host network.
 - **Strict mode is unsupported.** `zensical serve --strict` prints a
   warning and ignores the flag (per CLI source as of 0.0.43). Don't
   rely on it for validation.
-- `build.yaml` uses HA's Alpine `3.19` base — matches Xavier's working
-  combination with this pymdown stack.
+- The base (Alpine `3.21`) + image labels now live in the `Dockerfile`
+  via `ARG BUILD_FROM=ghcr.io/home-assistant/base:3.21`; `build.yaml` was
+  removed (Supervisor flags it as deprecated). The migrated labels were
+  also corrected — the old `build.yaml` still carried stale MkDocs-era
+  title/description/source.
 - `HEALTHCHECK` probes the ingress port; nginx returning 200 on
   `/index.html` proves both init and serve worked.
 - `image:` line in `config.yaml` is staged-commented; uncomment once

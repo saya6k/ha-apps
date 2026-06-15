@@ -1,7 +1,17 @@
-ARG BUILD_FROM
+# build.yaml is deprecated (Supervisor warns) — base image + labels live here
+# now. Pinned to the multi-arch base:3.21 manifest (Alpine 3.21 → Python 3.12);
+# the old per-arch :3.19 pin has no multi-arch tag, so a single ARG default
+# can't reference it. Overridable with --build-arg.
+ARG BUILD_FROM=ghcr.io/home-assistant/base:3.21
 FROM ${BUILD_FROM}
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+LABEL \
+    org.opencontainers.image.title="Home Assistant Add-on: Zensical" \
+    org.opencontainers.image.description="Render /config/docs/ as a Zensical site, served via the ingress panel" \
+    org.opencontainers.image.source="https://github.com/saya6k/ha-mkdocs" \
+    org.opencontainers.image.licenses="MIT"
 
 ENV LANG=C.UTF-8 \
     PIP_NO_CACHE_DIR=1 \
