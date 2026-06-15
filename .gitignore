@@ -67,12 +67,13 @@ super-linter-output/
 # hosted as a pinned release asset — never commit a local dev copy.
 /voiceprint/models/
 
-# Stage gating — only `stage: stable` add-ons are committed.
-# Experimental add-ons (per their config.yaml `stage:`) stay local-only;
-# delete the matching line here when an add-on is promoted to stable.
+# Stage gating — committed add-ons are "stable" (the default; the add-on
+# linter rejects an explicit `stage: stable`, so stable add-ons carry NO
+# `stage:` key). Experimental add-ons set `stage: experimental` and stay
+# local-only via the lines below; delete a line here to publish that add-on.
 /llm-conversation-agent/
 /rethink/
 /livekit-wakeword/
-# nemotron-asr is deferred from the published store for now (held back despite
-# its config.yaml stage:stable) — delete this line to publish it.
+# nemotron-asr is deferred from the published store for now — delete this
+# line (and set/keep it stable) to publish it.
 /nemotron-asr/

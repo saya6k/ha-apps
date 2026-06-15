@@ -206,11 +206,15 @@ BREAKING CHANGE: removes the `provider` option; users on 1.x must reconfigure.
   before opening a PR against that subproject. The root CI workflow runs
   the cross-cutting linters; it does not replace per-add-on smoke tests.
 - **One git repo at the root; no per-app `.git` checkouts.** Tracking is
-  stage-gated by the root `.gitignore`: `stage: stable` add-ons
-  (`nemo-asr-cpp`, `nemotron-asr`, `supertonic`, `voiceprint`, `wardrowbe`,
-  `zensical`) are committed; experimental ones (`llm-conversation-agent`,
-  `livekit-wakeword`, `rethink`) stay gitignored / local-only.
-  Each app's `AGENTS.md` restates its own status. Promote an app by setting
-  `stage: stable` in its `config.yaml`, deleting its line from the root
-  `.gitignore`, registering its slug in the repo-root release-please config,
-  labels, labeler, and issue templates, then `git add` it.
+  stage-gated by the root `.gitignore`: the stable add-ons
+  (`nemo-asr-cpp`, `supertonic`, `voiceprint`, `wardrowbe`, `zensical`)
+  are committed; experimental ones (`llm-conversation-agent`,
+  `livekit-wakeword`, `nemotron-asr`, `rethink`) stay gitignored /
+  local-only. **Stable is the default** — the add-on linter rejects an
+  explicit `stage: stable`, so committed add-ons carry NO `stage:` key;
+  experimental ones set `stage: experimental`.
+  Each app's `AGENTS.md` restates its own status. Promote an app by
+  removing any `stage: experimental` from its `config.yaml`, deleting its
+  line from the root `.gitignore`, registering its slug in the repo-root
+  release-please config, labels, labeler, and issue templates, then
+  `git add` it.
