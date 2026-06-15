@@ -39,18 +39,21 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# Agent dirs (.agents/): settings.local.json + decision logs, local-only by
-# convention. `.agents/skills/` is the one tracked exception. `.claude` is a
-# local symlink aliases -> .agents (.claude everywhere, plus .gemini at root,
-# point at .agents so the tools share .agents/skills/). Never link to .agents/
-# from any shipped doc.
+# Agent dirs (.agents/): settings.local.json + decision logs are local-only by
+# convention. `.agents/` is the single real dir (the SoT); `.claude`/`.gemini`
+# are symlink aliases -> .agents so the tools share one `.agents/`. Tracked
+# exceptions: `.agents/skills/` (shared skills) and the root
+# `.agents/settings.json` (shared project settings incl. the SessionStart
+# git-pull hook). Only the *root* `.claude`/`.gemini` aliases are tracked, since
+# the shared skills + settings live at the root `.agents/`; subproject aliases
+# are recreated locally. Never link to .agents/ from any shipped doc.
 **/.agents/*
 !**/.agents/skills
+!/.agents/settings.json
 .claude
 .gemini
-# Track wardrowbe's .claude symlink so its tracked .agents/skills/ resolves
-# via .claude/skills/ (Claude Code's lookup path) on a fresh clone.
-!wardrowbe/.claude
+!/.claude
+!/.gemini
 
 # Build / cache
 *.log
@@ -63,15 +66,23 @@ dist/
 report/
 super-linter-output/
 
+# App stage gating — WHITELIST (default-deny). Every non-hidden top-level dir
+# (i.e. every app) is local-only unless explicitly un-ignored below, so a new
+# or experimental app can never be committed by accident. `/[!.]*/` ignores all
+# top-level dirs that don't start with a dot; infra dirs (.github, .agents,
+# .devcontainer, .vscode) are hidden and unaffected.
+#
+# To publish (promote to stable) an app: add `!/<slug>/` here and remove any
+# `stage: experimental` from its config.yaml — stable carries NO `stage:` key
+# (the add-on linter rejects an explicit `stage: stable`).
+/[!.]*/
+# Published (stable) apps — tracked:
+!/nemo-asr-cpp/
+!/supertonic/
+!/voiceprint/
+!/wardrowbe/
+!/zensical/
 # voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
-# hosted as a pinned release asset — never commit a local dev copy.
+# hosted as a pinned release asset — never commit a local dev copy. (Listed
+# after the re-include above so this narrower exclusion wins.)
 /voiceprint/models/
-
-# Stage gating — committed add-ons are "stable" (the default; the add-on
-# linter rejects an explicit `stage: stable`, so stable add-ons carry NO
-# `stage:` key). Experimental add-ons set `stage: experimental` and stay
-# local-only via the lines below; delete a line here to publish that add-on.
-/llm-conversation-agent/
-/rethink/
-/livekit-wakeword/
-/nemotron-asr/
