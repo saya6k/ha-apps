@@ -37,12 +37,12 @@ jobs:
         uses: dorny/paths-filter@v3
         with:
           filters: |
-            llm-conversation-agent:
-              - 'llm-conversation-agent/**'
-            rethink:
-              - 'rethink/**'
+            nemo-asr-cpp:
+              - 'nemo-asr-cpp/**'
             supertonic:
               - 'supertonic/**'
+            voiceprint:
+              - 'voiceprint/**'
             wardrowbe:
               - 'wardrowbe/**'
             zensical:
