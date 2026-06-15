@@ -1,9 +1,10 @@
----
-version: 0.1.0
+version: 0.2.0
 slug: nemo-asr-cpp
 name: NeMo ASR (cpp)
 stage: stable
-description: Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron ASR on ggml (parakeet.cpp)
+description: >-
+  Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron
+  ASR on ggml (parakeet.cpp)
 url: https://github.com/mudler/parakeet.cpp
 arch:
   - amd64
@@ -12,34 +13,22 @@ init: false
 discovery:
   - wyoming
 backup_exclude:
-  - "models/**"
+  - models/**
 options:
   model: Nemotron 3.5 Streaming 0.6b
   quantization: q4_k
   hotwords: []
-  hf_token: ""
+  hf_token: ''
 schema:
-  # Model dropdown; keep in lockstep with const.MODELS. Every model is a
-  # streaming RNN-T transducer with hotword-boost support.
   model: list(Nemotron 3.5 Streaming 0.6b)
-  # No `language` option: the model auto-detects, and the Wyoming pipeline's
-  # per-request language (the pipeline's configured STT language) always wins.
-  # GGUF weight precision. q4_k = smallest/fastest (default), f16 = best quality.
   quantization: list(q4_k|q5_k|q6_k|q8_0|f16)
-  # Phrases to bias recognition toward (vendored decoder patch; see DOCS).
   hotwords:
     - str?
-  # Logit bonus per hotword token (advanced). Values above ~3 can destabilize
-  # decoding; the leading-space token is already stripped as a guard.
   hotword_boost: float(0,10)?
   hf_token: password?
-  # Optional + absent from `options:` on purpose → hidden from the default UI
-  # form (defaults off); enable via the add-on's YAML config editor when needed.
   debug_logging: bool?
 ports:
-  "10360/tcp": null
+  10360/tcp: null
 ports_description:
-  "10360/tcp": NeMo ASR (cpp) Wyoming Protocol
+  10360/tcp: NeMo ASR (cpp) Wyoming Protocol
 homeassistant: 2023.8.0.dev20230718
-# Uncomment once a prebuilt image is published to GHCR.
-# image: ghcr.io/saya6k/{arch}-addon-nemo-asr-cpp
