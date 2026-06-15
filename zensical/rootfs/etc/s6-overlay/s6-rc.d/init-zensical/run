@@ -11,6 +11,10 @@
 
 SEED_DOCS=/opt/zensical/seed/docs
 SEED_EXAMPLE_TOML=/opt/zensical/seed/zensical.example.toml
+# First-run marker in the add-on-private /data (persists across restarts/
+# updates). Once set, the example is never recreated — so deleting it makes
+# it stay gone instead of reappearing every start.
+SEED_MARKER=/data/.zensical-example-seeded
 # Lives under /var/lib/zensical/ so its relative docs_dir/site_dir
 # resolve to /var/lib/zensical/{docs,site}. Zensical 0.0.43 rejects
 # absolute paths for those keys.
@@ -25,15 +29,21 @@ if [ ! -d /config/docs ]; then
     bashio::log.info 'Seeded /config/docs/ (no existing directory).'
 fi
 
-# Drop a publish-ready example into /config so the user can rename it to
-# zensical.toml and that *same* file works both for the add-on and for a
-# GitHub Pages workflow. We only seed the example — never the active
-# zensical.toml — so the bundled defaults stay in charge by default.
-if [ ! -f /config/zensical.example.toml ] \
+# Drop a publish-ready example into /config on the *first run only* (tracked
+# by SEED_MARKER). The same file works both for the add-on and a GitHub Pages
+# workflow. We only ever seed the example — never the active zensical.toml — so
+# the bundled defaults stay in charge by default. After the first run we never
+# recreate it, so a user who doesn't want it can delete it and it stays gone.
+if [ ! -f "$SEED_MARKER" ] \
+    && [ ! -f /config/zensical.example.toml ] \
     && [ ! -f /config/zensical.toml ]; then
     cp "$SEED_EXAMPLE_TOML" /config/zensical.example.toml
     bashio::log.info 'Wrote /config/zensical.example.toml — rename to zensical.toml to customise.'
 fi
+# Mark the first-run seed as done (even when skipped because the user already
+# had a config), so it's a one-time event per install.
+mkdir -p /data
+: > "$SEED_MARKER"
 
 CONFIG_FILE=$(/opt/zensical/bin/resolve-config.sh)
 bashio::log.info "Using renderer config: $CONFIG_FILE"
