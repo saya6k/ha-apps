@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.1...nemo-asr-cpp-v0.3.2) (2026-06-15)
+
+
+### Documentation
+
+* **nemo-asr-cpp:** align README shields with sibling apps ([ec0195e](https://github.com/saya6k/ha-apps/commit/ec0195e19c07645cc163ca044c18fbfa309b2f09))
+
 ## [0.3.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.0...nemo-asr-cpp-v0.3.1) (2026-06-15)
 
 
