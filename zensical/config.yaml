@@ -1,9 +1,10 @@
----
-version: 0.1.0
+version: 0.1.1
 slug: zensical
 name: Zensical
 stage: stable
-description: Render /config/docs/ as a Zensical site (Material for MkDocs successor), served via the ingress panel.
+description: >-
+  Render /config/docs/ as a Zensical site (Material for MkDocs successor),
+  served via the ingress panel.
 url: https://github.com/saya6k/ha-mkdocs
 arch:
   - amd64
@@ -19,20 +20,10 @@ options:
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)
 map:
-  # homeassistant_config is the new name for the legacy `config:` map. We
-  # keep the in-container mount at /config so the user-facing path
-  # (`/config/docs/`) matches the in-container one.
   - type: homeassistant_config
     read_only: false
     path: /config
-  # addon_config is the add-on's own dedicated config dir, exposed to the
-  # user under /addon_configs/<repo>_<slug>/. We mount it at /addon_config
-  # (the default /config is already taken above) so users can drop a
-  # custom zensical.toml and theme overrides without polluting their HA
-  # config directory.
   - type: addon_config
     read_only: false
     path: /addon_config
 homeassistant: 2024.4.0
-# Uncomment once deploy.yaml has published prebuilt images to GHCR:
-# image: ghcr.io/saya6k/{arch}-addon-zensical

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.1](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.0...zensical-v0.1.1) (2026-06-15)
+
+
+### Bug Fixes
+
+* **zensical:** persist example-seeded marker so a deleted example stays gone ([29d198e](https://github.com/saya6k/ha-apps/commit/29d198ee3b34c37313bf52c6b54b23008c9fd5d5))
+
+
+### Build System
+
+* **zensical:** migrate off build.yaml, pin base image, mark stable ([84f46d1](https://github.com/saya6k/ha-apps/commit/84f46d188f544041dd1a3dabbf3b8c0daca43515))
+
 ## 0.1.0
 
 - First release. Renders `/config/docs/` as a
