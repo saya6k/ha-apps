@@ -2,6 +2,7 @@
 version: 2.0.0
 slug: supertonic
 name: Supertonic
+stage: stable
 description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
 url: https://github.com/vra/supertonic-mnn
 arch:
@@ -12,9 +13,6 @@ discovery:
   - wyoming
 backup_exclude:
   - ".cache/**"
-map:
-  - share
-  - addon_config:rw
 options:
   language: English
   speed: 1.0

@@ -11,6 +11,17 @@ whole repo *is* the app. As of **2.0.0** the engine is
 [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) (MNN). The 1.x
 ORT/OpenVINO stack is gone — see CHANGELOG before reintroducing any of it.
 
+## Git / repo tracking
+
+Part of the `ha-apps` monorepo — one git repo at the root, no per-app
+`.git` checkouts. Tracking is **stage-gated** by the root `.gitignore`:
+only `stage: stable` add-ons are committed; experimental ones are
+gitignored and stay local-only. Promote one by setting `stage: stable`
+in `config.yaml`, deleting its line from the root `.gitignore`, then
+`git add` it.
+
+**This add-on:** tracked (`stage: stable`).
+
 ## Layout
 
 ```
@@ -38,10 +49,10 @@ Follow the [Piper app](https://github.com/home-assistant/addons/tree/master/pipe
 | `DOCS.md`          | User-facing options + perf table. HA renders it as the "Documentation" tab. | ≤ ~80 lines |
 | `AGENTS.md`        | This file — agent/dev guidance for the *current* code. Symlinked as `CLAUDE.md`. | ~100 lines |
 | `CHANGELOG.md`     | Per-version headline. HA renders this in the app UI. Keep each version 5–15 lines. | — |
-| `notes/`           | Local dev decision logs / postmortems / *why* behind changes. **Gitignored** — never link to `notes/` from the shipped docs (README/DOCS/AGENTS/CHANGELOG); the link would dangle for end users. | free-form |
+| `.agents/`           | Local dev decision logs / postmortems / *why* behind changes. **Gitignored** — never link to `.agents/` from the shipped docs (README/DOCS/AGENTS/CHANGELOG); the link would dangle for end users. | free-form |
 | `translations/<lang>.yaml` | Option UI labels/descriptions. | — |
 
-Rule of thumb when writing docs: **CHANGELOG = *what* changed**, **AGENTS = *current state* of the code**, **DOCS = *user-visible knobs***, **`notes/` = *why* / decision log**. If a paragraph fits "we considered X and rejected it because Y", it belongs in `notes/`, not in any shipped file.
+Rule of thumb when writing docs: **CHANGELOG = *what* changed**, **AGENTS = *current state* of the code**, **DOCS = *user-visible knobs***, **`.agents/` = *why* / decision log**. If a paragraph fits "we considered X and rejected it because Y", it belongs in `.agents/`, not in any shipped file.
 
 ## Engine integration
 
