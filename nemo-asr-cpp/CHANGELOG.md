@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.0...nemo-asr-cpp-v0.3.1) (2026-06-15)
+
+
+### Build System
+
+* **nemo-asr-cpp:** reference prebuilt public GHCR image ([59d9d61](https://github.com/saya6k/ha-apps/commit/59d9d61bcde43798905f9bd86d3e6297d3b5f155))
+
 ## [0.3.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.2.0...nemo-asr-cpp-v0.3.0) (2026-06-15)
 
 
