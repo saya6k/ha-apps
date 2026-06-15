@@ -1,10 +1,13 @@
-ARG BUILD_FROM
-ARG WARDROWBE_VERSION=wardrowbe-v1.2.2
+# BUILD_FROM is no longer injected by the Supervisor (>=2026.04.0) — default to
+# the multi-arch HA base manifest, pinned to an Alpine version tag (3.23 →
+# Node 24.14.1) instead of the moving :latest. Overridable with --build-arg.
+ARG BUILD_FROM=ghcr.io/home-assistant/base:3.23
+ARG WARDROWBE_VERSION=wardrowbe-v1.3.0
 
 # =========================================================================
 # Stage 0 — Clone source from GitHub release tag
 # =========================================================================
-FROM alpine:3.20 AS source
+FROM ${BUILD_FROM} AS source
 ARG WARDROWBE_VERSION
 RUN apk add --no-cache git \
  && git clone --depth 1 --branch "${WARDROWBE_VERSION}" \
@@ -13,9 +16,9 @@ RUN apk add --no-cache git \
 # =========================================================================
 # Stage 1 — Frontend build (Next.js standalone)
 # =========================================================================
-FROM node:20-alpine AS frontend-builder
+FROM ${BUILD_FROM} AS frontend-builder
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat nodejs npm
 WORKDIR /build
 
 COPY --from=source /src/frontend/package.json /src/frontend/package-lock.json ./
@@ -64,6 +67,13 @@ RUN pip install --no-cache-dir --break-system-packages wheel \
 FROM ${BUILD_FROM}
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Image metadata — migrated from the deprecated build.yaml `labels:` block.
+LABEL \
+    org.opencontainers.image.title="Home Assistant Add-on: Wardrowbe" \
+    org.opencontainers.image.description="Self-hosted AI-powered wardrobe management" \
+    org.opencontainers.image.source="https://github.com/Anyesh/wardrowbe" \
+    org.opencontainers.image.licenses="MIT"
 
 ENV LANG=C.UTF-8 \
     PYTHONDONTWRITEBYTECODE=1 \
