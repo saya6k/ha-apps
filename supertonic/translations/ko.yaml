@@ -1,13 +1,5 @@
 ---
 configuration:
-  language:
-    name: 기본 언어
-    description: >-
-      Wyoming 클라이언트가 언어를 지정하지 않을 때 사용할 기본 언어.
-      드롭다운에서 선택하세요 (Supertonic은 31개 언어 지원).
-      각 언어는 자국어 표기(한국어, 日本語, Deutsch …)로 ISO 639-1 코드
-      순서로 정렬돼 있습니다. 클라이언트(예: Home Assistant Assist)가 요청마다
-      보내는 언어가 우선이며, 이 설정은 폴백 값입니다.
   speed:
     name: 속도
     description: >-

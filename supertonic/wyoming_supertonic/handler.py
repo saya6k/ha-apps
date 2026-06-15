@@ -40,7 +40,7 @@ from wyoming.tts import (
     SynthesizeStopped,
 )
 
-from .const import DEFAULT_LANGUAGE, DEFAULT_VOICE
+from .const import DEFAULT_LANGUAGE, DEFAULT_VOICE, resolve_language
 from .engine import SupertonicEngine, float_to_pcm16
 
 _LOGGER = logging.getLogger(__name__)
@@ -179,14 +179,19 @@ class SupertonicEventHandler(AsyncEventHandler):
             if text[-1] not in self.cli_args.auto_punctuation:
                 text = text + self.cli_args.auto_punctuation[0]
 
-        # Pick voice + language from the request, with our defaults as fallback.
+        # Voice + language come from the request: the HA pipeline's TTS
+        # language rides in Synthesize.voice.language. DEFAULT_LANGUAGE is only
+        # a fallback for clients that send none. (No `language` add-on option —
+        # the pipeline decides, mirroring the nemo-asr-cpp STT side.)
         voice_name = DEFAULT_VOICE
-        language = self.cli_args.language or DEFAULT_LANGUAGE
+        language = DEFAULT_LANGUAGE
         if synthesize.voice is not None:
             if synthesize.voice.name:
                 voice_name = synthesize.voice.name
             if getattr(synthesize.voice, "language", None):
                 language = synthesize.voice.language
+        # Normalise a locale ("en-US" -> "en") and map any name to its ISO code.
+        language = resolve_language(language.split("-")[0])
 
         if voice_name not in self.engine.available_voices:
             _LOGGER.warning(

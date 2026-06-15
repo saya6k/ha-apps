@@ -28,7 +28,6 @@ bashio::config.true 'debug_logging'   && flags+=('--debug')
 # shellcheck disable=SC2068
 exec python3 -m wyoming_supertonic \
     --uri 'tcp://0.0.0.0:10209' \
-    --language "$(bashio::config 'language')" \
     --speed "$(bashio::config 'speed')" \
     --steps "$(bashio::config 'steps')" \
     --version "$(bashio::config 'model_version')" \

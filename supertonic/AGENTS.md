@@ -76,7 +76,6 @@ need it). `handler.py` logs `TTFT` once per client request (first chunk only).
 
 | App option      | CLI flag           | Notes |
 | --------------- | ------------------ | ----- |
-| `language`      | `--language`       | Native name (`한국어`), English name (`Korean`), or ISO code (`ko`) — all accepted via `resolve_language` |
 | `speed`/`steps` | `--speed`/`--steps`| floats / ints |
 | `threads`       | `--threads`        | patched into `config.json` |
 | `precision`     | `--precision`      | `auto`\|`fp16`\|`fp32`\|`int8` |
@@ -85,8 +84,12 @@ need it). `handler.py` logs `TTFT` once per client request (first chunk only).
 | `warmup_voices` | `--warmup-voices`  | comma-joined from YAML array by `run` script |
 | `no_streaming`/`debug_logging` | `--no-streaming`/`--debug` | flags |
 
-Voice (`M1`–`F5`) is **not** an app option — it's per-request from the
-Wyoming client.
+Voice (`M1`–`F5`) **and language** are **not** app options — both come
+per-request from the Wyoming client. The HA pipeline's TTS language rides in
+`Synthesize.voice.language`; `handler.py` normalises it (`en-US` → `en`,
+names → ISO via `resolve_language`) and falls back to `DEFAULT_LANGUAGE`
+only when the client sends none. `__main__._build_info` advertises all
+`LANGUAGES` on every voice so HA knows what's offered.
 
 ## Pins & cache
 
@@ -138,9 +141,10 @@ returns `"Supertonic"`.
 - Don't reintroduce ORT/OpenVINO without a written reason — 2.0.0 removed
   ~400 MB and a lot of monkey-patching for a reason.
 - Don't add backwards-compat shims for removed options (`provider`,
-  `crop_silence`).
-- Don't translate `language` schema values — HA doesn't translate
-  `list(...)` items; the dropdown is English regardless of locale.
+  `crop_silence`, `language`).
+- Don't re-add a `language` add-on option — language is per-request from the
+  pipeline (`Synthesize.voice.language`); a fixed option only drifts from the
+  pipeline's choice.
 - Don't pre-download models in the Dockerfile; HF cache works fine.
 - Don't add `armv7`/`armhf`/`i386` without confirming MNN wheels exist.
 - Don't forget the `chmod +x` block in `Dockerfile` when adding a new s6 script.

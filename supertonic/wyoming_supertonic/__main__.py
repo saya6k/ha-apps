@@ -11,12 +11,10 @@ from typing import List
 
 from . import __version__
 from .const import (
-    DEFAULT_LANGUAGE,
     DEFAULT_PORT,
     LANGUAGES,
     MNN_CACHE_DIR,
     VOICES,
-    resolve_language,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -35,16 +33,6 @@ def _parse_args() -> argparse.Namespace:
         const="supertonic",
         default=None,
         help="Enable mDNS discovery with optional name (default: supertonic)",
-    )
-    parser.add_argument(
-        "--language",
-        default=DEFAULT_LANGUAGE,
-        type=resolve_language,
-        help=(
-            "Default language when a client does not specify one. Accepts "
-            "an ISO 639-1 code (e.g. 'ko') or an English name (e.g. 'Korean'). "
-            f"Supported codes: {', '.join(LANGUAGES)}"
-        ),
     )
     parser.add_argument(
         "--precision",

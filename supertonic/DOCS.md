@@ -18,9 +18,12 @@ per-request by the Wyoming client.
 
 ## Options
 
+There is **no language option** — Supertonic speaks whatever language your
+Voice pipeline is set to (sent per request, like an STT engine). `model_version`
+`v3` covers all 31 languages.
+
 | Option          | Default | Description |
 | --------------- | ------- | ----------- |
-| `language`      | English | Fallback language when the client doesn't specify. 31 supported (see dropdown). |
 | `speed`         | 1.0     | 0.5–2.0 speed multiplier. |
 | `steps`         | 4       | Denoising steps. 2–3 fastest, 4 balanced, 6+ slightly smoother. |
 | `model_version` | v3      | `v3` = all 31 languages; `v2` = en/ko/es/pt/fr only. |

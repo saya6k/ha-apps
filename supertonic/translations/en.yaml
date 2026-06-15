@@ -1,13 +1,5 @@
 ---
 configuration:
-  language:
-    name: Default language
-    description: >-
-      Language used when a Wyoming client does not specify one. Supertonic
-      supports 31 languages — pick from the dropdown. Languages are listed by
-      their native name (한국어, 日本語, Deutsch, …) ordered by ISO 639-1 code.
-      Per-request language sent by the client (e.g. Home Assistant Assist)
-      always wins; this is only the fallback.
   speed:
     name: Speed
     description: >-
