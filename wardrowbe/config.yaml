@@ -1,11 +1,11 @@
 name: Wardrowbe
-version: "1.4.0"
+version: 1.4.1
 slug: wardrowbe
 stage: stable
 description: >-
-  Self-hosted AI-powered wardrobe management.
-  Snap photos of your clothes, get AI-tagged details,
-  and receive daily outfit suggestions based on weather and occasion.
+  Self-hosted AI-powered wardrobe management. Snap photos of your clothes, get
+  AI-tagged details, and receive daily outfit suggestions based on weather and
+  occasion.
 url: https://github.com/Anyesh/wardrowbe
 arch:
   - aarch64
@@ -19,12 +19,9 @@ map:
   - data:rw
   - media:rw
   - share:rw
-# Keep HA add-on snapshots small. Paths are relative to /data/.
-# - postgres/**: PostgreSQL cluster (use /share/wardrowbe/backups/ pg_dump exports instead)
-# - redis/**:    Redis AOF/RDB cache (rebuilt on next start)
 backup_exclude:
-  - "postgres/**"
-  - "redis/**"
+  - postgres/**
+  - redis/**
 ports:
   8099/tcp: 8099
 ports_description:
@@ -33,21 +30,21 @@ options:
   postgres_user: wardrobe
   postgres_password: wardrobe
   postgres_db: wardrobe
-  secret_key: ""
-  nextauth_secret: ""
+  secret_key: ''
+  nextauth_secret: ''
   dev_login: true
-  ai_base_url: "http://homeassistant.local:11434/v1"
-  ai_api_key: ""
-  ai_vision_model: "gemma3:latest"
-  ai_text_model: "gemma3:latest"
-  oidc_issuer_url: ""
-  oidc_client_id: ""
-  oidc_client_secret: ""
-  oidc_mobile_client_id: ""
-  external_url: ""
-  ntfy_server: ""
-  ntfy_token: ""
-  mattermost_webhook_url: ""
+  ai_base_url: http://homeassistant.local:11434/v1
+  ai_api_key: ''
+  ai_vision_model: gemma3:latest
+  ai_text_model: gemma3:latest
+  oidc_issuer_url: ''
+  oidc_client_id: ''
+  oidc_client_secret: ''
+  oidc_mobile_client_id: ''
+  external_url: ''
+  ntfy_server: ''
+  ntfy_token: ''
+  mattermost_webhook_url: ''
   backup_enabled: true
   backup_retention_days: 7
   backup_hour: 3
@@ -76,4 +73,4 @@ schema:
 homeassistant_api: false
 hassio_api: false
 hassio_role: default
-watchdog: "http://[HOST]:[PORT:8099]/api/v1/health"
+watchdog: http://[HOST]:[PORT:8099]/api/v1/health
