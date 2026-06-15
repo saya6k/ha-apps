@@ -40,13 +40,13 @@ npm-debug.log*
 yarn-error.log*
 
 # Agent dirs (.agents/): settings.local.json + decision logs are local-only by
-# convention. `.agents/` is the single real dir (the SoT); `.claude`/`.gemini`
-# are symlink aliases -> .agents so the tools share one `.agents/`. Tracked
-# exceptions: `.agents/skills/` (shared skills) and the root
+# convention. `.agents/` is the single real dir (the SoT). The `.claude` and
+# `.gemini` symlink aliases -> .agents exist ONLY at the repo root, and are the
+# tracked aliases, since the shared skills + settings live at the root
+# `.agents/`. Tracked exceptions: `.agents/skills/` (shared skills) and the root
 # `.agents/settings.json` (shared project settings incl. the SessionStart
-# git-pull hook). Only the *root* `.claude`/`.gemini` aliases are tracked, since
-# the shared skills + settings live at the root `.agents/`; subproject aliases
-# are recreated locally. Never link to .agents/ from any shipped doc.
+# git-pull hook). Subprojects carry no per-tool symlinks. Never link to
+# .agents/ from any shipped doc.
 **/.agents/*
 !**/.agents/skills
 !/.agents/settings.json
