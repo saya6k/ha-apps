@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.1...zensical-v0.1.2) (2026-06-15)
+
+
+### Build System
+
+* **zensical:** reference prebuilt public GHCR image ([e49b1be](https://github.com/saya6k/ha-apps/commit/e49b1bedba90e33967ae71561ef39a2ee69338ad))
+
 ## [0.1.1](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.0...zensical-v0.1.1) (2026-06-15)
 
 
