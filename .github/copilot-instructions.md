@@ -170,7 +170,12 @@ BREAKING CHANGE: removes the `provider` option; users on 1.x must reconfigure.
    `llm-conversation-agent` / `nemo-asr-cpp` / `nemotron-asr` / `supertonic` /
    `voiceprint`).
 4. Merge. release-please tags `<addon>-v<ver>` and creates a GitHub
-   Release whose body is the new CHANGELOG section.
+   Release whose body is the new CHANGELOG section. The repo has
+   **Automatically delete head branches** enabled
+   (`deleteBranchOnMerge: true`), so the
+   `release-please--branches--main--components--<addon>` branch is deleted
+   on merge — release-please simply recreates it next cycle, so never
+   delete it by hand while its release PR is open.
 5. Image build/publish to GHCR is **not yet automated in monorepo
    mode** — run it manually until that workflow is added.
 
