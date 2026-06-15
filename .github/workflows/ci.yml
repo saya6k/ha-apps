@@ -31,7 +31,7 @@ jobs:
     outputs:
       addons: ${{ steps.filter.outputs.changes }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - id: filter
         uses: dorny/paths-filter@v3
@@ -63,7 +63,7 @@ jobs:
       matrix:
         addon: ${{ fromJSON(needs.changes.outputs.addons) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Home Assistant Add-on Lint
         uses: frenck/action-addon-linter@v2
@@ -85,7 +85,7 @@ jobs:
       matrix:
         addon: ${{ fromJSON(needs.changes.outputs.addons) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: frenck/action-yamllint@v1
         with:
@@ -105,7 +105,7 @@ jobs:
       matrix:
         addon: ${{ fromJSON(needs.changes.outputs.addons) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Check Dockerfile exists
         id: dockerfile
@@ -137,7 +137,7 @@ jobs:
       matrix:
         addon: ${{ fromJSON(needs.changes.outputs.addons) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Collect shell scripts
         id: collect

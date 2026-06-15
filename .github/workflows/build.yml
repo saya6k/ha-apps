@@ -55,7 +55,7 @@ jobs:
       arches: ${{ steps.meta.outputs.arches }}
       skip: ${{ steps.meta.outputs.skip }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - id: meta
         run: |
@@ -99,7 +99,7 @@ jobs:
       matrix:
         arch: ${{ fromJSON(needs.prepare.outputs.arches) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
