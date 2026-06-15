@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.2.0...voiceprint-v0.3.0) (2026-06-15)
+
+
+### Features
+
+* **voiceprint:** default upstream to nemo-asr-cpp and ship GHCR image ([03f0096](https://github.com/saya6k/ha-apps/commit/03f0096020ebdebacac7be16be7444436339407d))
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.1.0...voiceprint-v0.2.0) (2026-06-15)
 
 
