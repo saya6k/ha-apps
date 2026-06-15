@@ -56,6 +56,11 @@ per-app sanity checks.
 - Delete the local branch: `git branch -d <branch>` (squash merges trigger a
   "not merged to HEAD" warning — expected, the change is in `main` as the
   squash commit). The remote branch is already gone via auto-delete.
+- Merging a `feat`/`fix`/etc. PR makes release-please open (or update) a
+  `chore(<addon>): release <ver>` PR. When you later **merge that release PR**,
+  it lands the version bump + CHANGELOG on `main` and tags `<addon>-v<ver>` —
+  so `git switch main && git pull --ff-only origin main` again afterward to
+  keep local in sync (and pick up the manifest/`config.yaml` bumps).
 
 ## IMPORTANT
 - The diff of a `chore(<addon>): release <ver>` PR is auto-generated
