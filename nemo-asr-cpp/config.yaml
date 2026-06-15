@@ -1,10 +1,9 @@
----
-version: 0.2.0
+version: 0.3.0
 slug: nemo-asr-cpp
 name: NeMo ASR (cpp)
 description: >-
-  Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA
-  Nemotron ASR on ggml (parakeet.cpp)
+  Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron
+  ASR on ggml (parakeet.cpp)
 url: https://github.com/mudler/parakeet.cpp
 arch:
   - amd64
