@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.0...wardrowbe-v1.4.1) (2026-06-15)
+
+
+### Build System
+
+* **wardrowbe:** migrate off build.yaml, pin base image, bump upstream ([560218f](https://github.com/saya6k/ha-apps/commit/560218f23144833cf571ce45706edd69780322a3))
+
 ## [1.4.0] — 2026-05-25
 
 ### Removed (breaking)
