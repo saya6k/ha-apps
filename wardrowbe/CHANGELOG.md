@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [2.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.2...wardrowbe-v2.0.0) (2026-06-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wardrowbe:** clothing photos move from /config/photos to /data/photos. Existing photos are migrated automatically on first start; the addon_config photos dir is no longer used.
+
+### Features
+
+* **wardrowbe:** move clothing photos to /data/photos ([34c50e7](https://github.com/saya6k/ha-apps/commit/34c50e7c2bd63171fd700267b0d61e16294b9b36))
+
 ## [1.4.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.1...wardrowbe-v1.4.2) (2026-06-15)
 
 
