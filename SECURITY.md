@@ -30,7 +30,7 @@ These add-ons differ in how exposed they are:
   shell inside a bubblewrap sandbox (seccomp + rlimits + custom AppArmor +
   network/user/pid namespaces). Sandbox-escape reports are highest
   priority — please include the bwrap argv you tested against. The
-  sandbox is documented in `llm-conversation-agent/notes/sandbox.md`
+  sandbox is documented in `llm-conversation-agent/.agents/sandbox.md`
   (gitignored locally) and the active argv lives in `_bwrap_argv()`.
 - **`wardrowbe`** — exposes a FastAPI backend, Next.js frontend, Postgres,
   Redis, and nginx in one container. Auth modes (Dev / OIDC) are mutually
