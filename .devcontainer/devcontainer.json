@@ -5,7 +5,7 @@
     "7123:8123",
     "7357:4357"
   ],
-  "postStartCommand": "bash devcontainer_bootstrap",
+  "postStartCommand": "sudo mkdir -p /run/supervisor && bash devcontainer_bootstrap",
   "runArgs": [
     "-e",
     "GIT_EDITOR=code --wait",
