@@ -1,8 +1,0 @@
-# Local dev decision logs / scratch notes — not part of the published app.
-notes/
-
-# OS
-.DS_Store
-
-# Node (in case of local builds)
-node_modules/
