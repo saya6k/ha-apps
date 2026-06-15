@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ── Wait for PostgreSQL ───────────────────────────────────────────────────
 echo "[backend] waiting for postgres …"
-for i in $(seq 1 60); do
+for _ in $(seq 1 60); do
   if pg_isready -h 127.0.0.1 -p "${POSTGRES_PORT}" -q 2>/dev/null; then
     break
   fi
@@ -24,7 +24,7 @@ su-exec postgres psql -p "${POSTGRES_PORT}" -tc \
 
 # ── Wait for Redis ────────────────────────────────────────────────────────
 echo "[backend] waiting for redis …"
-for i in $(seq 1 30); do
+for _ in $(seq 1 30); do
   if redis-cli -h 127.0.0.1 -p "${REDIS_PORT}" ping 2>/dev/null | grep -q PONG; then
     break
   fi

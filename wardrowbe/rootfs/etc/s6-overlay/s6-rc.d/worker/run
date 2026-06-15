@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # Wait for postgres
-for i in $(seq 1 60); do
+for _ in $(seq 1 60); do
   pg_isready -h 127.0.0.1 -p "${POSTGRES_PORT}" -q 2>/dev/null && break
   sleep 1
 done
 
 # Wait for redis
-for i in $(seq 1 30); do
+for _ in $(seq 1 30); do
   redis-cli -h 127.0.0.1 -p "${REDIS_PORT}" ping 2>/dev/null | grep -q PONG && break
   sleep 1
 done

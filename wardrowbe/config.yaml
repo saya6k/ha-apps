@@ -12,13 +12,15 @@ arch:
   - amd64
 init: false
 startup: services
-boot: auto
-host_network: false
 map:
-  - addon_config:rw
-  - data:rw
-  - media:rw
-  - share:rw
+  - type: addon_config
+    read_only: false
+  - type: data
+    read_only: false
+  - type: media
+    read_only: false
+  - type: share
+    read_only: false
 backup_exclude:
   - postgres/**
   - redis/**
@@ -70,7 +72,3 @@ schema:
   backup_enabled: bool
   backup_retention_days: int(0,365)
   backup_hour: int(0,23)
-homeassistant_api: false
-hassio_api: false
-hassio_role: default
-watchdog: http://[HOST]:[PORT:8099]/api/v1/health
