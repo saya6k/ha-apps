@@ -18,9 +18,9 @@ and release cycle.
 
 | Directory | Add-on |
 | --- | --- |
-| [`llm-conversation-agent/`](llm-conversation-agent/) | Wyoming conversation agent backed by any OpenAI-compatible LLM. Delegates entity exposure to Home Assistant's built-in `mcp_server`. |
-| [`rethink/`](rethink/) | Packages [`anszom/rethink`](https://github.com/anszom/rethink) so supported LG ThinQ appliances talk to Home Assistant over MQTT instead of LG's cloud. |
+| [`nemo-asr-cpp/`](nemo-asr-cpp/) | Streaming Wyoming STT running NVIDIA Nemotron ASR on the ggml runtime via [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp), with hotword boosting. |
 | [`supertonic/`](supertonic/) | Lightweight multilingual Wyoming TTS service running the [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) engine. |
+| [`voiceprint/`](voiceprint/) | Speaker-verifying Wyoming STT proxy — a pass-through gate that only forwards utterances from enrolled voices to a downstream ASR. |
 | [`wardrowbe/`](wardrowbe/) | Self-hosted AI-powered wardrobe management. Packages [`Anyesh/wardrowbe`](https://github.com/Anyesh/wardrowbe) (Postgres, Redis, FastAPI, arq, Next.js, nginx) in a single container. |
 | [`zensical/`](zensical/) | Renders `/config/docs/` as a [Zensical](https://zensical.org/) site served through the Home Assistant ingress side panel. |
 
@@ -37,10 +37,13 @@ appear under their own section in the store.
 
 ## Contributing
 
-PRs welcome — please read [CONTRIBUTING.md](CONTRIBUTING.md) first. The
-key requirement is **Conventional Commit titles with the add-on slug as
-the scope** (e.g. `feat(supertonic): add Korean voice F5`); release-please
-routes commits to per-add-on changelogs based on that scope.
+This is a personal add-on repository. **Direct contributions (PRs) are
+limited to repository collaborators**; if you aren't one, please open an
+issue instead of a pull request. Collaborators: read
+[CONTRIBUTING.md](CONTRIBUTING.md) first. The key requirement is
+**Conventional Commit titles with the add-on slug as the scope** (e.g.
+`feat(supertonic): add Korean voice F5`); release-please routes commits to
+per-add-on changelogs based on that scope.
 
 Security reports: see [SECURITY.md](SECURITY.md) — use GitHub's private
 vulnerability reporting, not a public issue.
