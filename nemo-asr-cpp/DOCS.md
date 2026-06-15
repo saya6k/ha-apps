@@ -20,6 +20,7 @@ First boot compiles nothing on your device — the add-on image already contains
 | --------------- | ------- | ----------- |
 | `model`         | Nemotron 3.5 Streaming 0.6b | ASR model to run. **Nemotron 3.5 Streaming 0.6b** — multilingual (40+ locales), streaming, hotword-capable. **Currently the only supported model**; more NeMo streaming models may be added later. Changing re-downloads. |
 | `quantization`  | q4_k    | GGUF weight precision: `q4_k` (smallest/fastest) → `f16` (best quality). Changing re-downloads the model. |
+| `chunk_size`    | 320ms   | Streaming lookahead (accuracy ↔ speed). `80ms` (fastest) · `320ms` (default) · `560ms` · `1120ms` (most accurate). Applied to the existing model — **no re-download**. See below. |
 | `hotwords`      | []      | Phrases to bias recognition toward — one per item (room names, entity names, people). |
 | `hotword_boost` | 2       | Advanced. Bias strength (logit bonus per token). Values above ~3 can destabilize decoding. |
 | `hf_token`      | (empty) | HuggingFace token for gated/private repos. |
@@ -32,6 +33,25 @@ rooms, devices, or people it otherwise mishears. Biasing is best-effort: it
 nudges the greedy decoder at near-ties, it cannot force words that weren't
 spoken. Keep the boost at the default unless a hotword still loses; raising it
 past ~3 trades accuracy everywhere else and can garble output.
+
+## Chunk size (accuracy vs speed)
+
+Nemotron is a cache-aware streaming model whose **lookahead** (right attention
+context) is a built-in accuracy↔speed dial:
+
+| `chunk_size` | Lookahead | Trade-off |
+| ------------ | --------- | --------- |
+| `80ms`       | smallest  | fastest, least accurate |
+| `320ms`      | default   | balanced (the model's shipped default) |
+| `560ms`      | larger    | more accurate |
+| `1120ms`     | largest   | most accurate, slightly more compute (higher RTF) |
+
+This add-on transcribes the whole utterance at once, so a larger chunk does not
+delay the result — it just lets the encoder see more right-context, which is
+generally more accurate (at a small compute cost). Changing it **does not
+re-download** the model: the setting is applied to the already-downloaded GGUF
+on the next start. Only the four sizes above are the model's trained operating
+points.
 
 ## Language
 
