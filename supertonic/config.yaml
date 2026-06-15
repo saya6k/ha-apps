@@ -1,7 +1,7 @@
+---
 version: 2.0.1
 slug: supertonic
 name: Supertonic
-stage: stable
 description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
 url: https://github.com/vra/supertonic-mnn
 arch:
@@ -20,10 +20,15 @@ options:
   warmup_voices:
     - M1
 schema:
+  # The language list() is a single unsplittable validator value (folding it
+  # would inject spaces into the option values), so line-length is disabled
+  # for this key only — not relaxed globally.
+  # yamllint disable rule:line-length
   language: >-
     list(العربية|Български|Čeština|Dansk|Deutsch|Ελληνικά|English|Español|Eesti|Suomi|Français|हिन्दी|Hrvatski|Magyar|Bahasa
     Indonesia|Italiano|日本語|한국어|Lietuvių|Latviešu|Nederlands|Polski|Português|Română|Русский|Slovenčina|Slovenščina|Svenska|Türkçe|Українська|Tiếng
     Việt)
+  # yamllint enable rule:line-length
   speed: float(0.5,2.0)
   steps: int(1,30)
   model_version: list(v2|v3)

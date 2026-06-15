@@ -58,7 +58,7 @@ configuration:
     name: Disable streaming
     description: >-
       If enabled, audio is only returned once the full request is synthesized
-      instead of streaming sentence by sentence. Leave unset to keep streaming on.
+      instead of streaming sentence by sentence. Unset keeps streaming on.
   debug_logging:
     name: Debug logging
     description: >-

@@ -39,7 +39,8 @@ configuration:
     name: 모델 정밀도
     description: >-
       MNN 모델 가중치의 수치 정밀도. 비워두면 "auto"가 됩니다 — /proc/cpuinfo를 검사해
-      AVX-VNNI(Intel 12세대+, AMD Zen 4+)나 NEON SDOT(Pi 5, Cortex-A75+) 지원 CPU에서는 int8을,
+      AVX-VNNI(Intel 12세대+, AMD Zen 4+)나 NEON SDOT(Pi 5, Cortex-A75+)
+      지원 CPU에서는 int8을,
       FEAT_FP16만 있는 ARM에서는 fp16을, 그 외엔 fp32를 자동 선택합니다.
       특정 설정이 본인 CPU에서 더 빠르다는 것을 측정으로 확인했을 때만 수동 변경하세요.
   mnn_memory:
