@@ -1,7 +1,7 @@
+---
 name: Wardrowbe
 version: 1.4.1
 slug: wardrowbe
-stage: stable
 description: >-
   Self-hosted AI-powered wardrobe management. Snap photos of your clothes, get
   AI-tagged details, and receive daily outfit suggestions based on weather and
