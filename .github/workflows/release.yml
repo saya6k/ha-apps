@@ -10,6 +10,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # Needed to dispatch the image-build workflow when a release is cut.
+  actions: write
 
 # Only one release run at a time — release-please does not handle racing
 # pushes well; later runs supersede earlier ones.
@@ -23,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
+        id: release
         with:
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
@@ -30,3 +33,24 @@ jobs:
           # block above. If you want release-please-created PRs to themselves
           # trigger CI, swap in a PAT here.
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      # A tag created with GITHUB_TOKEN does NOT trigger build.yml's `push:
+      # tags` (GitHub's recursion guard). workflow_dispatch is exempt, so we
+      # dispatch the image build for each add-on that was just released.
+      - name: Dispatch image builds for released add-ons
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dispatch() {
+            if [ "$1" = "true" ]; then
+              echo "Dispatching build for $2 v$3"
+              gh workflow run "Build & publish images" \
+                -R "$GITHUB_REPOSITORY" -f addon="$2" -f version="$3"
+            fi
+          }
+          dispatch "${{ steps.release.outputs['nemo-asr-cpp--release_created'] }}" nemo-asr-cpp "${{ steps.release.outputs['nemo-asr-cpp--version'] }}"
+          dispatch "${{ steps.release.outputs['supertonic--release_created'] }}"   supertonic   "${{ steps.release.outputs['supertonic--version'] }}"
+          dispatch "${{ steps.release.outputs['voiceprint--release_created'] }}"   voiceprint   "${{ steps.release.outputs['voiceprint--version'] }}"
+          dispatch "${{ steps.release.outputs['wardrowbe--release_created'] }}"    wardrowbe    "${{ steps.release.outputs['wardrowbe--version'] }}"
+          dispatch "${{ steps.release.outputs['zensical--release_created'] }}"     zensical     "${{ steps.release.outputs['zensical--version'] }}"
