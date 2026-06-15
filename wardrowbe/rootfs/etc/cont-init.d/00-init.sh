@@ -15,12 +15,12 @@ set_env() {
 #
 #   /config/               (addon_config — private to this addon)
 #     ├── .nextauth_secret   auto-generated NextAuth session secret
-#     ├── .secret_key        auto-generated backend JWT secret
-#     └── photos/            clothing photos + thumbnails
+#     └── .secret_key        auto-generated backend JWT secret
 #
-#   /data/                 (data — backup_exclude'd from addon snapshots)
-#     ├── postgres/data/     PostgreSQL cluster
-#     └── redis/             Redis AOF + RDB
+#   /data/                 (data — private to this addon)
+#     ├── photos/            clothing photos + thumbnails (in addon snapshot)
+#     ├── postgres/data/     PostgreSQL cluster (backup_exclude'd)
+#     └── redis/             Redis AOF + RDB (backup_exclude'd)
 #
 #   /share/wardrowbe/      (share — HA-wide, included in HA backups)
 #     └── backups/           daily pg_dump output
@@ -149,14 +149,14 @@ set_env BACKUP_RETENTION_DAYS  "$(bashio::config 'backup_retention_days')"
 set_env BACKUP_HOUR            "$(bashio::config 'backup_hour')"
 
 # ── 3. Derived / internal env vars ────────────────────────────────────────
-# Wardrobe photos live under /config/photos (addon_config mount). The dir
-# name reflects the content (photos), not the app (wardrowbe) — /config/
-# is already scoped per-addon so the addon name would be redundant.
+# Wardrobe photos live under /data/photos (data mount). The dir name
+# reflects the content (photos), not the app (wardrowbe) — /data/ is
+# already scoped per-addon so the addon name would be redundant.
 # Photos are private to this addon — NOT visible in the HA media browser,
-# which is the right default for personal clothing photos. Trade-off: /config/
+# which is the right default for personal clothing photos. Trade-off: /data/
 # is in every HA addon snapshot, so heavy wardrobes inflate snapshot size.
 # See DOCS.md "Data & Storage".
-set_env STORAGE_PATH        "/config/photos"
+set_env STORAGE_PATH        "/data/photos"
 set_env REDIS_URL           "redis://127.0.0.1:${REDIS_PORT}/0"
 set_env DATABASE_URL        "postgresql+asyncpg://${PG_USER}:${PG_PASS}@127.0.0.1:${PG_PORT}/${PG_DB}"
 set_env BACKEND_URL         "http://127.0.0.1:${BACKEND_PORT}"
@@ -191,7 +191,7 @@ else
 fi
 
 # ── 4. Create directories ─────────────────────────────────────────────────
-mkdir -p /config/photos                # wardrobe photos (addon_config mount, private)
+mkdir -p /data/photos                  # wardrobe photos (data mount, private)
 mkdir -p /share/wardrowbe/backups      # DB backups (share mount)
 mkdir -p /data/redis                   # Redis persistence (data mount)
 mkdir -p /var/lib/postgresql/data      # PostgreSQL (data mount)
@@ -200,16 +200,16 @@ mkdir -p /run/postgresql /run/nginx    # runtime sockets
 chown -R postgres:postgres /var/lib/postgresql /run/postgresql
 chmod 700 /var/lib/postgresql/data
 
-# ── 5. One-shot photo migration to /config/photos ────────────────────────
-# Temporary: photos used to live at /media/wardrowbe (1.0.0–1.1.x),
-# /data/wardrobe (≤ 0.x), or /config/wardrobe (1.2.0 dev iteration).
-# Move them once, then clear the old dir. Drop this block before public
-# 1.x release once dev rotation is fully on /config/photos.
-for SRC in /media/wardrowbe /data/wardrobe /config/wardrobe; do
+# ── 5. One-shot photo migration to /data/photos ──────────────────────────
+# Temporary: photos used to live at /config/photos (1.2.0–1.4.x),
+# /media/wardrowbe (1.0.0–1.1.x), /data/wardrobe (≤ 0.x), or /config/wardrobe
+# (1.2.0 dev iteration). Move them once, then clear the old dir. Drop this
+# block in a later release once installs are fully on /data/photos.
+for SRC in /config/photos /media/wardrowbe /data/wardrobe /config/wardrobe; do
   [ -d "$SRC" ] && [ -n "$(ls -A "$SRC" 2>/dev/null)" ] \
-    && [ -z "$(ls -A /config/photos 2>/dev/null)" ] || continue
-  bashio::log.info "Migrating photos: ${SRC} → /config/photos"
-  cp -a "$SRC"/. /config/photos/
+    && [ -z "$(ls -A /data/photos 2>/dev/null)" ] || continue
+  bashio::log.info "Migrating photos: ${SRC} → /data/photos"
+  cp -a "$SRC"/. /data/photos/
   rm -rf "${SRC:?}"/*
   rmdir "$SRC" 2>/dev/null || true
 done
@@ -237,7 +237,7 @@ EOF
 chown postgres:postgres "$PG_HBA"
 
 bashio::log.info "Initialization complete."
-bashio::log.info "  Photos:  /config/photos"
+bashio::log.info "  Photos:  /data/photos"
 bashio::log.info "  Config:  /config/"
 bashio::log.info "  Backups: /share/wardrowbe/backups"
 bashio::log.info "  DB data: /data/"

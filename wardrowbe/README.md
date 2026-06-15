@@ -35,7 +35,7 @@ args:
 | HA Mount | Container Path | Content |
 |----------|---------------|---------|
 | `addon_config` | `/config/` | Secrets, persistent config |
-| `media` | `/media/wardrowbe/` | Wardrobe photos |
+| `data` | `/data/photos/` | Wardrobe photos |
 | `share` | `/share/wardrowbe/backups/` | DB exports |
 | `data` | `/data/` | PostgreSQL, Redis (internal) |
 
