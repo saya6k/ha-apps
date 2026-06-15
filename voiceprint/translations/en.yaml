@@ -33,4 +33,4 @@ configuration:
       turn this off (clips accumulate on every utterance while on).
   debug_logging:
     name: Debug logging
-    description: Enable verbose logging, including per-speaker similarity scores.
+    description: Enable verbose logging with per-speaker similarity scores.

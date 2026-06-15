@@ -1,7 +1,7 @@
+---
 version: 0.2.0
 slug: voiceprint
 name: Voiceprint
-stage: stable
 description: >-
   Speaker-verifying Wyoming STT proxy — only enrolled voices reach your
   speech-to-text
