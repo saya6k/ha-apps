@@ -6,6 +6,7 @@ description: >-
   On-device wake word detection over Wyoming — livekit-wakeword runtime (also
   runs openWakeWord models)
 url: https://github.com/livekit/livekit-wakeword
+image: ghcr.io/saya6k/{arch}-addon-livekit-wakeword
 arch:
   - amd64
   - aarch64
