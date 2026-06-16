@@ -33,7 +33,7 @@ RUN \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
         "wyoming==1.7.2" \
         "sentence-stream" \
-        "num2words" \
+        "unicode-rbnf" \
         "numpy" \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
     # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack
