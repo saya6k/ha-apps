@@ -6,13 +6,11 @@ guidance. `AGENTS.md`, `GEMINI.md`, and `CLAUDE.md` at the repo root, and
 file, not the symlinks.
 
 **Per-app guidance** lives in each subproject's own `AGENTS.md` (the per-app
-source of truth). How each tool finds it:
-- **Claude Code / Gemini** load the subproject's `CLAUDE.md` / `GEMINI.md`
-  (symlinks to its `AGENTS.md`) hierarchically when working in that dir.
-- **GitHub Copilot** reads `AGENTS.md` at the root (this file) and
-  `.github/instructions/<app>.instructions.md` (symlinked from `.agents/skills/`,
-  one per tracked app with an `applyTo: "<app>/**"` glob) — those are thin
-  pointers to the app's `AGENTS.md` so there's a single source, no duplication.
+source of truth). All AI tools find it the same way: each subproject has a
+`CLAUDE.md` / `GEMINI.md` symlink to its `AGENTS.md`, which tools load
+hierarchically when working in that directory. GitHub Copilot reads `AGENTS.md`
+at the root (this file) and each subproject's `AGENTS.md` directly — no
+separate per-path instruction files needed.
 
 ## What this directory is
 
@@ -62,8 +60,7 @@ subproject wins.
   truth for all AI tooling in this repo. Its tracked subdirs:
   - `manifests/` — repo-level instructions (this file); root `AGENTS.md` /
     `CLAUDE.md` / `GEMINI.md` / `.github/copilot-instructions.md` all symlink here.
-  - `skills/` — per-app Copilot instruction files; `.github/instructions/`
-    symlinks here.
+  - `skills/` — agentskills.io-format skill directories (for cross-tool skills).
   - `workflows/` — Claude Code slash commands; `.claude/commands` symlinks here.
   - `agents/` — Claude Code agent definitions; `.claude/agents` symlinks here.
   - `memory/` — project context notes shared across conversations (gitignored).
