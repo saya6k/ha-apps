@@ -124,7 +124,7 @@ jobs:
             *) echo "::error::Unsupported arch ${{ matrix.arch }}"; exit 1 ;;
           esac
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: ${{ needs.prepare.outputs.slug }}
           file: ${{ needs.prepare.outputs.slug }}/Dockerfile
