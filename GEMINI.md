@@ -1,1 +1,1 @@
-.agents/manifests/repo.md
+AGENTS.md
