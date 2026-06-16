@@ -37,4 +37,5 @@ ports:
   10350/tcp: null
 ports_description:
   10350/tcp: Nemotron ASR Wyoming Protocol
+image: ghcr.io/saya6k/{arch}-addon-nemotron-asr
 homeassistant: 2023.8.0.dev20230718
