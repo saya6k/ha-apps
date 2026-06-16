@@ -28,11 +28,11 @@ If the container was started outside VS Code (e.g. `docker start`), the
 devcontainer lifecycle is skipped and HA never boots. Use the helper:
 
 ```bash
-scripts/devcontainer-ha.sh up         # mount apps + boot HA, wait for :7123
-scripts/devcontainer-ha.sh restart    # stop + remount + reboot (apps not showing)
-scripts/devcontainer-ha.sh mount-apps # (re)bind apps into apps/local only
-scripts/devcontainer-ha.sh status     # inner containers + HA HTTP status
-scripts/devcontainer-ha.sh log        # tail supervisor_run.log
+.agents/workflows/devcontainer-ha.sh up         # mount apps + boot HA, wait for :7123
+.agents/workflows/devcontainer-ha.sh restart    # stop + remount + reboot (apps not showing)
+.agents/workflows/devcontainer-ha.sh mount-apps # (re)bind apps into apps/local only
+.agents/workflows/devcontainer-ha.sh status     # inner containers + HA HTTP status
+.agents/workflows/devcontainer-ha.sh log        # tail supervisor_run.log
 ```
 
 ## Why the local apps need bind-mounting
