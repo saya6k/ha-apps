@@ -76,6 +76,8 @@ super-linter-output/
 # `stage: experimental` from its config.yaml — stable carries NO `stage:` key
 # (the add-on linter rejects an explicit `stage: stable`).
 /[!.]*/
+# Dev tooling (not an app) — tracked:
+!/scripts/
 # Published (stable) apps — tracked:
 !/nemo-asr-cpp/
 !/supertonic/
