@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.0...supertonic-v2.2.1) (2026-06-16)
+
+
+### CI
+
+* **repo:** restructure AI harness under .agents/ and track in git ([#38](https://github.com/saya6k/ha-apps/issues/38)) ([b4c56a4](https://github.com/saya6k/ha-apps/commit/b4c56a405c3b3e98da37b07e5712698352c8b13a))
+
 ## [2.2.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.1.1...supertonic-v2.2.0) (2026-06-16)
 
 
