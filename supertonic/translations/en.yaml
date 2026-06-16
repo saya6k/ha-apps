@@ -49,10 +49,10 @@ configuration:
   text_normalization:
     name: Text normalization
     description: >-
-      Expand numbers into spoken words before synthesis (e.g. "23" → "twenty-three").
-      Uses CLDR RBNF spellout rules; covers all 31 supported languages. Unset
-      keeps normalization on. Set to false only if a language produces
-      unexpected output — the engine handles raw digits too.
+      Expand numbers into spoken words before synthesis (e.g. "23" ->
+      "twenty-three"). Uses CLDR RBNF spellout rules; covers all 31 supported
+      languages. Unset keeps normalization on. Set to false only if a language
+      produces unexpected output — the engine handles raw digits too.
   no_streaming:
     name: Disable streaming
     description: >-
