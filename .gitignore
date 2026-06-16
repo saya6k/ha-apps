@@ -39,20 +39,14 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# Agent dirs (.agents/): settings.local.json + decision logs are local-only by
-# convention. `.agents/` is the single real dir (the SoT). The `.claude` and
-# `.gemini` symlink aliases -> .agents exist ONLY at the repo root, and are the
-# tracked aliases, since the shared skills + settings live at the root
-# `.agents/`. Tracked exceptions: `.agents/skills/` (shared skills) and the root
-# `.agents/settings.json` (shared project settings incl. the SessionStart
-# git-pull hook). Subprojects carry no per-tool symlinks. Never link to
-# .agents/ from any shipped doc.
-**/.agents/*
-!**/.agents/skills
-!/.agents/settings.json
+# AI tooling dirs — tracked in full; only local-override files are excluded.
+**/.agents/settings.local.json
+# .claude is a real dir (not a symlink) with individual symlinks inside.
+# settings.local.json inside is gitignored (local overrides only).
 .claude
-.gemini
 !/.claude
+/.claude/settings.local.json
+.gemini
 !/.gemini
 
 # Build / cache
@@ -76,8 +70,6 @@ super-linter-output/
 # `stage: experimental` from its config.yaml — stable carries NO `stage:` key
 # (the add-on linter rejects an explicit `stage: stable`).
 /[!.]*/
-# Dev tooling (not an app) — tracked:
-!/scripts/
 # Published (stable) apps — tracked:
 !/nemo-asr-cpp/
 !/supertonic/
