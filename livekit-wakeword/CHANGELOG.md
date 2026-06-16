@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.0...livekit-wakeword-v0.2.1) (2026-06-16)
+
+
+### Build System
+
+* **livekit-wakeword:** add GHCR image reference to config.yaml ([#51](https://github.com/saya6k/ha-apps/issues/51)) ([c43289d](https://github.com/saya6k/ha-apps/commit/c43289de9d83ac0f06346e34298c867eb1b7a9f9))
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.1.0...livekit-wakeword-v0.2.0) (2026-06-16)
 
 
