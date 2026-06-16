@@ -71,7 +71,9 @@ super-linter-output/
 # (the add-on linter rejects an explicit `stage: stable`).
 /[!.]*/
 # Published (stable) apps — tracked:
+!/livekit-wakeword/
 !/nemo-asr-cpp/
+!/nemotron-asr/
 !/supertonic/
 !/voiceprint/
 !/wardrowbe/

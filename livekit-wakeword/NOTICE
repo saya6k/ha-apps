@@ -1,0 +1,38 @@
+────────────────────────────────────────────────────────────────────────────
+livekit-wakeword runtime
+────────────────────────────────────────────────────────────────────────────
+
+This add-on uses the livekit-wakeword inference library:
+
+  https://github.com/livekit/livekit-wakeword
+
+  Copyright LiveKit Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+livekit-wakeword bundles the openWakeWord frozen audio frontend
+(melspectrogram.onnx + Google speech embedding model).
+
+────────────────────────────────────────────────────────────────────────────
+openWakeWord pretrained classifiers
+────────────────────────────────────────────────────────────────────────────
+
+The built-in wake word models (alexa, hey_jarvis, hey_mycroft, hey_rhasspy)
+are from the openWakeWord project:
+
+  https://github.com/dscripka/openWakeWord
+
+  Copyright 2023 David Scripka
+
+  Licensed under the Apache License, Version 2.0
+
+Model release assets are downloaded from
+https://github.com/dscripka/openWakeWord/releases/tag/v0.5.1
+at first boot and stored in /data/models.
+
+The hey_livekit model is from the livekit-wakeword repository and is
+licensed under the Apache License, Version 2.0 (see above).

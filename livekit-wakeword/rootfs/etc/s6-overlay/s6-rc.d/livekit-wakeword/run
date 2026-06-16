@@ -1,0 +1,22 @@
+#!/command/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Start the LiveKit WakeWord Wyoming wake word service.
+# ==============================================================================
+
+flags=()
+bashio::config.has_value 'threshold'     && flags+=('--threshold'     "$(bashio::config 'threshold')")
+bashio::config.has_value 'trigger_level' && flags+=('--trigger-level' "$(bashio::config 'trigger_level')")
+bashio::config.true 'debug_logging'      && flags+=('--debug')
+
+# Models are a YAML list; --models takes them as separate arguments.
+mapfile -t models < <(jq -r '(.models // [])[]' /data/options.json)
+[ ${#models[@]} -eq 0 ] && models=('hey_jarvis')
+
+exec python3 -m wyoming_livekit_wakeword \
+    --uri 'tcp://0.0.0.0:10400' \
+    --model-dir /data/models \
+    --custom-model-dir /share/livekit-wakeword \
+    --models "${models[@]}" \
+    "${flags[@]}"

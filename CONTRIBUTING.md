@@ -48,8 +48,8 @@ add a `BREAKING CHANGE:` footer. Either triggers a major bump.
 
 ### Allowed scopes
 
-`llm-conversation-agent` · `nemo-asr-cpp` · `nemotron-asr` · `rethink` ·
-`supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo` (for `.github/`,
+`livekit-wakeword` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` ·
+`voiceprint` · `wardrowbe` · `zensical` · `repo` (for `.github/`,
 root docs, `repository.yaml`).
 
 Any other scope = release-please can't route the commit. If a change truly
@@ -59,7 +59,7 @@ spans add-ons, split the PR.
 
 ```
 feat(supertonic): add Korean voice F5
-fix(llm-conversation-agent): retry half-closed MCP keepalive sockets
+fix(nemotron-asr): handle empty transcript on short audio clips
 docs(zensical): document use_directory_urls=false constraint
 ci(repo): bump dorny/paths-filter to v3
 chore(supertonic)!: drop ORT/OpenVINO stack
@@ -74,7 +74,7 @@ BREAKING CHANGE: removes the `provider` option; users on 1.x must reconfigure.
    `chore(<addon>): release <ver>` PR per affected add-on.
 3. A maintainer reviews the release PR — the diff is auto-bumped
    `config.yaml` / `CHANGELOG.md` (and `pyproject.toml`
-   for `llm-conversation-agent` / `nemo-asr-cpp` / `nemotron-asr` / `supertonic` /
+   for `livekit-wakeword` / `nemo-asr-cpp` / `nemotron-asr` / `supertonic` /
    `voiceprint`).
 4. Merging that PR tags `<addon>-v<ver>` and creates a GitHub Release.
 

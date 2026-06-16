@@ -1,0 +1,37 @@
+#!/command/with-contenv bashio
+# vim: ft=bash
+# shellcheck shell=bash
+# ==============================================================================
+# Start the Nemotron ASR Wyoming service (ONNX, CPU).
+# ==============================================================================
+
+# Model weights download to the persistent /data volume (not the image).
+export HOME=/data
+mkdir -p /data/models
+
+flags=()
+bashio::config.has_value 'language'   && flags+=('--language'   "$(bashio::config 'language')")
+bashio::config.has_value 'model_repo' && flags+=('--model-repo' "$(bashio::config 'model_repo')")
+bashio::config.has_value 'hf_token'   && flags+=('--hf-token'   "$(bashio::config 'hf_token')")
+bashio::config.false 'transcript_streaming' && flags+=('--no-transcript-streaming')
+bashio::config.has_value 'hotword_boost' && flags+=('--hotword-boost' "$(bashio::config 'hotword_boost')")
+bashio::config.true 'debug_logging'   && flags+=('--debug')
+
+# Hotwords are a YAML list; join into one newline-separated --hotwords value.
+hotwords=$(jq -r '(.hotwords // []) | join("\n")' /data/options.json 2>/dev/null || echo "")
+[ -n "${hotwords}" ] && flags+=('--hotwords' "${hotwords}")
+
+# Cap thread pools when num_threads > 0; 0 lets the libraries use all cores.
+threads="$(bashio::config 'num_threads')"
+if [[ "${threads}" =~ ^[0-9]+$ ]] && [ "${threads}" -gt 0 ]; then
+    flags+=('--num-threads' "${threads}")
+    export OMP_NUM_THREADS="${threads}"
+    export OPENBLAS_NUM_THREADS="${threads}"
+    bashio::log.info "Threads capped to ${threads}"
+fi
+
+# Quote the array so flag values containing spaces/newlines (multi-word
+# language names, multi-line --hotwords) stay one argument each.
+exec python3 -m wyoming_nemotron_asr \
+    --uri 'tcp://0.0.0.0:10350' \
+    "${flags[@]}"

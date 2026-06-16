@@ -12,8 +12,8 @@ contact the maintainer privately first.
 
 Please include:
 
-- Which add-on is affected (`llm-conversation-agent`, `rethink`,
-  `supertonic`, `wardrowbe`, `zensical`).
+- Which add-on is affected (`livekit-wakeword`, `nemo-asr-cpp`, `nemotron-asr`,
+  `supertonic`, `voiceprint`, `wardrowbe`, `zensical`).
 - Affected version (shown in the HA Add-ons UI).
 - A reproducer or proof of concept, ideally minimal.
 - Impact assessment (what can an attacker do? what privileges are needed?).
@@ -25,21 +25,10 @@ and a disclosure window before publishing details.
 
 These add-ons differ in how exposed they are:
 
-- **`llm-conversation-agent`** — runs a Wyoming server (TCP/10500) and a
-  metrics endpoint. The `run_skill_script` meta-tool executes LLM-supplied
-  shell inside a bubblewrap sandbox (seccomp + rlimits + custom AppArmor +
-  network/user/pid namespaces). Sandbox-escape reports are highest
-  priority — please include the bwrap argv you tested against. The
-  sandbox is documented in `llm-conversation-agent/.agents/sandbox.md`
-  (gitignored locally) and the active argv lives in `_bwrap_argv()`.
 - **`wardrowbe`** — exposes a FastAPI backend, Next.js frontend, Postgres,
   Redis, and nginx in one container. Auth modes (Dev / OIDC) are mutually
   exclusive under HA ingress; please describe which mode was active for
   any reported issue.
-- **`rethink`** — exposes an unauthenticated management UI on port 44401
-  via `webui` (documented). Reports about that UI being reachable from
-  the network are working-as-intended; reports about it leaking secrets
-  beyond what's already documented are not.
 - **`supertonic`** — Wyoming TTS server on TCP/10209. Minimal surface;
   voice / language inputs are untrusted but mapped through a fixed
   enum.

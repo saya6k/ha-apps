@@ -1,0 +1,41 @@
+version: 0.2.0
+slug: nemotron-asr
+name: Nemotron ASR
+description: >-
+  Speech-to-text over Wyoming, powered by NVIDIA Nemotron streaming ASR (ONNX,
+  CPU)
+url: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b
+arch:
+  - amd64
+  - aarch64
+init: false
+discovery:
+  - wyoming
+backup_exclude:
+  - models/**
+options:
+  language: Auto
+  num_threads: 0
+  model_repo: nub235/nemotron-3.5-asr-streaming-onnx
+  transcript_streaming: true
+  hotwords: []
+  hf_token: ''
+  debug_logging: false
+schema:
+  language: >-
+    list(Auto|English|Español|中文|हिन्दी|العربية|Français|Deutsch|日本語|Русский|Português|한국어|Italiano|Nederlands|Polski|Türkçe|Українська|Română|Čeština|Magyar|Ελληνικά|Svenska|Dansk|Suomi|Norsk|Slovenčina|Hrvatski|Български|Lietuvių|Latviešu|Eesti|Slovenščina|ไทย|Tiếng
+    Việt|Bahasa Indonesia|Bahasa Melayu|עברית)
+  num_threads: int(0,16)
+  model_repo: str
+  transcript_streaming: bool
+  hotwords:
+    - str?
+  hotword_boost: float(0,10)?
+  hf_token: password?
+  debug_logging: bool?
+ports:
+  10350/tcp: null
+ports_description:
+  10350/tcp: Nemotron ASR Wyoming Protocol
+image: ghcr.io/saya6k/{arch}-addon-nemotron-asr
+homeassistant: 2023.8.0.dev20230718

@@ -1,0 +1,74 @@
+# Production config for the 빅스비 wake word (conv_attention head — ONNX-only,
+# served by the livekit-wakeword add-on via /share/livekit-wakeword).
+#
+# Prereqs beyond the smoke run:
+#   livekit-wakeword setup --config bixby_prod.yaml   # NO --skip-acav: pulls
+#   ~16 GB ACAV100M negative features (check disk first)
+# Run:  livekit-wakeword run bixby_prod.yaml
+# (stages individually: generate / augment / train / export / eval)
+
+model_name: bixby
+
+target_phrases:
+  - "빅스비"
+
+tts_backend: voxcpm
+
+# Diversification defaults (persona x cfg x timesteps grid) are intentionally
+# large — leave voxcpm_tts unset for production except Korean personas.
+voxcpm_tts:
+  voice_design_prompts:
+    - "A young adult Korean woman, clear mid-pitch voice, moderate pace, calm tone"
+    - "A young adult Korean woman, bright higher-pitch voice, quick pace, energetic tone"
+    - "A middle-aged Korean man, warm baritone, steady pace, friendly tone"
+    - "A middle-aged Korean woman, soft low voice, slow pace, gentle tone"
+    - "An older Korean man, slightly raspy voice, deliberate pace, calm tone"
+    - "A Korean teenager, light voice, fast casual pace, playful tone"
+
+n_samples: 25000
+n_samples_val: 5000
+n_background_samples: 5000
+n_background_samples_val: 1000
+tts_batch_size: 4
+
+# Auto adversarial negatives are English/CMUdict-biased; Korean phonetic
+# neighbours of 빅스비 must be manual. Extend this list with anything the
+# deployed model false-fires on.
+custom_negative_phrases:
+  - "빅스"
+  - "비스비"
+  - "믹스비"
+  - "픽스"
+  - "빅수"
+  - "이 수비"
+  - "빅스비스킷"
+  - "비수기"
+  - "복습이"
+  - "박수비"
+  - "비속비"
+  - "빅 스카이"
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 64
+  rounds: 2
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: small
+
+steps: 50000
+learning_rate: 0.001
+max_negative_weight: 1000
+target_fp_per_hour: 0.2
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50
