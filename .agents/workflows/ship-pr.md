@@ -26,8 +26,8 @@ per-app sanity checks.
 ## 3. Commit
 - Use [[conventional-commit]]: `<type>(<scope>): <subject>`, exactly one
   allowed scope per commit, split commits that span multiple apps.
-- Allowed scopes: `llm-conversation-agent`, `nemo-asr-cpp`, `nemotron-asr`,
-  `rethink`, `supertonic`, `voiceprint`, `wardrowbe`, `zensical`, `repo`.
+- Allowed scopes: `livekit-wakeword`, `nemo-asr-cpp`, `nemotron-asr`,
+  `supertonic`, `voiceprint`, `wardrowbe`, `zensical`, `repo`.
 - **Never `--no-verify` / `--no-gpg-sign`.** If a hook fails, fix the cause.
 - End the message with the `Co-Authored-By:` trailer your harness specifies.
 
