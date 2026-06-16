@@ -81,6 +81,6 @@ Never squash-merge a multi-scope PR — squash collapses all scopes to the title
 - **`config.yaml` at subproject root only.** Supervisor scans every `config.*` it finds.
 - **Never `--no-verify` / `--no-gpg-sign`.** Fix hook failures at the root cause.
 - **Lint config is at the root** (`.hadolint.yaml`, `.markdownlint.yaml`, `.shellcheckrc`). Don't duplicate in subprojects.
-- **Stage gating:** stable = no `stage:` key, committed. Experimental = `stage: experimental`, gitignored. To promote: remove key + gitignore line, register slug in release-please config / labels / labeler / issue templates.
+- **Stage gating:** stable = no `stage:` key, committed. Experimental = `stage: experimental`, gitignored. **Never commit an app that still has `stage: experimental` in `config.yaml`.** To promote: remove key + gitignore line, register slug in release-please config / labels / labeler / issue templates.
 - **`.github/labels.yml` is SoT for labels.** Hand edits on GitHub are wiped on the next sync.
 - **Doc taxonomy:** `CHANGELOG.md` = what changed · `AGENTS.md` = current shape · `DOCS.md` = user knobs · `README.md` = one-paragraph blurb. Never link to `.agents/` from shipped docs.
