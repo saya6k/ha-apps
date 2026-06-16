@@ -25,6 +25,7 @@ on:
         options:
           - livekit-wakeword
           - nemo-asr-cpp
+          - nemotron-asr
           - supertonic
           - voiceprint
           - wardrowbe
@@ -77,7 +78,7 @@ jobs:
 
           # Only the published add-ons get an image; ignore any stray tag.
           case "$slug" in
-            livekit-wakeword|nemo-asr-cpp|supertonic|voiceprint|wardrowbe|zensical) ;;
+            livekit-wakeword|nemo-asr-cpp|nemotron-asr|supertonic|voiceprint|wardrowbe|zensical) ;;
             *)
               echo "skip=true" >> "$GITHUB_OUTPUT"
               echo "::notice::'$slug' is not a published add-on — skipping image build."
