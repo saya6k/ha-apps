@@ -21,12 +21,17 @@ from unicode_rbnf import FormatPurpose, RbnfEngine
 _LOGGER = logging.getLogger(__name__)
 
 # A signed integer or simple decimal. Bounded by ASCII alphanumerics + dot
-# (not `\w`) on both sides: this protects Latin identifiers ("v3", voice "M1")
-# and version strings ("3.5.2"), while still normalizing numbers glued to a
-# non-Latin word — e.g. a CJK counter like Korean "23개" (`\w` would match the
-# Hangul and block it). Locale thousands grouping ("1,234") is intentionally
-# not handled — see the module docstring / decision log; such numbers are
-# spelled out group-by-group.
+# (not `\w`) on both sides. This approximates how Piper 2 spells out numbers:
+# it tokenizes with ICU (UAX#29) and only spells out pure-number tokens, and
+# UAX#29 rules WB9/WB10 (Numeric x ALetter / ALetter x Numeric have no break)
+# keep a Latin-letter-glued number as one alphanumeric token — so "350m", "v3",
+# voice "M1", and "3.5.2" are left for the model to read, exactly as in Piper 2.
+# A CJK-glued number ("23개") still normalizes because CJK breaks per character
+# (and `\w` would wrongly match the Hangul). Latin units like "350m" are *not*
+# expanded ("...meters") — Piper 2 doesn't either; that needs a unit dictionary
+# (out of scope). Locale thousands grouping ("1,234") is intentionally not
+# handled — see the module docstring / decision log; such numbers are spelled
+# out group-by-group.
 _NUMBER_RE = re.compile(r"(?<![A-Za-z0-9.])(-?\d+(?:\.\d+)?)(?![A-Za-z0-9.])")
 
 
