@@ -1,1 +1,16 @@
-../.agents/settings.json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git pull --ff-only 2>&1 || true",
+            "statusMessage": "Pulling latest ha-apps…",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
