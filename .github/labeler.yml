@@ -1,5 +1,5 @@
 # Auto-applied PR labels based on changed paths.
-# Consumed by actions/labeler@v5 — schema requires every rule under
+# Consumed by actions/labeler@v6 — schema requires every rule under
 # changed-files, never a bare glob list.
 
 "addon:nemo-asr-cpp":
