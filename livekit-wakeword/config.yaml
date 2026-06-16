@@ -1,9 +1,10 @@
----
-version: 0.1.0
+version: 0.2.0
 slug: livekit-wakeword
 name: LiveKit WakeWord
 stage: experimental
-description: On-device wake word detection over Wyoming — livekit-wakeword runtime (also runs openWakeWord models)
+description: >-
+  On-device wake word detection over Wyoming — livekit-wakeword runtime (also
+  runs openWakeWord models)
 url: https://github.com/livekit/livekit-wakeword
 arch:
   - amd64
@@ -14,7 +15,7 @@ discovery:
 map:
   - share:ro
 backup_exclude:
-  - "models/**"
+  - models/**
 options:
   models:
     - hey_jarvis
@@ -22,20 +23,13 @@ options:
   trigger_level: 1
   debug_logging: false
 schema:
-  # Built-ins: hey_livekit (livekit-wakeword) + the openWakeWord zoo (the two
-  # runtimes share a byte-identical frontend). Custom .onnx models dropped in
-  # /share/livekit-wakeword are loaded automatically in addition.
   models:
     - list(hey_livekit|alexa|hey_jarvis|hey_mycroft|hey_rhasspy)
   threshold: float(0,1)
-  # Consecutive 80 ms frames at/above threshold required to fire. Raise to
-  # suppress one-frame false positives at the cost of slight latency.
   trigger_level: int(1,10)
   debug_logging: bool?
 ports:
-  "10400/tcp": null
+  10400/tcp: null
 ports_description:
-  "10400/tcp": LiveKit WakeWord Wyoming Protocol
+  10400/tcp: LiveKit WakeWord Wyoming Protocol
 homeassistant: 2023.9.0.dev20230809
-# Uncomment once a prebuilt image is published to GHCR.
-# image: ghcr.io/saya6k/{arch}-addon-livekit-wakeword
