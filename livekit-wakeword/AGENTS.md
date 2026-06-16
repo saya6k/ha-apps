@@ -20,10 +20,7 @@ bundles the **byte-identical frozen frontend** as openWakeWord
 
 ## Git / repo tracking
 
-Stage-gated by the root `.gitignore`. **This add-on:** `stage: experimental`
-→ gitignored, local-only. Promote by setting `stage: stable`, deleting the
-`/livekit-wakeword/` line from the root `.gitignore`, and registering the
-slug in release-please / labels / issue templates at the repo root.
+Tracked in git (`stage: experimental` in `config.yaml` controls HA store display only — it does not affect git tracking). Release-please is configured for this slug; commits on `main` scoped `livekit-wakeword` will generate CHANGELOG entries and version bumps.
 
 ## Layout
 
