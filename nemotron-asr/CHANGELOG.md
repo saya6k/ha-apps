@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.1.0...nemotron-asr-v0.2.0) (2026-06-16)
+
+
+### Features
+
+* **nemotron-asr:** add Wyoming STT add-on (Nemotron 0.6B ONNX/CPU) ([#53](https://github.com/saya6k/ha-apps/issues/53)) ([00c6c0b](https://github.com/saya6k/ha-apps/commit/00c6c0bce83296cb7fbb6cdc02fc8b560148db62))
+
 ## 0.1.0
 
 - Initial scaffold. Wyoming **speech-to-text** add-on running
