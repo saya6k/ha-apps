@@ -1,0 +1,51 @@
+---
+version: 0.1.0
+slug: nemotron-asr
+name: Nemotron ASR
+description: Speech-to-text over Wyoming, powered by NVIDIA Nemotron streaming ASR (ONNX, CPU)
+url: https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b
+arch:
+  - amd64
+  - aarch64
+init: false
+discovery:
+  - wyoming
+backup_exclude:
+  - "models/**"
+options:
+  language: Auto
+  num_threads: 0
+  model_repo: nub235/nemotron-3.5-asr-streaming-onnx
+  transcript_streaming: true
+  hotwords: []
+  hf_token: ""
+  debug_logging: false
+schema:
+  # Fallback language when the HA voice pipeline doesn't send one. Auto =
+  # let the model detect. Native-name dropdown; keep in lockstep with
+  # const.LANGUAGE_CHOICES. HA does not translate list() values.
+  language: list(Auto|English|Español|中文|हिन्दी|العربية|Français|Deutsch|日本語|Русский|Português|한국어|Italiano|Nederlands|Polski|Türkçe|Українська|Română|Čeština|Magyar|Ελληνικά|Svenska|Dansk|Suomi|Norsk|Slovenčina|Hrvatski|Български|Lietuvių|Latviešu|Eesti|Slovenščina|ไทย|Tiếng Việt|Bahasa Indonesia|Bahasa Melayu|עברית)
+  # 0 = use all CPU cores. ONNX Runtime intra-op thread count.
+  num_threads: int(0,16)
+  # HuggingFace repo id of the ONNX export (encoder.onnx + .data,
+  # decoder_joint.onnx, tokenizer.model, config.json). Downloaded to
+  # /data/models/<name> on first start.
+  model_repo: str
+  # Emit live partial text (TranscriptChunk). Turn OFF if your HA voice
+  # pipeline errors mid-utterance (e.g. shows "[object Object]").
+  transcript_streaming: bool
+  # Phrases to bias recognition toward (room/entity/person names). One per
+  # list item. Helps the recognizer pick the right word for known vocabulary.
+  hotwords:
+    - str?
+  # Logit bonus per hotword token (advanced). Higher = stronger bias.
+  hotword_boost: float(0,10)?
+  hf_token: password?
+  debug_logging: bool?
+ports:
+  "10350/tcp": null
+ports_description:
+  "10350/tcp": Nemotron ASR Wyoming Protocol
+homeassistant: 2023.8.0.dev20230718
+# Uncomment once a prebuilt image is published to GHCR.
+# image: ghcr.io/saya6k/{arch}-addon-nemotron-asr

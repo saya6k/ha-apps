@@ -1,0 +1,44 @@
+---
+configuration:
+  language:
+    name: 기본 언어
+    description: >-
+      Home Assistant 음성 파이프라인이 언어를 보내지 않을 때 사용할 언어입니다.
+      "Auto"는 모델이 언어를 자동 감지합니다. 파이프라인이 보낸 요청별 언어가
+      이 기본값보다 항상 우선합니다.
+  num_threads:
+    name: CPU 스레드
+    description: >-
+      ONNX Runtime intra-op 스레드 수. OpenMP/OpenBLAS에도 적용됩니다.
+      0이면 모든 코어를 사용합니다.
+  model_repo:
+    name: 모델 저장소 (HuggingFace)
+    description: >-
+      ONNX 익스포트의 HuggingFace repo id. encoder.onnx (+ encoder.onnx.data),
+      decoder_joint.onnx, tokenizer.model, config.json을 포함해야 합니다. 첫
+      시작 시 /data/models/<name>에 다운로드됩니다 (약 1.4 GB).
+  transcript_streaming:
+    name: 실시간 부분 인식
+    description: >-
+      말하는 동안 부분 텍스트(Wyoming TranscriptChunk)를 실시간으로 보냅니다.
+      HA 음성 파이프라인이 발화 도중 오류(예: "[object Object]")를 내면 이 옵션을
+      끄세요. 최종 인식 결과는 그대로 동작합니다.
+  hotwords:
+    name: 핫워드 (어휘 바이어싱)
+    description: >-
+      인식을 유도할 구를 항목당 하나씩 입력합니다 (방 이름, 엔티티 이름, 사람
+      이름 등). 모델이 자주 틀리는 고유 어휘에 유용합니다. greedy 디코딩 특성상
+      최선의 노력 수준입니다.
+  hotword_boost:
+    name: 핫워드 가중치
+    description: >-
+      고급. 핫워드 바이어스 강도(토큰당 로짓 가산점). 기본값 2. 높일수록 핫워드를
+      더 강하게 유도하지만, 너무 높으면 오인식이 생길 수 있습니다.
+  hf_token:
+    name: HuggingFace 토큰
+    description: >-
+      게이트/비공개 모델 저장소 접근 및 익명 다운로드 속도 제한 해제를 위한
+      선택적 토큰. 공개 모델이면 비워 두세요.
+  debug_logging:
+    name: 디버그 로깅
+    description: 문제 해결을 위한 상세 로깅을 활성화합니다.
