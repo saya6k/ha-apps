@@ -5,9 +5,15 @@
 # Anything not in this file gets deleted on sync.
 
 # --- Add-on scope ---
+- name: "addon:livekit-wakeword"
+  color: "0E8A16"
+  description: "Affects livekit-wakeword"
 - name: "addon:nemo-asr-cpp"
   color: "0E8A16"
   description: "Affects nemo-asr-cpp"
+- name: "addon:nemotron-asr"
+  color: "0E8A16"
+  description: "Affects nemotron-asr"
 - name: "addon:supertonic"
   color: "0E8A16"
   description: "Affects supertonic"

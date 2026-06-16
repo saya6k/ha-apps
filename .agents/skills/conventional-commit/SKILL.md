@@ -13,8 +13,8 @@ change never reaches a CHANGELOG. The authoritative tables live in
 1. Inspect what changed: `git status --porcelain` / `git diff --cached --stat`.
 2. **Map paths → scope** (exactly one per commit):
    - a single app dir → that app's slug
-     (`llm-conversation-agent`, `nemo-asr-cpp`, `nemotron-asr`, `rethink`,
-     `supertonic`, `wardrowbe`, `zensical`)
+     (`livekit-wakeword`, `nemo-asr-cpp`, `nemotron-asr`,
+     `supertonic`, `voiceprint`, `wardrowbe`, `zensical`)
    - `.github/`, root docs, `repository.yaml`, `.gitignore` → `repo`
 3. **If the change spans multiple apps, split it** into one commit per scope
    (use `git commit --only <paths> -m ...` to stage-split without disturbing
