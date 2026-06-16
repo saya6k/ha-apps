@@ -55,3 +55,38 @@ def test_engine_cached_across_calls():
     n.normalize("6", "en")
     assert set(n._engines) == {"en"}
     assert n._engines["en"] is not None
+
+
+def _run_stream(chunks, lang="en"):
+    """Mimic the handler's streaming path: chunks -> SBD -> per-sentence
+    normalize. Numbers must survive being split across chunks, and a decimal
+    point must not be mistaken for a sentence boundary."""
+    from sentence_stream import SentenceBoundaryDetector
+
+    n = TextNormalizer()
+    sbd = SentenceBoundaryDetector()
+    out = []
+    for c in chunks:
+        for sentence in sbd.add_chunk(c):
+            out.append(n.normalize(sentence, lang))
+    tail = sbd.finish()
+    if tail:
+        out.append(n.normalize(tail, lang))
+    return out
+
+
+def test_streaming_decimal_not_split_at_period():
+    # The SBD must keep "3.5" intact (not split on the dot) before we normalize.
+    assert _run_stream(["I have 3.5 apples. Done."]) == [
+        "I have three point five apples.",
+        "Done.",
+    ]
+
+
+def test_streaming_number_split_across_chunks():
+    # "12" + "34" arrive in separate chunks; the SBD buffers, so the
+    # normalizer sees the reassembled "1234".
+    assert _run_stream(["I have 12", "34 apples. ", "Cost 5", "6.7 now."]) == [
+        "I have one thousand two hundred thirty-four apples.",
+        "Cost fifty-six point seven now.",
+    ]

@@ -95,6 +95,11 @@ def _parse_args() -> argparse.Namespace:
         help="Auto-append a punctuation character when missing",
     )
     parser.add_argument(
+        "--no-text-normalization",
+        action="store_true",
+        help="Disable number-to-words normalization before synthesis",
+    )
+    parser.add_argument(
         "--no-streaming",
         action="store_true",
         help="Disable Wyoming streaming protocol input events",
@@ -168,6 +173,7 @@ async def main() -> None:
 
     from .engine import SupertonicEngine
     from .handler import SupertonicEventHandler
+    from .normalize import TextNormalizer
 
     resolved_threads = args.threads if args.threads > 0 else (os.cpu_count() or 4)
     _LOGGER.info(
@@ -198,6 +204,12 @@ async def main() -> None:
         else:
             _LOGGER.info("Warm-up disabled by empty --warmup-voices")
 
+    # One shared normalizer so its per-language RBNF engine cache survives
+    # across client connections.
+    normalizer = TextNormalizer()
+    if args.no_text_normalization:
+        _LOGGER.info("Number normalization disabled")
+
     wyoming_info = _build_info(__version__)
 
     from wyoming.server import AsyncServer, AsyncTcpServer
@@ -222,7 +234,9 @@ async def main() -> None:
     _LOGGER.info("Ready (uri=%s)", args.uri)
 
     server_task = asyncio.create_task(
-        server.run(partial(SupertonicEventHandler, wyoming_info, args, engine))
+        server.run(
+            partial(SupertonicEventHandler, wyoming_info, args, engine, normalizer)
+        )
     )
 
     loop = asyncio.get_running_loop()

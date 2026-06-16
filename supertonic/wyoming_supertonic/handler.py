@@ -42,6 +42,7 @@ from wyoming.tts import (
 
 from .const import DEFAULT_LANGUAGE, DEFAULT_VOICE, resolve_language
 from .engine import SupertonicEngine, float_to_pcm16
+from .normalize import TextNormalizer
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,6 +57,7 @@ class SupertonicEventHandler(AsyncEventHandler):
         wyoming_info: Info,
         cli_args: argparse.Namespace,
         engine: SupertonicEngine,
+        normalizer: TextNormalizer,
         *args,
         **kwargs,
     ) -> None:
@@ -63,6 +65,7 @@ class SupertonicEventHandler(AsyncEventHandler):
         self.cli_args = cli_args
         self.wyoming_info_event = wyoming_info.event()
         self.engine = engine
+        self.normalizer = normalizer
         self.is_streaming: Optional[bool] = None
         self.sbd = SentenceBoundaryDetector()
         self._synthesize: Optional[Synthesize] = None
@@ -175,10 +178,6 @@ class SupertonicEventHandler(AsyncEventHandler):
                 await self.write_event(AudioStop().event())
             return True
 
-        if self.cli_args.auto_punctuation:
-            if text[-1] not in self.cli_args.auto_punctuation:
-                text = text + self.cli_args.auto_punctuation[0]
-
         # Voice + language come from the request: the HA pipeline's TTS
         # language rides in Synthesize.voice.language. DEFAULT_LANGUAGE is only
         # a fallback for clients that send none. (No `language` add-on option —
@@ -200,6 +199,16 @@ class SupertonicEventHandler(AsyncEventHandler):
                 self.engine.available_voices[0],
             )
             voice_name = self.engine.available_voices[0]
+
+        # Number-to-words normalization runs on the full (post-sentence-split)
+        # text, with the resolved language, *before* auto-punctuation — a
+        # trailing "." appended next to a number would otherwise mask it.
+        if not self.cli_args.no_text_normalization:
+            text = self.normalizer.normalize(text, language)
+
+        if self.cli_args.auto_punctuation:
+            if text[-1] not in self.cli_args.auto_punctuation:
+                text = text + self.cli_args.auto_punctuation[0]
 
         _LOGGER.info(
             "Synthesizing: %r [voice=%s lang=%s len=%d]",
