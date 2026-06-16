@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Features
+
+* Number-to-words normalization before synthesis — integers and decimals are
+  expanded to spoken words using CLDR RBNF spellout (e.g. `23` → `twenty-three`,
+  `3.5` → `three point five`, `이십삼개` in Korean). Covers all 31 supported
+  languages. On by default; disable via `text_normalization: false` in the
+  advanced options if a specific language produces unexpected output.
+
 ## [2.1.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.1.0...supertonic-v2.1.1) (2026-06-15)
 
 
