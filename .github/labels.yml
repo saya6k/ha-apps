@@ -26,7 +26,8 @@
 - name: "addon:zensical"
   color: "0E8A16"
   description: "Affects zensical"
-- name: "addon:repo"
+# --- Repo scope ---
+- name: "scope:repo"
   color: "0E8A16"
   description: "Affects repository-wide tooling (.github, root docs)"
 
