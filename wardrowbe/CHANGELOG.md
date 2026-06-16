@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [2.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.0...wardrowbe-v2.0.1) (2026-06-16)
+
+
+### CI
+
+* **repo:** restructure AI harness under .agents/ and track in git ([#38](https://github.com/saya6k/ha-apps/issues/38)) ([b4c56a4](https://github.com/saya6k/ha-apps/commit/b4c56a405c3b3e98da37b07e5712698352c8b13a))
+
 ## [2.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.2...wardrowbe-v2.0.0) (2026-06-15)
 
 
