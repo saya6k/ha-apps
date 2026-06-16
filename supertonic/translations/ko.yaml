@@ -40,6 +40,13 @@ configuration:
     description: >-
       MNN이 중간 텐서를 얼마나 적극적으로 캐싱할지 설정. 비워두면 "normal" (균형 잡힌 기본값).
       "low"는 RAM을 절약하지만 재계산이 많고, "high"는 RAM을 더 쓰는 대신 속도가 빠릅니다.
+  text_normalization:
+    name: 텍스트 정규화
+    description: >-
+      합성 전 숫자를 발음 단어로 변환합니다 (예: "23" → "이십삼").
+      CLDR RBNF 발음 규칙을 사용하며 지원하는 31개 언어 전체에 적용됩니다.
+      비워두면 정규화가 켜진 상태로 유지됩니다. 특정 언어에서 예상치 못한
+      출력이 발생할 때만 false로 설정하세요.
   no_streaming:
     name: 스트리밍 비활성화
     description: >-
