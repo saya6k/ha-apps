@@ -1,6 +1,6 @@
 # Repository agent instructions
 
-> `CLAUDE.md` · `GEMINI.md` · `.github/copilot-instructions.md` are symlinks to this file — edit `AGENTS.md`.
+> `CLAUDE.md` and `GEMINI.md` are symlinks to this file — edit `AGENTS.md`.
 > Per-app guidance lives in each subproject's own `AGENTS.md`. **Read it first when working in a subproject.**
 
 HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Each add-on has its own version, Dockerfile, and CHANGELOG. Subproject names use the bare slug (no `ha-` prefix); keep `ha-` in GitHub URLs, package names, Wyoming Info strings, and CHANGELOG cross-references.

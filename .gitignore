@@ -39,20 +39,8 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# Agent dirs (.agents/): the canonical SoT for all AI tooling. Subdirs:
-#   skills/    — per-app Copilot instruction pointers (also .github/instructions symlink)
-#   workflows/ — Claude Code slash commands (.claude/commands symlink)
-#   agents/    — Claude Code agent definitions (.claude/agents symlink)
-#   manifests/ — repo-level instruction source of truth (AGENTS.md/CLAUDE.md/GEMINI.md symlink)
-#   memory/    — project context notes (local-only, not tracked)
-#   settings.local.json + decision logs — local-only, not tracked
-# Subprojects carry no per-tool symlinks. Never link to .agents/ from any shipped doc.
-**/.agents/*
-!**/.agents/skills
-!**/.agents/workflows
-!**/.agents/agents
-!**/.agents/manifests
-!/.agents/settings.json
+# AI tooling dirs — tracked in full; only local-override files are excluded.
+**/.agents/settings.local.json
 # .claude is a real dir (not a symlink) with individual symlinks inside.
 # settings.local.json inside is gitignored (local overrides only).
 .claude
