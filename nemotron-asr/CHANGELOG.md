@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.2.1...nemotron-asr-v0.2.2) (2026-06-16)
+
+
+### CI
+
+* **repo:** consolidate AI harness under .agents/ as canonical SoT ([#57](https://github.com/saya6k/ha-apps/issues/57)) ([d339325](https://github.com/saya6k/ha-apps/commit/d33932542b92887f10b4f18536227c8396aa5c4d))
+
 ## [0.2.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.2.0...nemotron-asr-v0.2.1) (2026-06-16)
 
 
