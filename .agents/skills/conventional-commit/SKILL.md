@@ -7,7 +7,7 @@ description: "Writes and validates Conventional Commit messages for this monorep
 
 release-please parses every commit on `main`; a wrong type/scope means the
 change never reaches a CHANGELOG. The authoritative tables live in
-`.github/copilot-instructions.md` → **"Commit and release rules"**. Follow them.
+`AGENTS.md` → **"Commits"**. Follow them.
 
 ## Steps
 1. Inspect what changed: `git status --porcelain` / `git diff --cached --stat`.
