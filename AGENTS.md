@@ -53,7 +53,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 - New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `ship-pr`
 - Existing change: implement → `app-preflight` → `conventional-commit` → `ship-pr`
 
-**`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Check it before reading READMEs (e.g. `devcontainer-ha-boot.md` over `.devcontainer/README.md`). Memory can go stale; always verify against current files.
+**`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Memory can go stale; always verify against current files.
 
 ## Commits (enforced — release-please depends on this)
 
