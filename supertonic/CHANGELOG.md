@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.1.1...supertonic-v2.2.0) (2026-06-16)
+
+
+### Features
+
+* **supertonic:** add language-aware number normalizer ([3bb7f5b](https://github.com/saya6k/ha-apps/commit/3bb7f5b11bfae8209fbd014200e1e8682bf6ebfc))
+* **supertonic:** add text_normalization app option (hidden, default on) ([9a5e153](https://github.com/saya6k/ha-apps/commit/9a5e1530ac0c3369ebcb0ad41c9a5ee4233af4d9))
+* **supertonic:** wire number normalization into the synth path ([4b8da88](https://github.com/saya6k/ha-apps/commit/4b8da886c885d0af2e3a5f12cfc0ba987fd518ac))
+
+
+### Documentation
+
+* **supertonic:** clarify number-normalization boundary matches Piper 2 ([d8c70b8](https://github.com/saya6k/ha-apps/commit/d8c70b875a5e9e41a5b1cfacf215bd0f4bef303a))
+* **supertonic:** document text_normalization option ([8e7b130](https://github.com/saya6k/ha-apps/commit/8e7b13011bc67064c4d50eaacb0c91a894f6beb0))
+
+
+### Build System
+
+* **supertonic:** swap orphan num2words for unicode-rbnf ([3686f09](https://github.com/saya6k/ha-apps/commit/3686f0983c0e61cbef2a18b4b34bd834c5d8fdcf))
+
 ## [Unreleased]
 
 ### Features
