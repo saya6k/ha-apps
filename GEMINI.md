@@ -1,1 +1,1 @@
-.github/copilot-instructions.md
+.agents/manifests/repo.md
