@@ -27,6 +27,7 @@ schema:
   threads: int(0,16)?
   precision: list(auto|fp16|fp32|int8)?
   mnn_memory: list(low|normal|high)?
+  text_normalization: bool?
   no_streaming: bool?
   debug_logging: bool?
 ports:

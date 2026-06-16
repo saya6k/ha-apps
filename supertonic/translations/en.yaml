@@ -46,6 +46,13 @@ configuration:
       How aggressively MNN caches intermediate tensors. Leave unset for
       "normal" (balanced default). "low" minimises RAM at the cost of more
       recomputation; "high" trades extra RAM for speed.
+  text_normalization:
+    name: Text normalization
+    description: >-
+      Expand numbers into spoken words before synthesis (e.g. "23" → "twenty-three").
+      Uses CLDR RBNF spellout rules; covers all 31 supported languages. Unset
+      keeps normalization on. Set to false only if a language produces
+      unexpected output — the engine handles raw digits too.
   no_streaming:
     name: Disable streaming
     description: >-

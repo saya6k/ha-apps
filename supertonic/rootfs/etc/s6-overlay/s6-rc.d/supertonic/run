@@ -22,8 +22,9 @@ flags=()
 bashio::config.has_value 'threads'    && flags+=('--threads'     "$(bashio::config 'threads')")
 bashio::config.has_value 'precision'  && flags+=('--precision'   "$(bashio::config 'precision')")
 bashio::config.has_value 'mnn_memory' && flags+=('--mnn-memory'  "$(bashio::config 'mnn_memory')")
-bashio::config.true 'no_streaming'    && flags+=('--no-streaming')
-bashio::config.true 'debug_logging'   && flags+=('--debug')
+bashio::config.false 'text_normalization' && flags+=('--no-text-normalization')
+bashio::config.true 'no_streaming'        && flags+=('--no-streaming')
+bashio::config.true 'debug_logging'       && flags+=('--debug')
 
 # shellcheck disable=SC2068
 exec python3 -m wyoming_supertonic \
