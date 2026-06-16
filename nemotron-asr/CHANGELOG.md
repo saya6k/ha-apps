@@ -7,6 +7,7 @@
 
 * **nemotron-asr:** add GHCR image reference to config.yaml ([#55](https://github.com/saya6k/ha-apps/issues/55)) ([1525e86](https://github.com/saya6k/ha-apps/commit/1525e86c8bf26e6ff64537005ad41159a27feaf8))
 
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.1.0...nemotron-asr-v0.2.0) (2026-06-16)
 
 
