@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wyoming-nemotron-asr"
+version = "0.1.0"
+description = "Wyoming STT bridge for NVIDIA Nemotron streaming ASR (ONNX, CPU)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "ha-nemotron-asr contributors" }]
+keywords = ["home-assistant", "wyoming", "stt", "asr", "nemotron", "onnx"]
+
+dependencies = [
+    "wyoming>=1.9,<2",
+    "huggingface_hub",
+    "sentencepiece",
+    "onnxruntime",
+    "numpy",
+]
+
+[project.scripts]
+wyoming-nemotron-asr = "wyoming_nemotron_asr.__main__:run"
+
+[tool.setuptools]
+packages = ["wyoming_nemotron_asr"]
