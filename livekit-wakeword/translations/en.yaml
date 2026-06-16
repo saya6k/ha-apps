@@ -1,0 +1,23 @@
+---
+configuration:
+  models:
+    name: Wake word models
+    description: >-
+      Built-in models to load (downloaded on first start, ~300 KB each).
+      hey_livekit comes from livekit-wakeword; the rest are openWakeWord's
+      pretrained models, which run natively on the shared frontend. Custom
+      .onnx models placed in /share/livekit-wakeword are loaded in addition.
+  threshold:
+    name: Detection threshold
+    description: >-
+      Activation probability required to trigger (0–1). Default 0.5. Lower it
+      if your wake word is missed; raise it if you get false activations.
+  trigger_level:
+    name: Trigger level
+    description: >-
+      Consecutive 80 ms frames at/above the threshold required to fire.
+      Default 1. Raise to 2–3 to suppress brief false positives at the cost
+      of a little latency.
+  debug_logging:
+    name: Debug logging
+    description: Enable verbose logging, including per-frame detection scores.

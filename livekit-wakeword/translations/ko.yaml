@@ -1,0 +1,22 @@
+---
+configuration:
+  models:
+    name: 웨이크 워드 모델
+    description: >-
+      로드할 내장 모델(첫 시작 시 각 ~300 KB 다운로드). hey_livekit은
+      livekit-wakeword 모델이고 나머지는 openWakeWord 사전학습 모델로, 공유
+      프런트엔드 위에서 그대로 동작합니다. /share/livekit-wakeword에 넣은
+      커스텀 .onnx 모델은 추가로 자동 로드됩니다.
+  threshold:
+    name: 감지 임계값
+    description: >-
+      트리거에 필요한 활성화 확률(0–1). 기본값 0.5. 웨이크 워드를 자주 놓치면
+      낮추고, 오작동이 잦으면 높이세요.
+  trigger_level:
+    name: 트리거 레벨
+    description: >-
+      발화에 필요한 임계값 이상 연속 80ms 프레임 수. 기본값 1. 순간적인 오탐이
+      있으면 2–3으로 올리세요(지연이 약간 늘어남).
+  debug_logging:
+    name: 디버그 로깅
+    description: 프레임별 감지 점수를 포함한 상세 로깅을 활성화합니다.
