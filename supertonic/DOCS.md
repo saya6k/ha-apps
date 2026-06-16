@@ -40,7 +40,7 @@ a specific reason to override.
 | `threads`       | auto (`os.cpu_count()`) | Positive integer to pin MNN thread pool size. |
 | `precision`     | `auto`            | `fp16` / `fp32` / `int8` to force a precision (default `auto` picks from `/proc/cpuinfo`). |
 | `mnn_memory`    | `normal`          | `low` (RAM-tight) / `high` (RAM-for-speed). |
-| `text_normalization` | `true`       | `false` to disable number-to-words expansion (e.g. "23" → "twenty-three"). Uses CLDR RBNF spellout; covers all 31 languages. Disable only if a specific language produces unexpected output. |
+| `text_normalization` | `true`       | `false` to disable number-to-words expansion (e.g. "23" → "twenty-three", "11번" → "십일번"). Uses CLDR RBNF spellout; covers all 31 languages. Numbers glued to a Latin unit/identifier ("350m", "v3") are left for the model to read — same as Piper. Disable only if a specific language produces unexpected output. |
 | `no_streaming`  | `false`           | `true` to disable sentence-by-sentence streaming. |
 | `debug_logging` | `false`           | `true` to enable DEBUG logs. |
 
