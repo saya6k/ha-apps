@@ -82,6 +82,7 @@ need it). `handler.py` logs `TTFT` once per client request (first chunk only).
 | `model_version` | `--version`        | `v2`\|`v3` (overrides argparse default `--version` behaviour) |
 | `mnn_memory`    | `--mnn-memory`     | `low`\|`normal`\|`high` |
 | `warmup_voices` | `--warmup-voices`  | comma-joined from YAML array by `run` script |
+| `text_normalization`           | `--no-text-normalization`  | absent/true → on; false → flag passed |
 | `no_streaming`/`debug_logging` | `--no-streaming`/`--debug` | flags |
 
 Voice (`M1`–`F5`) **and language** are **not** app options — both come
