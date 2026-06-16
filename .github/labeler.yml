@@ -2,9 +2,17 @@
 # Consumed by actions/labeler@v6 — schema requires every rule under
 # changed-files, never a bare glob list.
 
+"addon:livekit-wakeword":
+  - changed-files:
+      - any-glob-to-any-file: "livekit-wakeword/**"
+
 "addon:nemo-asr-cpp":
   - changed-files:
       - any-glob-to-any-file: "nemo-asr-cpp/**"
+
+"addon:nemotron-asr":
+  - changed-files:
+      - any-glob-to-any-file: "nemotron-asr/**"
 
 "addon:supertonic":
   - changed-files:

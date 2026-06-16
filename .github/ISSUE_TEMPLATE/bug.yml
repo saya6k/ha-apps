@@ -17,7 +17,9 @@ body:
       label: Add-on
       description: Which add-on is affected?
       options:
+        - livekit-wakeword
         - nemo-asr-cpp
+        - nemotron-asr
         - supertonic
         - voiceprint
         - wardrowbe

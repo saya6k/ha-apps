@@ -19,9 +19,27 @@
     {"type": "style",    "section": "Style",  "hidden": true}
   ],
   "packages": {
+    "livekit-wakeword": {
+      "component": "livekit-wakeword",
+      "package-name": "livekit-wakeword",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
     "nemo-asr-cpp": {
       "component": "nemo-asr-cpp",
       "package-name": "nemo-asr-cpp",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
+    "nemotron-asr": {
+      "component": "nemotron-asr",
+      "package-name": "nemotron-asr",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},

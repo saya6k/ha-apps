@@ -9,10 +9,9 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 
 | App | What it is |
 |---|---|
-| [`llm-conversation-agent/`](llm-conversation-agent/AGENTS.md) | Wyoming conversation agent backed by any OpenAI-compatible LLM; delegates entity exposure to HA's `mcp_server`. Python + s6. Skill sandbox (bubblewrap + seccomp + rlimits + AppArmor). |
+| [`livekit-wakeword/`](livekit-wakeword/AGENTS.md) | Wyoming wake word — livekit-wakeword runtime + our incremental oWW-compatible bridge. Serves oWW zoo + custom `/share` models. |
 | [`nemo-asr-cpp/`](nemo-asr-cpp/AGENTS.md) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling of `nemotron-asr`; ctypes over a flat C API. |
 | [`nemotron-asr/`](nemotron-asr/AGENTS.md) | Wyoming STT — Nemotron 0.6B from ONNX on CPU. Cache-aware streaming + greedy RNN-T decode, hotword biasing. |
-| [`rethink/`](rethink/AGENTS.md) | LG ThinQ → HA over MQTT instead of LG's cloud. Node upstream, packaged shell. |
 | [`supertonic/`](supertonic/AGENTS.md) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. |
 | [`voiceprint/`](voiceprint/AGENTS.md) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. |
 | [`wardrowbe/`](wardrowbe/AGENTS.md) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. |
@@ -22,7 +21,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 
 ```
 .agents/
-├── skills/     ← reusable abilities (Skill — "어떻게 잘 할까?")
+├── skills/     ← reusable abilities (Skill — "어떻게 잘 할까?") · .claude/skills symlinks here
 ├── workflows/  ← task procedures (Workflow — "무슨 순서로 할까?") · .claude/commands symlinks here
 ├── agents/     ← Claude Code agent definitions · .claude/agents symlinks here
 └── memory/     ← cross-conversation context notes (gitignored)
@@ -61,7 +60,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 <type>(<scope>): <subject>
 ```
 
-**Scopes:** `llm-conversation-agent` · `nemo-asr-cpp` · `nemotron-asr` · `rethink` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
+**Scopes:** `livekit-wakeword` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
 
 **Types:** `feat` (minor) · `fix`/`perf`/`revert` (patch) · `docs`/`refactor`/`build`/`ci` (patch, in CHANGELOG) · `chore`/`test`/`style` (no release) · `type!` / `BREAKING CHANGE:` footer (major)
 

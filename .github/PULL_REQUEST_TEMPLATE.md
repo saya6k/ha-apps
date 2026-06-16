@@ -2,12 +2,12 @@
 PR title must follow Conventional Commits with the add-on slug as the
 scope. Examples:
 
-  feat(supertonic): add Korean voice F5
-  fix(llm-conversation-agent): retry half-closed MCP sockets
+  feat(livekit-wakeword): add Korean custom model support
+  fix(nemotron-asr): handle empty transcript on short audio clips
   docs(repo): expand release process
 
 Scope must be one of:
-  llm-conversation-agent | rethink | supertonic | wardrowbe | zensical | repo
+  livekit-wakeword | nemo-asr-cpp | nemotron-asr | supertonic | voiceprint | wardrowbe | zensical | repo
 
 release-please reads the PR title (and squash-merge commit message) to
 build per-add-on changelogs. A wrong scope = a release queued under the
