@@ -32,6 +32,17 @@
       "component": "nemo-asr-cpp",
       "package-name": "nemo-asr-cpp",
       "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["nemo-asr-cpp/.agents"],
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
+    "nemotron-asr": {
+      "component": "nemotron-asr",
+      "package-name": "nemotron-asr",
+      "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["nemotron-asr/.agents"],
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -50,6 +61,7 @@
       "component": "supertonic",
       "package-name": "supertonic",
       "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["supertonic/.agents"],
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -59,6 +71,7 @@
       "component": "voiceprint",
       "package-name": "voiceprint",
       "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["voiceprint/.agents"],
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -68,6 +81,7 @@
       "component": "wardrowbe",
       "package-name": "wardrowbe",
       "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["wardrowbe/.agents"],
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
       ]
@@ -76,6 +90,7 @@
       "component": "zensical",
       "package-name": "zensical",
       "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["zensical/.agents"],
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
       ]

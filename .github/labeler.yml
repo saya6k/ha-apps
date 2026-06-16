@@ -30,7 +30,7 @@
   - changed-files:
       - any-glob-to-any-file: "zensical/**"
 
-"addon:repo":
+"scope:repo":
   - changed-files:
       - any-glob-to-any-file:
           - ".github/**"

@@ -14,7 +14,7 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - "type:ci"
-      - "addon:repo"
+      - "scope:repo"
     commit-message:
       prefix: "ci"
       include: scope
