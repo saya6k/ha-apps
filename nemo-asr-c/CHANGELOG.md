@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.11](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.10...nemo-asr-c-v0.2.11) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** address code review findings ([ca90cc3](https://github.com/saya6k/ha-apps/commit/ca90cc32ac3d14eda1993fada13bd902756652c1))
+* **nemo-asr-c:** set restype=None for void nemo_set_att_right ([507dffd](https://github.com/saya6k/ha-apps/commit/507dffdd93a39bb27533ac31d38466c8793f7d2c))
+* **nemo-asr-c:** use Attribution object for AsrProgram, not plain string ([ea904bd](https://github.com/saya6k/ha-apps/commit/ea904bdaf52ec3832f62ec1414688c515866bf5b))
+* **nemo-asr-c:** wire up att_right, drop unimplemented hotword options, sync version ([6bc0767](https://github.com/saya6k/ha-apps/commit/6bc0767331a36748b629861d953b9d3c6cc9d037))
+
 ## [0.2.10](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.9...nemo-asr-c-v0.2.10) (2026-06-17)
 
 
