@@ -48,6 +48,7 @@ class NemoCStream:
         self._audio = np.zeros(0, dtype=np.float32)
         self._tokens: list[int] = []
         self._last_emitted = ""
+        self._final_text: str | None = None  # cached after finalize() frees rnnt
 
         # Create the RNN-T stream (decoder side — we feed encoder output to it).
         self._rnnt: c_void_p | None = engine._lib.nemo_rnnt_stream_create(engine._ctx)
@@ -136,24 +137,29 @@ class NemoCStream:
 
     def text(self) -> str:
         """Return the current partial transcript (language tags stripped)."""
-        if not self._rnnt:
-            return ""
-        raw = self._e._lib.nemo_rnnt_stream_text(self._rnnt)
-        if not raw:
-            return ""
-        text = raw.decode("utf-8", "replace")
-        return " ".join(_TAG_RE.sub(" ", text).split())
+        # After finalize() frees the rnnt stream, return the cached final text.
+        if self._rnnt is not None:
+            raw = self._e._lib.nemo_rnnt_stream_text(self._rnnt)
+            if raw:
+                return " ".join(_TAG_RE.sub(" ", raw.decode("utf-8", "replace")).split())
+        return self._final_text or ""
 
     def finalize(self) -> None:
         """Finish the RNN-T stream and return the final text."""
         if self._rnnt is None:
             return
-        # nemo_rnnt_stream_finish returns malloc'd char* with the final text.
-        # We don't need the return value (text() gives us the same), but we
-        # must call it to properly finalize.
+        # nemo_rnnt_stream_finish frees the rnnt stream internally and returns
+        # a malloc'd char* with the final text (ownership transferred to caller).
         p = self._e._lib.nemo_rnnt_stream_finish(self._rnnt)
+        self._rnnt = None  # already freed by nemo_rnnt_stream_finish
         if p:
-            _libc.free(p)
+            try:
+                raw = ctypes.cast(p, ctypes.c_char_p).value
+                self._final_text = raw.decode("utf-8", "replace") if raw else ""
+            finally:
+                _libc.free(p)
+        else:
+            self._final_text = ""
 
     def close(self) -> None:
         """Free C stream objects."""
