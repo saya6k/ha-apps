@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.2...nemo-asr-c-v0.2.3) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** add s6-overlay user bundle and dependency declarations ([#80](https://github.com/saya6k/ha-apps/issues/80)) ([6b86e8d](https://github.com/saya6k/ha-apps/commit/6b86e8d043b652ddc2b3b257067a56f9e7060bac))
+
 ## [0.2.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.1...nemo-asr-c-v0.2.2) (2026-06-17)
 
 
