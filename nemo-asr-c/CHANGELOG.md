@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.6...nemo-asr-c-v0.2.7) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** set rnnt=None after finish to prevent double-free in close() ([#90](https://github.com/saya6k/ha-apps/issues/90)) ([0f18208](https://github.com/saya6k/ha-apps/commit/0f1820829e2f54653e42ae4101458ce9041fad9a))
+
 ## [0.2.6](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.5...nemo-asr-c-v0.2.6) (2026-06-17)
 
 
