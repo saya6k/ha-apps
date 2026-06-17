@@ -155,7 +155,11 @@ class NemoCStream:
         if p:
             try:
                 raw = ctypes.cast(p, ctypes.c_char_p).value
-                self._final_text = raw.decode("utf-8", "replace") if raw else ""
+                if raw:
+                    decoded = raw.decode("utf-8", "replace")
+                    self._final_text = " ".join(_TAG_RE.sub(" ", decoded).split())
+                else:
+                    self._final_text = ""
             finally:
                 _libc.free(p)
         else:
