@@ -1,0 +1,46 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ============================================================================
+# s6 down for nemotron-asr-c — graceful shutdown with timeout
+#
+# s6-rc calls this instead of sending the signal directly.  We send SIGTERM,
+# then poll by PID until the process exits or the timeout expires.  After this
+# script exits, s6-rc applies its own death timeout (~7s) before SIGKILL, so
+# the total grace window is this timeout + s6-rc's.
+# ============================================================================
+set -euo pipefail
+
+readonly process_pattern="python3 -m wyoming_nemotron_asr_c"
+readonly signal="${1:-15}"
+readonly timeout=15
+
+bashio::log.info "nemotron-asr-c: graceful shutdown (signal ${signal}, timeout ${timeout}s)..."
+
+# Capture the supervised process PID before signalling so we track the same
+# instance — avoids matching a restarted service or a collateral process.
+declare target_pid
+target_pid=$(pgrep -f "${process_pattern}" | head -1) || true
+
+if [[ -z "${target_pid}" ]]; then
+    bashio::log.info "nemotron-asr-c: process already exited (no signal sent)"
+    exit 0
+fi
+
+# Send the signal.  The run script exec's python3 -m wyoming_nemotron_asr_c.
+pkill -"${signal}" -f "${process_pattern}" || true
+
+# Wait for that specific PID to exit.  The C engine's close() frees the
+# encoder/RNN-T streams, the decoder, and the model — large models can take
+# a few seconds.
+declare -i elapsed=0
+while (( elapsed < timeout )); do
+    if ! kill -0 "${target_pid}" 2>/dev/null; then
+        bashio::log.info "nemotron-asr-c: exited gracefully after ${elapsed}s"
+        exit 0
+    fi
+    sleep 1
+    elapsed+=1
+done
+
+bashio::log.warning "nemotron-asr-c: did not exit within ${timeout}s"
+exit 1

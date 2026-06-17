@@ -75,12 +75,12 @@
         }
       ]
     },
-    "nemo-asr-c": {
-      "component": "nemo-asr-c",
-      "package-name": "nemo-asr-c",
+    "nemotron-asr-c": {
+      "component": "nemotron-asr-c",
+      "package-name": "nemotron-asr-c",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": [
-        "nemo-asr-c/.agents"
+        "nemotron-asr-c/.agents"
       ],
       "extra-files": [
         {
@@ -99,26 +99,6 @@
       "component": "nemo-asr-cpp",
       "package-name": "nemo-asr-cpp",
       "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        {
-          "type": "yaml",
-          "path": "config.yaml",
-          "jsonpath": "$.version"
-        },
-        {
-          "type": "toml",
-          "path": "pyproject.toml",
-          "jsonpath": "$.project.version"
-        }
-      ]
-    },
-    "nemotron-asr": {
-      "component": "nemotron-asr",
-      "package-name": "nemotron-asr",
-      "changelog-path": "CHANGELOG.md",
-      "exclude-paths": [
-        "nemotron-asr/.agents"
-      ],
       "extra-files": [
         {
           "type": "yaml",

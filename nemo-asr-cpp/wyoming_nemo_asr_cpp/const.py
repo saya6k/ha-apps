@@ -88,7 +88,7 @@ LANGUAGES = [
 
 # Native-name dropdown for the `language` option. Label -> the locale string
 # passed to parakeet's `--lang` / transcribe_pcm_lang (same Nemotron prompt
-# dictionary as the nemotron-asr add-on). "Auto" lets the model detect.
+# dictionary as the nemotron-asr-c add-on). "Auto" lets the model detect.
 LANGUAGE_CHOICES = [
     ("Auto", "auto"),
     ("English", "en"),

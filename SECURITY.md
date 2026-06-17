@@ -12,7 +12,7 @@ contact the maintainer privately first.
 
 Please include:
 
-- Which add-on is affected (`livekit-wakeword`, `nemo-asr-cpp`, `nemotron-asr`,
+- Which add-on is affected (`livekit-wakeword`, `nemotron-asr-c`, `nemo-asr-cpp`,
   `supertonic`, `voiceprint`, `wardrowbe`, `zensical`).
 - Affected version (shown in the HA Add-ons UI).
 - A reproducer or proof of concept, ideally minimal.
