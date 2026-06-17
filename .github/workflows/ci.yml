@@ -37,6 +37,8 @@ jobs:
         uses: dorny/paths-filter@v4
         with:
           filters: |
+            nemo-asr-c:
+              - 'nemo-asr-c/**'
             nemo-asr-cpp:
               - 'nemo-asr-cpp/**'
             supertonic:
@@ -162,6 +164,60 @@ jobs:
             --severity=warning --shell=bash "${FILES[@]}"
 
   # ---------------------------------------------------------------------
+  # Version consistency: __init__.py, pyproject.toml, and config.yaml must
+  # agree on the version string.  Release-please bumps config.yaml +
+  # pyproject.toml; __init__.py is hand-maintained and must match.
+  # ---------------------------------------------------------------------
+  version-check:
+    name: Version check (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check version consistency
+        run: |
+          set -euo pipefail
+          ADDON="${{ matrix.addon }}"
+
+          # config.yaml version
+          CFG_VER=$(awk '/^version:/ {print $2; exit}' "${ADDON}/config.yaml")
+          echo "config.yaml: ${CFG_VER}"
+
+          # pyproject.toml version (PEP 621)
+          if [ -f "${ADDON}/pyproject.toml" ]; then
+            TOML_VER=$(grep -Po '^version\s*=\s*"\K[^"]*' "${ADDON}/pyproject.toml" | head -1)
+            echo "pyproject.toml: ${TOML_VER}"
+          else
+            TOML_VER=""
+          fi
+
+          # __init__.py __version__
+          PKG_DIR=$(find "${ADDON}" -maxdepth 2 -name '__init__.py' -exec grep -l '__version__' {} \; | head -1)
+          if [ -n "${PKG_DIR}" ]; then
+            INIT_VER=$(grep -Po '__version__\s*=\s*"\K[^"]*' "${PKG_DIR}")
+            echo "$(dirname "${PKG_DIR}")/__init__.py: ${INIT_VER}"
+          else
+            INIT_VER=""
+          fi
+
+          FAIL=0
+          if [ -n "${TOML_VER}" ] && [ "${TOML_VER}" != "${CFG_VER}" ]; then
+            echo "::error::pyproject.toml version ${TOML_VER} != config.yaml version ${CFG_VER}"
+            FAIL=1
+          fi
+          if [ -n "${INIT_VER}" ] && [ "${INIT_VER}" != "${CFG_VER}" ]; then
+            echo "::error::__init__.py version ${INIT_VER} != config.yaml version ${CFG_VER}"
+            FAIL=1
+          fi
+          exit $FAIL
+
+  # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
   # downstream lint succeeded OR was cleanly skipped because no add-on
   # directory changed in this push.
@@ -169,7 +225,7 @@ jobs:
   ci-ok:
     name: CI passed
     if: always()
-    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell]
+    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell, version-check]
     runs-on: ubuntu-latest
     steps:
       - name: Verify all lint jobs succeeded (or cleanly skipped)
@@ -183,7 +239,8 @@ jobs:
             "${{ needs.lint-addon.result }}" \
             "${{ needs.lint-yaml.result }}" \
             "${{ needs.lint-dockerfile.result }}" \
-            "${{ needs.lint-shell.result }}"; do
+            "${{ needs.lint-shell.result }}" \
+            "${{ needs.version-check.result }}"; do
             case "$result" in
               success|skipped) ;;
               *) echo "downstream lint failed: $result"; exit 1 ;;
