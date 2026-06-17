@@ -1,0 +1,6 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ============================================================================
+# s6 finish for nemo-asr-c
+# ============================================================================
+bashio::log.info "nemo-asr-c stopped."

@@ -1,0 +1,11 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ============================================================================
+# Wyoming discovery oneshot — announces nemo-asr-c to the supervisor
+# ============================================================================
+set -euo pipefail
+
+bashio::log.info "Announcing nemo-asr-c on port 10370..."
+exec python3 -m wyoming \
+    --uri 'tcp://127.0.0.1:10370' \
+    --discovery
