@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.4...nemo-asr-c-v0.3.5) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** add debug logging for every incoming Wyoming event ([#120](https://github.com/saya6k/ha-apps/issues/120)) ([84e9c52](https://github.com/saya6k/ha-apps/commit/84e9c5286db4d888966f842e41e326c4c504c5ef))
+
 ## [0.3.4](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.3...nemo-asr-c-v0.3.4) (2026-06-17)
 
 
