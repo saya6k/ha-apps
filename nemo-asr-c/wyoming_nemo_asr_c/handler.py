@@ -56,6 +56,9 @@ class NemoCHandler(AsyncEventHandler):
 
     async def handle_event(self, event: Event) -> bool:
         try:
+            _LOGGER.debug("Event: %s (data=%s, payload_len=%d)",
+                          event.type, bool(event.data),
+                          len(event.payload) if event.payload else 0)
             if Describe.is_type(event.type):
                 await self.write_event(self.wyoming_info_event)
                 return True
