@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.1...nemo-asr-c-v0.2.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** use nullglob for wildcard chmod ([#77](https://github.com/saya6k/ha-apps/issues/77)) ([36f018c](https://github.com/saya6k/ha-apps/commit/36f018c031ee14e0bb0f06d11613671fc29d79af))
+
 ## [0.2.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.0...nemo-asr-c-v0.2.1) (2026-06-17)
 
 
