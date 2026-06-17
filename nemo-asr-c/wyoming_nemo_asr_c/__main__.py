@@ -40,7 +40,10 @@ def _build_info(model_repo: str) -> Info:
                     "NVIDIA Nemotron streaming ASR on pure C "
                     "(nemotron-asr-streaming.c), .nemo -> .bin at boot"
                 ),
-                attribution="NVIDIA Nemotron 3.5 ASR (NVIDIA Open Model License)",
+                attribution=Attribution(
+                    name="NVIDIA",
+                    url="https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+                ),
                 installed=True,
                 version=__version__,
                 supports_transcript_streaming=True,
