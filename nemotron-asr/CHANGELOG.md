@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.2](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.2.1...nemotron-asr-v0.2.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemotron-asr:** revert stage experimental and image config ([e65288a](https://github.com/saya6k/ha-apps/commit/e65288a963d3bc0d3f2a6f9377b3e52daaa1d0d8))
+* **nemotron-asr:** set stage experimental, comment image, switch to canonical HF model repo ([196d7b6](https://github.com/saya6k/ha-apps/commit/196d7b67ac3ac6660847733bc5abd7599fe5711f))
+
+
+### CI
+
+* **repo:** consolidate AI harness under .agents/ as canonical SoT ([#57](https://github.com/saya6k/ha-apps/issues/57)) ([d339325](https://github.com/saya6k/ha-apps/commit/d33932542b92887f10b4f18536227c8396aa5c4d))
+
 ## [0.2.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-v0.2.0...nemotron-asr-v0.2.1) (2026-06-16)
 
 
