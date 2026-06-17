@@ -1,8 +1,7 @@
 """Wyoming protocol handler for nemo-asr-c.
 
-Streaming ASR: TranscriptStart on Transcribe (acknowledges session),
-incremental TranscriptChunk deltas per encoder chunk,
-TranscriptStop + final Transcript on AudioStop.
+Chunk-by-chunk encoder streaming internally; only the final Transcript
+is sent (matches wyoming-faster-whisper pattern — HA skips streaming events).
 """
 
 from __future__ import annotations
@@ -13,7 +12,7 @@ import time
 from typing import TYPE_CHECKING
 
 import numpy as np
-from wyoming.asr import Transcript, TranscriptChunk, TranscriptStart, TranscriptStop
+from wyoming.asr import Transcript
 from wyoming.audio import AudioChunk, AudioStart, AudioStop
 from wyoming.event import Event
 from wyoming.info import Describe, Info
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 
-# Serialize utterances — the C context is not re-entrant.
+# Serialize access to the shared C context (not re-entrant).
 _ASR_LOCK = asyncio.Lock()
 
 
@@ -35,7 +34,7 @@ def _pcm16_to_float32(audio: bytes) -> np.ndarray:
 
 
 class NemoCHandler(AsyncEventHandler):
-    """Streaming Wyoming ASR handler backed by Nemotron C runtime."""
+    """Wyoming ASR handler backed by Nemotron C runtime."""
 
     def __init__(
         self,
@@ -54,7 +53,6 @@ class NemoCHandler(AsyncEventHandler):
         self._t0: float = 0.0
         self._n_samples: int = 0
         self._last_emitted: str = ""
-        self._have_lock: bool = False
 
     async def handle_event(self, event: Event) -> bool:
         try:
@@ -68,15 +66,13 @@ class NemoCHandler(AsyncEventHandler):
                 if lang:
                     self._language = lang
                 _LOGGER.info("Transcribe request (language=%s)", self._language)
-                # Streaming protocol: acknowledge session before client sends audio.
-                await self.write_event(
-                    TranscriptStart(language=self._language).event()
-                )
                 return True
 
             if AudioStart.is_type(event.type):
                 _LOGGER.info("Utterance start")
-                await self._start()
+                self._t0 = time.monotonic()
+                self._n_samples = 0
+                self._last_emitted = ""
                 return True
 
             if AudioChunk.is_type(event.type):
@@ -92,38 +88,35 @@ class NemoCHandler(AsyncEventHandler):
             return True
         except (ConnectionResetError, BrokenPipeError, asyncio.IncompleteReadError):
             _LOGGER.debug("Client disconnected")
+            self._release()
             return False
         except Exception:
             _LOGGER.exception("Unexpected error in handle_event")
+            self._release()
             await self.write_event(
                 Event("error", {"text": "Internal server error", "code": "internal"})
             )
             return False
 
-    async def _start(self) -> None:
-        await _ASR_LOCK.acquire()
-        self._have_lock = True
-        self._t0 = time.monotonic()
-        self._n_samples = 0
-        self._last_emitted = ""
-        self._stream = self._engine.create_stream(self._language)
-
     async def _feed(self, chunk: AudioChunk) -> None:
-        if self._stream is None:
-            return
         samples = _pcm16_to_float32(chunk.audio)
         self._n_samples += samples.size
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._stream.accept_audio, samples)
-        await self._emit_delta()
+        async with _ASR_LOCK:
+            # Lazy-init stream on first audio chunk (matching
+            # wyoming-faster-whisper pattern).
+            if self._stream is None:
+                self._stream = self._engine.create_stream(self._language)
+            await loop.run_in_executor(None, self._stream.accept_audio, samples)
+        self._emit_delta()
 
     async def _stop(self) -> None:
         try:
             if self._stream is not None:
                 loop = asyncio.get_running_loop()
-                await loop.run_in_executor(None, self._stream.finalize)
-                await self._emit_delta()
-                await self.write_event(TranscriptStop().event())
+                async with _ASR_LOCK:
+                    await loop.run_in_executor(None, self._stream.finalize)
+                self._emit_delta()
                 text = self._stream.text()
                 await self.write_event(
                     Transcript(text=text, language=self._language).event()
@@ -139,23 +132,15 @@ class NemoCHandler(AsyncEventHandler):
         finally:
             self._release()
 
-    async def _emit_delta(self) -> None:
+    def _emit_delta(self) -> None:
+        """Track latest text for the final transcript (no streaming output to HA)."""
         if self._stream is None:
             return
         text = self._stream.text()
-        if text == self._last_emitted:
-            return
-        # Greedy RNN-T output normally grows by appending; emit the new suffix.
-        if text.startswith(self._last_emitted):
-            delta = text[len(self._last_emitted):]
-            if delta:
-                await self.write_event(TranscriptChunk(text=delta).event())
-        self._last_emitted = text
+        if text != self._last_emitted:
+            self._last_emitted = text
 
     def _release(self) -> None:
         if self._stream is not None:
             self._stream.close()
             self._stream = None
-        if self._have_lock:
-            self._have_lock = False
-            _ASR_LOCK.release()
