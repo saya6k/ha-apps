@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.0...nemo-asr-c-v0.2.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** add missing discovery up file for s6-rc oneshot service ([#74](https://github.com/saya6k/ha-apps/issues/74)) ([1f234ca](https://github.com/saya6k/ha-apps/commit/1f234ca76f8892dcb83933ca1cae3a39e864c73c))
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.1.0...nemo-asr-c-v0.2.0) (2026-06-17)
 
 
