@@ -92,11 +92,6 @@
           "type": "toml",
           "path": "pyproject.toml",
           "jsonpath": "$.project.version"
-        },
-        {
-          "type": "generic",
-          "path": "wyoming_nemo_asr_c/__init__.py",
-          "pattern": "__version__ = \"(.+)\""
         }
       ]
     },
