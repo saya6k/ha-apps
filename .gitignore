@@ -61,17 +61,19 @@ report/
 super-linter-output/
 
 # App stage gating — WHITELIST (default-deny). Every non-hidden top-level dir
-# (i.e. every app) is local-only unless explicitly un-ignored below, so a new
-# or experimental app can never be committed by accident. `/[!.]*/` ignores all
-# top-level dirs that don't start with a dot; infra dirs (.github, .agents,
-# .devcontainer, .vscode) are hidden and unaffected.
+# (i.e. every app) is gitignored unless explicitly un-ignored below. `/[!.]*/`
+# ignores all top-level dirs that don't start with a dot; infra dirs (.github,
+# .agents, .devcontainer, .vscode) are hidden and unaffected.
 #
-# To publish (promote to stable) an app: add `!/<slug>/` here and remove any
-# `stage: experimental` from its config.yaml — stable carries NO `stage:` key
-# (the add-on linter rejects an explicit `stage: stable`).
+# To register a new app: add `!/<slug>/` here. Stage is controlled by
+# config.yaml's `stage:` key (experimental or absent for stable), not by
+# gitignore — all registered apps are tracked.
+#
+# To promote to stable: remove `stage: experimental` from config.yaml.
 /[!.]*/
-# Published (stable) apps — tracked:
+# Registered apps — tracked:
 !/livekit-wakeword/
+!/nemo-asr-c/
 !/nemo-asr-cpp/
 !/nemotron-asr/
 !/supertonic/
