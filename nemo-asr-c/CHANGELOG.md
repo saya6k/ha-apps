@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.3...nemo-asr-c-v0.2.4) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** use bashio::discovery instead of python3 -m wyoming ([#84](https://github.com/saya6k/ha-apps/issues/84)) ([4e5fc4d](https://github.com/saya6k/ha-apps/commit/4e5fc4d9e1d996921a18e10d951b95c7afaa90be))
+
 ## [0.2.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.2...nemo-asr-c-v0.2.3) (2026-06-17)
 
 
