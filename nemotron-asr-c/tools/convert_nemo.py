@@ -59,7 +59,7 @@ def load_nemo(nemo_path: Path, work_dir: Path):
     cfg_path = work_dir / "model_config.yaml"
     ckpt_path = work_dir / "model_weights.ckpt"
     if not (cfg_path.exists() and ckpt_path.exists()):
-        with tarfile.open(nemo_path, "r:gz") as tar:
+        with tarfile.open(nemo_path, "r:") as tar:
             cfg_path = extract_member(tar, "model_config.yaml", work_dir)
             ckpt_path = extract_member(tar, "model_weights.ckpt", work_dir)
     with cfg_path.open("r", encoding="utf-8") as f:

@@ -103,11 +103,11 @@ def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path
             if nemo_path.resolve() == Path(downloaded).resolve():
                 # Validate that the cached file is a real .nemo (not a stale Xet
                 # pointer file from an older huggingface_hub).
-                if _is_gzip_file(nemo_path):
+                if _is_tar_archive(nemo_path):
                     _LOGGER.info("Using cached .nemo: %s", nemo_path)
                     return nemo_path
                 _LOGGER.warning(
-                    "Cached .nemo is not a valid gzip archive (likely a stale "
+                    "Cached .nemo is not a valid tar archive (likely a stale "
                     "Xet pointer file). Re-downloading."
                 )
                 nemo_path.unlink()
@@ -128,10 +128,11 @@ def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path
     os.symlink(downloaded, nemo_path)
 
     # Validate the downloaded file is a real .nemo archive.
-    if not _is_gzip_file(nemo_path):
+    if not _is_tar_archive(nemo_path):
         nemo_path.unlink()
         raise RuntimeError(
-            f"Downloaded file from {repo_id} is not a valid .nemo (gzip) archive. "
+            f"Downloaded file from {repo_id} is not a valid .nemo archive "
+            "(expected tar or tar.gz). "
             "This may be a Xet pointer file — install huggingface_hub with the "
             "hf-xet extra: pip install 'huggingface_hub[hf-xet]>=0.32'"
         )
@@ -139,16 +140,26 @@ def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path
     return nemo_path
 
 
-def _is_gzip_file(path: Path) -> bool:
-    """Check that a file is a valid gzip archive (not a Xet pointer file).
+def _is_tar_archive(path: Path) -> bool:
+    """Check that a file is a valid tar archive (not a Xet pointer file).
 
-    Xet pointer files start with './' — they're plain text, not gzip.
-    A real .nemo is a gzipped tar archive starting with \\x1f\\x8b.
+    .nemo files are tar archives, optionally gzip-compressed.  Xet pointer
+    files are plain text starting with './...' — they lack tar magic bytes
+    and will fail this check.
     """
     try:
         with open(path, "rb") as f:
             header = f.read(2)
-        return header == b"\x1f\x8b"
+        # gzip-compressed tar
+        if header == b"\x1f\x8b":
+            return True
+        # plain tar — check for ustar magic at offset 257
+        if path.stat().st_size < 512:
+            return False
+        with open(path, "rb") as f:
+            f.seek(257)
+            magic = f.read(6)
+        return magic in (b"ustar\x00", b"ustar  ")
     except OSError:
         return False
 
@@ -219,9 +230,9 @@ def ensure_bin(
 def extract_tokenizer(nemo_path: Path, output_dir: Path) -> Path | None:
     """Extract SentencePiece tokenizer.model from a .nemo archive.
 
-    The .nemo is a tar.gz containing model_config.yaml, model_weights.ckpt,
-    and tokenizer.model.  We extract the tokenizer so the engine can tokenize
-    hotword phrases at runtime.
+    The .nemo is a tar archive (optionally gzip-compressed) containing
+    model_config.yaml, model_weights.ckpt, and tokenizer.model.  We extract
+    the tokenizer so the engine can tokenize hotword phrases at runtime.
 
     Returns the path to tokenizer.model, or None if extraction failed.
     """
@@ -231,7 +242,7 @@ def extract_tokenizer(nemo_path: Path, output_dir: Path) -> Path | None:
     if tok_path.exists():
         return tok_path
     try:
-        with tarfile.open(nemo_path, "r:gz") as tar:
+        with tarfile.open(nemo_path, "r:") as tar:
             for m in tar.getmembers():
                 if m.name.endswith("tokenizer.model"):
                     with tar.extractfile(m) as src:
