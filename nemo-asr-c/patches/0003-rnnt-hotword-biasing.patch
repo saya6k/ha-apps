@@ -225,7 +225,7 @@ persist across encoder frames (blank frames do not advance them).
 +                            void *p = realloc(s->hw_active,
 +                                              (size_t)new_cap * sizeof(s->hw_active[0]));
 +                            if (!p) { nxt_len = 0; break; }
-+                            s->hw_active = (typeof(s->hw_active))p;
++                            s->hw_active = p;
 +                            s->hw_active_cap = new_cap;
 +                        }
 +                        s->hw_active[nxt_len].phrase_idx = pi;
@@ -247,7 +247,7 @@ persist across encoder frames (blank frames do not advance them).
 +                            void *p = realloc(s->hw_active,
 +                                              (size_t)new_cap * sizeof(s->hw_active[0]));
 +                            if (!p) continue;
-+                            s->hw_active = (typeof(s->hw_active))p;
++                            s->hw_active = p;
 +                            s->hw_active_cap = new_cap;
 +                        }
 +                        s->hw_active[nxt_len].phrase_idx = p;
