@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.10](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.9...nemotron-asr-c-v0.3.10) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** add hf-xet extra for Xet-only model repos ([884e48e](https://github.com/saya6k/ha-apps/commit/884e48e7322dca3a6b91f41eabbf3d42f0b225d1))
+
 ## [0.3.9](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.8...nemotron-asr-c-v0.3.9) (2026-06-17)
 
 
