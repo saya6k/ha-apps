@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.3...nemo-asr-c-v0.3.4) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** drop streaming transcript events, narrow lock to C calls ([#118](https://github.com/saya6k/ha-apps/issues/118)) ([f0f060a](https://github.com/saya6k/ha-apps/commit/f0f060ad997ec39c90e7d7a2bf07e6f31747602a))
+
 ## [0.3.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.2...nemo-asr-c-v0.3.3) (2026-06-17)
 
 
