@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.7...nemo-asr-c-v0.2.8) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** prevent double-free in close() and add missing AsrModel args ([#92](https://github.com/saya6k/ha-apps/issues/92)) ([021ae09](https://github.com/saya6k/ha-apps/commit/021ae09695a3f20e57c116671010b52c847491cd))
+
 ## [0.2.7](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.6...nemo-asr-c-v0.2.7) (2026-06-17)
 
 
