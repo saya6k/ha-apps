@@ -8,7 +8,7 @@ metadata:
 ---
 
 To run HA for ha-apps app smoke-tests, the repo opens in the official HA add-on
-devcontainer (`ghcr.io/home-assistant/devcontainer:2-addons`); workspace mounts
+devcontainer (`ghcr.io/home-assistant/devcontainer:5-apps`); workspace mounts
 at `/mnt/supervisor/addons/local/ha-apps`. HA UI = host `:7123` (→ container
 8123), observer = host `:7357` (→ 4357). Runtime is Docker Desktop (see
 [[container-runtime-preference]] — Apple container can't do the privileged dind

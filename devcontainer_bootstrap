@@ -1,23 +1,9 @@
 #!/bin/bash
 # ============================================================================
-# HA devcontainer postCreate bootstrap — runs once after the container is
-# created/reopened. Does NOT start dockerd or the Supervisor (that's
-# supervisor_run's job, via the "Start Home Assistant" task or
-# scripts/devcontainer-ha.sh). See .agents/memory/devcontainer-ha-boot.md
-# for the 3 boot gotchas.
+# HA devcontainer bootstrap hook — runs once after the container is
+# created/reopened. /sbin/init handles machine-id on 5-apps; this is a
+# minimal placeholder. Add custom setup here as needed.
 # ============================================================================
 set -euo pipefail
-
-# Regenerate machine-id so D-Bus works inside the container.
-# dbus-uuidgen may not exist on newer images (5-apps uses /sbin/init).
-if command -v dbus-uuidgen &>/dev/null; then
-    sudo dbus-uuidgen --ensure=/etc/machine-id 2>/dev/null || true
-elif [ ! -s /etc/machine-id ]; then
-    sudo sh -c 'uuidgen > /etc/machine-id' 2>/dev/null || \
-    sudo sh -c 'cat /proc/sys/kernel/random/uuid > /etc/machine-id' 2>/dev/null || true
-fi
-
-# Ensure /run/supervisor exists (Supervisor binds it).
 sudo mkdir -p /run/supervisor
-
-echo "devcontainer bootstrap done."
+echo "devcontainer ready."
