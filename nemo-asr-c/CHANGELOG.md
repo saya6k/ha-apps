@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.6...nemo-asr-c-v0.3.7) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** switch to fully-buffered transcription, strip language tags ([#125](https://github.com/saya6k/ha-apps/issues/125)) ([0cc998f](https://github.com/saya6k/ha-apps/commit/0cc998f19fe5e6caa771dab67bfc77845a392967))
+
 ## [0.3.6](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.5...nemo-asr-c-v0.3.6) (2026-06-17)
 
 
