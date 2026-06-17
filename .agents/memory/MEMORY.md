@@ -13,3 +13,4 @@
 - [release-please squash gotcha](release-please-squash-gotcha.md) — squash-merging multi-scope PRs drops release-please releases; use rebase-merge or a conventional PR title; revert+cherry-pick to recover
 - [zeroconf default=None](zeroconf-default-none.md) — Wyoming --zeroconf must default to None, not a truthy string; truthy default imports wyoming.zeroconf → uninstalled zeroconf package → ModuleNotFoundError at boot
 - [patch-path-prefix-consistency](patch-path-prefix-consistency.md) — git apply fails when .patch files mix a/b prefix styles in a single invocation; keep all patches consistent
+- [nemo-asr-cpp .nemo source](nemo-asr-cpp-nemo-source.md) — .nemo → GGUF conversion evaluated 2026-06-18 and rejected; nemo_toolkit ~3 GB image bloat kills the value prop for HAOS targets
