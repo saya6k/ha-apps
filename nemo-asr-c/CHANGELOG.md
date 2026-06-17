@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.1...nemo-asr-c-v0.3.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** pass hf_token, hotwords, hotword_boost from config to run script ([4ec149c](https://github.com/saya6k/ha-apps/commit/4ec149c5db5f9fdbd3525fabbfde485f238f690f))
+
 ## [0.3.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.0...nemo-asr-c-v0.3.1) (2026-06-17)
 
 
