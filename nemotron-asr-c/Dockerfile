@@ -43,7 +43,7 @@ WORKDIR /usr/src/app
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends python3 python3-pip \
-    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub>=0.32" "numpy" "torch" "pyyaml" "sentencepiece"
+    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub[hf-xet]>=0.32" "numpy" "torch" "pyyaml" "sentencepiece"
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_nemotron_asr_c/ /usr/src/app/wyoming_nemotron_asr_c/
 RUN pip3 install --no-cache-dir --no-deps /usr/src/app
