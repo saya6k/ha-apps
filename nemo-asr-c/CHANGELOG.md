@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.14](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.13...nemo-asr-c-v0.2.14) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** cleanup old models on config change and detect upstream updates ([5fc24a7](https://github.com/saya6k/ha-apps/commit/5fc24a7af52e1949e9141702c025323bb114d312))
+* **nemo-asr-c:** cleanup old models on config change and detect upstream updates ([5fc24a7](https://github.com/saya6k/ha-apps/commit/5fc24a7af52e1949e9141702c025323bb114d312))
+* **repo:** derive __version__ from pyproject.toml, drop generic extra-file ([be97102](https://github.com/saya6k/ha-apps/commit/be971024b32236c91fb56d3eef09077df8869fc0))
+
 ## [0.2.13](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.12...nemo-asr-c-v0.2.13) (2026-06-17)
 
 
