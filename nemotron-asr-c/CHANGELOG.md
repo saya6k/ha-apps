@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.11](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.10...nemotron-asr-c-v0.3.11) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** support plain-tar .nemo files alongside gzip ([4a74b19](https://github.com/saya6k/ha-apps/commit/4a74b1916c322b5ef50a6bc00bc5080be389e3de))
+
 ## [0.3.10](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.9...nemotron-asr-c-v0.3.10) (2026-06-17)
 
 
