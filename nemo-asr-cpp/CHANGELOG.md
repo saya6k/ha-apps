@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.2...nemo-asr-cpp-v0.3.3) (2026-06-17)
+
+
+### Code Refactoring
+
+* **repo:** rename nemo-asr-c to nemotron-asr-c, delete nemotron-asr (ONNX) ([#128](https://github.com/saya6k/ha-apps/issues/128)) ([2b822a3](https://github.com/saya6k/ha-apps/commit/2b822a3653f1d9e3c70b0fa4f2fd54d94b56e6f2))
+
 ## [0.3.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.1...nemo-asr-cpp-v0.3.2) (2026-06-15)
 
 
