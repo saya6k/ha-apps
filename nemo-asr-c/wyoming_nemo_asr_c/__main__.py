@@ -173,8 +173,17 @@ async def main() -> None:
         tokenizer_path=str(tok_path) if tok_path else None,
     )
     try:
-        # Set hotwords if configured.
-        hotwords = [w.strip() for w in args.hotwords.split("\n") if w.strip()]
+        # Set hotwords if configured.  Accepts both a newline-separated
+        # string (from jq join in the s6 run script) and a JSON array.
+        hotwords_raw = args.hotwords.strip()
+        if hotwords_raw.startswith("["):
+            import json
+            try:
+                hotwords = json.loads(hotwords_raw)
+            except json.JSONDecodeError:
+                hotwords = [w.strip() for w in hotwords_raw.split("\n") if w.strip()]
+        else:
+            hotwords = [w.strip() for w in hotwords_raw.split("\n") if w.strip()]
         if hotwords:
             engine.set_hotwords(hotwords, args.hotword_boost)
 
