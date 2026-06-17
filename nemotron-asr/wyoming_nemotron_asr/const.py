@@ -6,7 +6,7 @@ DEFAULT_PORT = 10350
 # The ONNX model is downloaded from this HuggingFace repo into MODEL_DIR on
 # first start. It must contain: encoder.onnx (+ encoder.onnx.data),
 # decoder_joint.onnx, tokenizer.model, config.json.
-DEFAULT_MODEL_REPO = "nub235/nemotron-3.5-asr-streaming-onnx"
+DEFAULT_MODEL_REPO = "tonythethompson/Nemotron-3.5-ASR-Streaming-0.6B-ONNX"
 
 # Models persist on the add-on's /data volume (not baked into the image).
 MODEL_BASE_DIR = "/data/models"

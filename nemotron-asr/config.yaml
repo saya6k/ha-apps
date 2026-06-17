@@ -1,5 +1,6 @@
 version: 0.2.1
 slug: nemotron-asr
+stage: experimental
 name: Nemotron ASR
 description: >-
   Speech-to-text over Wyoming, powered by NVIDIA Nemotron streaming ASR (ONNX,
@@ -16,7 +17,7 @@ backup_exclude:
 options:
   language: Auto
   num_threads: 0
-  model_repo: nub235/nemotron-3.5-asr-streaming-onnx
+  model_repo: tonythethompson/Nemotron-3.5-ASR-Streaming-0.6B-ONNX
   transcript_streaming: true
   hotwords: []
   hf_token: ''
@@ -37,5 +38,5 @@ ports:
   10350/tcp: null
 ports_description:
   10350/tcp: Nemotron ASR Wyoming Protocol
-image: ghcr.io/saya6k/{arch}-addon-nemotron-asr
+# image: ghcr.io/saya6k/{arch}-addon-nemotron-asr
 homeassistant: 2023.8.0.dev20230718

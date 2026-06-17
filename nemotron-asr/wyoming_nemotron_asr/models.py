@@ -33,7 +33,7 @@ def ensure_model(repo_id: str, base_dir: str, token: Optional[str] = None) -> st
     os.makedirs(base_dir, exist_ok=True)
     from huggingface_hub import snapshot_download
 
-    _LOGGER.info("Downloading %s -> %s (first use, ~1.4 GB) ...", repo_id, dest)
+    _LOGGER.info("Downloading %s -> %s (first use, ~2.6 GB) ...", repo_id, dest)
     snapshot_download(
         repo_id=repo_id,
         local_dir=dest,
