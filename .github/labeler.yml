@@ -10,6 +10,10 @@
   - changed-files:
       - any-glob-to-any-file: "nemo-asr-cpp/**"
 
+"addon:nemo-asr-c":
+  - changed-files:
+      - any-glob-to-any-file: "nemo-asr-c/**"
+
 "addon:nemotron-asr":
   - changed-files:
       - any-glob-to-any-file: "nemotron-asr/**"

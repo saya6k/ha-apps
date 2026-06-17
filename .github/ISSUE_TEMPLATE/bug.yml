@@ -18,6 +18,7 @@ body:
       description: Which add-on is affected?
       options:
         - livekit-wakeword
+        - nemo-asr-c
         - nemo-asr-cpp
         - nemotron-asr
         - supertonic
