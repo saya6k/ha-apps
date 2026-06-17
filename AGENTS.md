@@ -10,6 +10,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 | App | What it is |
 |---|---|
 | [`livekit-wakeword/`](livekit-wakeword/AGENTS.md) | Wyoming wake word — livekit-wakeword runtime + our incremental oWW-compatible bridge. Serves oWW zoo + custom `/share` models. |
+| [`nemo-asr-c/`](nemo-asr-c/AGENTS.md) | Wyoming STT — Nemotron 0.6B on pure C (nemotron-asr-streaming.c). Boot-time .nemo conversion, streaming, any fine-tuned model. |
 | [`nemo-asr-cpp/`](nemo-asr-cpp/AGENTS.md) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling of `nemotron-asr`; ctypes over a flat C API. |
 | [`nemotron-asr/`](nemotron-asr/AGENTS.md) | Wyoming STT — Nemotron 0.6B from ONNX on CPU. Cache-aware streaming + greedy RNN-T decode, hotword biasing. |
 | [`supertonic/`](supertonic/AGENTS.md) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. |
@@ -60,7 +61,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 <type>(<scope>): <subject>
 ```
 
-**Scopes:** `livekit-wakeword` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
+**Scopes:** `livekit-wakeword` · `nemo-asr-c` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
 
 **Types:** `feat` (minor) · `fix`/`perf`/`revert` (patch) · `docs`/`refactor`/`build`/`ci` (patch, in CHANGELOG) · `chore`/`test`/`style` (no release) · `type!` / `BREAKING CHANGE:` footer (major)
 

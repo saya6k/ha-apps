@@ -48,7 +48,7 @@ add a `BREAKING CHANGE:` footer. Either triggers a major bump.
 
 ### Allowed scopes
 
-`livekit-wakeword` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` ·
+`livekit-wakeword` · `nemo-asr-c` · `nemo-asr-cpp` · `nemotron-asr` · `supertonic` ·
 `voiceprint` · `wardrowbe` · `zensical` · `repo` (for `.github/`,
 root docs, `repository.yaml`).
 

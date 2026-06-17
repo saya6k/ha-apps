@@ -29,6 +29,16 @@
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
       ]
     },
+    "nemo-asr-c": {
+      "component": "nemo-asr-c",
+      "package-name": "nemo-asr-c",
+      "changelog-path": "CHANGELOG.md",
+      "exclude-paths": ["nemo-asr-c/.agents"],
+      "extra-files": [
+        {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"},
+        {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
+      ]
+    },
     "nemo-asr-cpp": {
       "component": "nemo-asr-cpp",
       "package-name": "nemo-asr-cpp",
