@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.5...nemo-asr-c-v0.2.6) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** remove broken hf_hub_download call with filename=None ([#88](https://github.com/saya6k/ha-apps/issues/88)) ([6803dba](https://github.com/saya6k/ha-apps/commit/6803dba76f358fbeecb3320af0c091b4ba8f46cc))
+
 ## [0.2.5](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.4...nemo-asr-c-v0.2.5) (2026-06-17)
 
 
