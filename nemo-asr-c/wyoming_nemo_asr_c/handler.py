@@ -1,7 +1,8 @@
 """Wyoming protocol handler for nemo-asr-c.
 
-Chunk-by-chunk encoder streaming internally; only the final Transcript
-is sent (matches wyoming-faster-whisper pattern — HA skips streaming events).
+Audio is buffered in Python and flushed to the C runtime every 80 ms
+so the handler can consume HA's 10 ms chunks without backpressure.
+Only the final Transcript is sent (matches wyoming-faster-whisper pattern).
 """
 
 from __future__ import annotations
@@ -27,6 +28,10 @@ _LOGGER = logging.getLogger(__name__)
 # Serialize access to the shared C context (not re-entrant).
 _ASR_LOCK = asyncio.Lock()
 
+# Flush buffered audio to C runtime every 80 ms (shortest encoder chunk).
+# 16 kHz × 0.08 s × 2 bytes = 2,560 bytes.
+_FLUSH_BYTES = 2560
+
 
 def _pcm16_to_float32(audio: bytes) -> np.ndarray:
     """Convert 16-bit PCM bytes to float32 [-1, 1]."""
@@ -49,6 +54,7 @@ class NemoCHandler(AsyncEventHandler):
         self._args = cli_args
         self._engine = engine
         self._language: str | None = cli_args.language
+        self._buffer: bytearray = bytearray()
         self._stream: NemoCStream | None = None
         self._t0: float = 0.0
         self._n_samples: int = 0
@@ -73,6 +79,7 @@ class NemoCHandler(AsyncEventHandler):
 
             if AudioStart.is_type(event.type):
                 _LOGGER.info("Utterance start")
+                self._buffer = bytearray()
                 self._t0 = time.monotonic()
                 self._n_samples = 0
                 self._last_emitted = ""
@@ -102,12 +109,21 @@ class NemoCHandler(AsyncEventHandler):
             return False
 
     async def _feed(self, chunk: AudioChunk) -> None:
-        samples = _pcm16_to_float32(chunk.audio)
-        self._n_samples += samples.size
+        # Buffer raw PCM; only flush to C when we have enough.
+        # Most calls hit this fast path — no lock, no executor, no C call.
+        self._buffer.extend(chunk.audio)
+        self._n_samples += len(chunk.audio) // 2
+        if len(self._buffer) >= _FLUSH_BYTES:
+            await self._flush()
+
+    async def _flush(self) -> None:
+        """Feed buffered audio to the C runtime (called under _ASR_LOCK)."""
+        if not self._buffer:
+            return
+        samples = _pcm16_to_float32(bytes(self._buffer))
+        self._buffer = bytearray()
         loop = asyncio.get_running_loop()
         async with _ASR_LOCK:
-            # Lazy-init stream on first audio chunk (matching
-            # wyoming-faster-whisper pattern).
             if self._stream is None:
                 self._stream = self._engine.create_stream(self._language)
             await loop.run_in_executor(None, self._stream.accept_audio, samples)
@@ -115,6 +131,9 @@ class NemoCHandler(AsyncEventHandler):
 
     async def _stop(self) -> None:
         try:
+            # Flush any remaining buffered audio (creates stream lazily
+            # for short utterances that never hit the _FLUSH_BYTES threshold).
+            await self._flush()
             if self._stream is not None:
                 loop = asyncio.get_running_loop()
                 async with _ASR_LOCK:
@@ -144,6 +163,8 @@ class NemoCHandler(AsyncEventHandler):
             self._last_emitted = text
 
     def _release(self) -> None:
+        if self._buffer:
+            self._buffer = bytearray()
         if self._stream is not None:
             self._stream.close()
             self._stream = None
