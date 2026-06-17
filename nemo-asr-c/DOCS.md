@@ -32,14 +32,6 @@ Streaming encoder lookahead. Larger = more accurate, slightly more compute.
 | `560ms` | 6 | — |
 | `1120ms` | 13 | Most accurate |
 
-### `hotwords`
-
-Phrases to bias recognition toward. One per item. Best-effort greedy biasing.
-
-### `hotword_boost`
-
-Strength of hotword bias (logit bonus per token). Default 2.0. Range 0–10.
-
 ### `hf_token`
 
 Optional HuggingFace access token for gated/private model repos.

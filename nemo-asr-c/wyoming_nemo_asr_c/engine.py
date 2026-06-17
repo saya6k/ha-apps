@@ -234,6 +234,11 @@ class NemoCEngine:
         L.nemo_set_threads.argtypes = [c_int]
         L.nemo_get_threads.restype = c_int
 
+        # ---- Streaming lookahead ----
+        L.nemo_set_att_right.argtypes = [c_void_p, c_int]
+        L.nemo_get_att_right.restype = c_int
+        L.nemo_get_att_right.argtypes = [c_void_p]
+
         # ---- Load model ----
         self._ctx: c_void_p = L.nemo_load(bin_path.encode("utf-8"))
         if not self._ctx:
@@ -255,17 +260,9 @@ class NemoCEngine:
 
     def _set_att_right(self, value: int) -> None:
         """Set the encoder right-context (streaming lookahead)."""
-        # The att_right field is at a known offset in nemo_ctx_t.
-        # nemo_ctx_t layout (from nemotron_asr.h):
-        #   nemo_model_t model;      // large struct
-        #   char model_path[1024];
-        #   int prompt_id;
-        #   int att_left;
-        #   int att_right;           // <-- this field
-        # We can't easily set this from Python because the struct layout is
-        # opaque. For now we rely on the default (3 = 320ms).
-        # TODO: use ctypes.Structure to define nemo_ctx_t layout for field access.
-        _LOGGER.debug("att_right=%d (using C default; struct layout TBD)", value)
+        self._lib.nemo_set_att_right(self._ctx, value)
+        actual = self._lib.nemo_get_att_right(self._ctx)
+        _LOGGER.info("att_right=%d (requested %d)", actual, value)
 
     def create_stream(self, language: str | None = None) -> NemoCStream:
         """Create a new streaming session for one utterance.
