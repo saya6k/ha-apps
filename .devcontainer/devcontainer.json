@@ -1,7 +1,6 @@
 {
   "name": "ha-apps (Home Assistant apps)",
   "image": "ghcr.io/home-assistant/devcontainer:2-addons",
-  "overrideCommand": false,
   "remoteUser": "vscode",
   "appPort": [
     "7123:8123",
