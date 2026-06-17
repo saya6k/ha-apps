@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.12](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.11...nemo-asr-c-v0.2.12) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** sync __init__.py version to 0.2.11 ([cba60d2](https://github.com/saya6k/ha-apps/commit/cba60d294a962c23fe62124d7f1d8c6cf6c39963))
+
 ## [0.2.11](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.10...nemo-asr-c-v0.2.11) (2026-06-17)
 
 
