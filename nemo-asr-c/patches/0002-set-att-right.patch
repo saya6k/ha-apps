@@ -1,0 +1,32 @@
+--- a/nemotron_asr.h
++++ b/nemotron_asr.h
+@@ -143,6 +143,8 @@
+ nemo_ctx_t *nemo_load(const char *model_path);
+ void nemo_free(nemo_ctx_t *ctx);
+ int nemo_set_language(nemo_ctx_t *ctx, const char *lang);
++void nemo_set_att_right(nemo_ctx_t *ctx, int att_right);
++int nemo_get_att_right(nemo_ctx_t *ctx);
+ char *nemo_transcribe(nemo_ctx_t *ctx, const char *wav_path);
+ char *nemo_transcribe_audio(nemo_ctx_t *ctx, const float *samples, int n_samples);
+
+--- a/nemotron_asr.c
++++ b/nemotron_asr.c
+@@ -63,6 +63,18 @@
+     fprintf(stderr, "nemotron: unknown language '%s' (try en-US, ko-KR, auto)\n", lang);
+     return -1;
+ }
++
++void nemo_set_att_right(nemo_ctx_t *ctx, int att_right) {
++    if (!ctx) return;
++    if (att_right < 0) att_right = 0;
++    if (att_right > 13) att_right = 13;
++    ctx->att_right = att_right;
++}
++
++int nemo_get_att_right(nemo_ctx_t *ctx) {
++    if (!ctx) return -1;
++    return ctx->att_right;
++}
+
+ typedef struct {
+     nemo_ctx_t *ctx;

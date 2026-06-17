@@ -18,15 +18,11 @@ options:
   model: nvidia/nemotron-3.5-asr-streaming-0.6b
   quantization: q8p
   chunk_size: 320ms
-  hotwords: []
   hf_token: ''
 schema:
   model: str
   quantization: list(f32|bf16|w8a16|q8p|q4p)
   chunk_size: list(80ms|160ms|320ms|560ms|1120ms)
-  hotwords:
-    - str?
-  hotword_boost: float(0,10)?
   hf_token: password?
   debug_logging: bool?
 ports:

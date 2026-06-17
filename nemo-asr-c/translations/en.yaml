@@ -21,18 +21,6 @@ configuration:
       right-context = more accurate, but more compute per chunk. 80ms
       (fastest) · 160ms · 320ms (default) · 560ms · 1120ms (most accurate).
       No re-download — applied on next start.
-  hotwords:
-    name: Hotwords (vocabulary biasing)
-    description: >-
-      Phrases to bias recognition toward — one per item (room names, entity
-      names, people). Useful for known vocabulary the model otherwise mishears.
-      Best-effort greedy biasing.
-  hotword_boost:
-    name: Hotword boost
-    description: >-
-      Advanced. Strength of the hotword bias (logit bonus per token). Default
-      2. Higher pushes harder toward hotwords, but values above ~3 can
-      destabilize decoding and cause garbled output.
   hf_token:
     name: HuggingFace token
     description: >-
