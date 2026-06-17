@@ -130,7 +130,13 @@ async def main() -> None:
         raise SystemExit(1)
 
     # Resolve chunk size.
-    att_right = CHUNK_CHOICES.get(args.chunk_size, 3)
+    att_right = CHUNK_CHOICES.get(args.chunk_size)
+    if att_right is None:
+        _LOGGER.warning(
+            "Unrecognized chunk_size '%s'; falling back to %s",
+            args.chunk_size, DEFAULT_CHUNK_SIZE,
+        )
+        att_right = CHUNK_CHOICES[DEFAULT_CHUNK_SIZE]
 
     # 1. Download .nemo + convert to .bin (cached).
     _LOGGER.info(
