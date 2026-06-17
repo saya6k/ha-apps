@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.3.0...voiceprint-v0.3.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
 ## [0.3.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.2.0...voiceprint-v0.3.0) (2026-06-15)
 
 
