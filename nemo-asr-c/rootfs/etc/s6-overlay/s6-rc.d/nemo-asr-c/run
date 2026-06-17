@@ -6,9 +6,13 @@
 set -euo pipefail
 
 cd /usr/src/app || exit 1
-exec python3 -m wyoming_nemo_asr_c \
-    --uri tcp://0.0.0.0:10370 \
-    --model "$(bashio::config 'model')" \
-    --quantization "$(bashio::config 'quantization')" \
-    --chunk-size "$(bashio::config 'chunk_size')" \
-    "$(bashio::config 'debug_logging' && echo '--debug')"
+
+args=(
+    --uri "tcp://0.0.0.0:10370"
+    --model "$(bashio::config 'model')"
+    --quantization "$(bashio::config 'quantization')"
+    --chunk-size "$(bashio::config 'chunk_size')"
+)
+bashio::config.true 'debug_logging' && args+=(--debug)
+
+exec python3 -m wyoming_nemo_asr_c "${args[@]}"
