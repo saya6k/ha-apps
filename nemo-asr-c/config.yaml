@@ -1,4 +1,4 @@
-version: 0.1.0
+version: 0.2.0
 slug: nemo-asr-c
 name: NeMo ASR (C)
 description: >-
@@ -6,7 +6,6 @@ description: >-
   (nemotron-asr-streaming.c), converts .nemo at boot
 url: https://github.com/kdrkdrkdr/nemotron-asr-streaming.c
 stage: experimental
-# image: ghcr.io/saya6k/{arch}-addon-nemo-asr-c  # uncomment on promote to stable
 arch:
   - amd64
   - aarch64
