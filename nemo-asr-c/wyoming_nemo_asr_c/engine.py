@@ -246,8 +246,6 @@ class NemoCEngine:
             raise RuntimeError(f"nemo_load failed for {bin_path}")
 
         # Set streaming lookahead.
-        self._ctx_obj = self._ctx  # opaque; we set fields via the C API
-        self._att_right = att_right
         self._set_att_right(att_right)
 
         # Cache encoder output dimension (1024 for Nemotron).

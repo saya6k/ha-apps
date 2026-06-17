@@ -186,7 +186,7 @@ jobs:
           ADDON="${{ matrix.addon }}"
 
           # config.yaml version
-          CFG_VER=$(awk '/^version:/ {print $2; exit}' "${ADDON}/config.yaml")
+          CFG_VER=$(awk '/^version:/ {gsub(/"/, "", $2); print $2; exit}' "${ADDON}/config.yaml")
           echo "config.yaml: ${CFG_VER}"
 
           # pyproject.toml version (PEP 621)
@@ -200,7 +200,7 @@ jobs:
           # __init__.py __version__
           PKG_DIR=$(find "${ADDON}" -maxdepth 2 -name '__init__.py' -exec grep -l '__version__' {} \; | head -1)
           if [ -n "${PKG_DIR}" ]; then
-            INIT_VER=$(grep -Po '__version__\s*=\s*"\K[^"]*' "${PKG_DIR}")
+            INIT_VER=$(grep -Po '__version__\s*=\s*"\K[^"]*' "${PKG_DIR}" || grep -Po "__version__\s*=\s*'\K[^']*" "${PKG_DIR}" || true)
             echo "$(dirname "${PKG_DIR}")/__init__.py: ${INIT_VER}"
           else
             INIT_VER=""
