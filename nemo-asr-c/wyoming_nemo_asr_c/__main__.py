@@ -10,7 +10,7 @@ import signal
 import sys
 from functools import partial
 
-from wyoming.info import AsrModel, AsrProgram, Info
+from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 from wyoming.server import AsyncServer, AsyncTcpServer
 
 from . import __version__
@@ -48,6 +48,13 @@ def _build_info(model_repo: str) -> Info:
                     AsrModel(
                         name=model_repo,
                         languages=list(LANGUAGES),
+                        attribution=Attribution(
+                            name="NVIDIA",
+                            url="https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+                        ),
+                        installed=True,
+                        description=None,
+                        version=None,
                     )
                 ],
             )
