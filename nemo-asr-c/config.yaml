@@ -1,4 +1,4 @@
-version: 0.2.15
+version: 0.3.0
 slug: nemo-asr-c
 name: NeMo ASR (C)
 description: >-
@@ -20,7 +20,7 @@ options:
   chunk_size: 320ms
   hf_token: ''
   hotwords: ''
-  hotword_boost: 2.0
+  hotword_boost: 2
 schema:
   model: str
   quantization: list(f32|bf16|q8p)

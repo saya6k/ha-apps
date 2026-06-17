@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.15...nemo-asr-c-v0.3.0) (2026-06-17)
+
+
+### Features
+
+* **nemo-asr-c:** add RNN-T hotword biasing for contextual word boosting ([5b8cf99](https://github.com/saya6k/ha-apps/commit/5b8cf99725825bbf6a77f93dcbbe8a4e5b208493))
+
 ## [0.2.15](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.14...nemo-asr-c-v0.2.15) (2026-06-17)
 
 
