@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.1...livekit-wakeword-v0.2.2) (2026-06-17)
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
 ## [0.2.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.0...livekit-wakeword-v0.2.1) (2026-06-16)
 
 
