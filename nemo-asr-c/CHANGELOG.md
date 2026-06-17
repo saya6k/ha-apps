@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.13](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.12...nemo-asr-c-v0.2.13) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** normalize patch path prefixes for git apply compatibility ([6a9cbbd](https://github.com/saya6k/ha-apps/commit/6a9cbbd2ae0dee4b372b8d72bc387814ba944e17))
+
 ## [0.2.12](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.11...nemo-asr-c-v0.2.12) (2026-06-17)
 
 
