@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.5...nemo-asr-c-v0.3.6) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** buffer audio chunks before feeding C runtime to prevent backpressure ([#122](https://github.com/saya6k/ha-apps/issues/122)) ([5830d92](https://github.com/saya6k/ha-apps/commit/5830d92fa5b73f0d56b6a08f4fc0c41a87b95b05))
+
 ## [0.3.5](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.4...nemo-asr-c-v0.3.5) (2026-06-17)
 
 
