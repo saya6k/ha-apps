@@ -1,9 +1,0 @@
-#!/bin/bash
-# ============================================================================
-# HA devcontainer bootstrap hook — runs once after the container is
-# created/reopened. /sbin/init handles machine-id on 5-apps; this is a
-# minimal placeholder. Add custom setup here as needed.
-# ============================================================================
-set -euo pipefail
-sudo mkdir -p /run/supervisor
-echo "devcontainer ready."
