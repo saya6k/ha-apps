@@ -13,7 +13,7 @@ import ctypes
 import logging
 import os
 import re
-from ctypes import CFUNCTYPE, POINTER, c_char_p, c_float, c_int, c_size_t, c_void_p
+from ctypes import CFUNCTYPE, POINTER, c_char_p, c_float, c_int, c_int32, c_size_t, c_void_p
 from typing import Optional
 
 import numpy as np
@@ -181,7 +181,13 @@ class NemoCEngine:
     One instance per process. Creates per-connection NemoCStream objects.
     """
 
-    def __init__(self, lib_dir: str, bin_path: str, att_right: int = 3) -> None:
+    def __init__(
+        self,
+        lib_dir: str,
+        bin_path: str,
+        att_right: int = 3,
+        tokenizer_path: str | None = None,
+    ) -> None:
         """Load libnemotron_asr.so and the model .bin file.
 
         Args:
@@ -189,6 +195,8 @@ class NemoCEngine:
             bin_path: Path to the converted .bin model file.
             att_right: Encoder right-context in frames (0-13). Controls the
                        streaming lookahead / accuracy-speed trade-off.
+            tokenizer_path: Path to SentencePiece tokenizer.model for hotword
+                            tokenization. Extracted from the .nemo at boot.
         """
         lib_path = os.path.join(lib_dir, "libnemotron_asr.so")
         self._lib = L = ctypes.CDLL(lib_path)
@@ -240,6 +248,12 @@ class NemoCEngine:
         L.nemo_get_att_right.restype = c_int
         L.nemo_get_att_right.argtypes = [c_void_p]
 
+        # ---- Hotword biasing ----
+        L.nemo_set_hotwords.argtypes = [
+            c_void_p, POINTER(c_int32), POINTER(c_int), c_int, c_float,
+        ]
+        L.nemo_set_hotwords.restype = None
+
         # ---- Load model ----
         self._ctx: c_void_p = L.nemo_load(bin_path.encode("utf-8"))
         if not self._ctx:
@@ -252,6 +266,26 @@ class NemoCEngine:
         self._n_mels = 128
         self._n_enc = 1024
 
+        # Load SentencePiece tokenizer for hotword phrase tokenization.
+        self._sp: object | None = None
+        if tokenizer_path and os.path.exists(tokenizer_path):
+            try:
+                import sentencepiece as spm
+                proc = spm.SentencePieceProcessor()
+                if not proc.Load(tokenizer_path):
+                    _LOGGER.warning(
+                        "Tokenizer Load() returned False from %s — hotwords disabled",
+                        tokenizer_path,
+                    )
+                else:
+                    self._sp = proc
+                    _LOGGER.info("Tokenizer loaded: %s", tokenizer_path)
+            except Exception:
+                _LOGGER.warning(
+                    "Failed to load tokenizer from %s — hotwords disabled",
+                    tokenizer_path,
+                )
+
         _LOGGER.info(
             "Engine ready: %s loaded (att_right=%d, threads=%d)",
             bin_path, att_right, L.nemo_get_threads(),
@@ -262,6 +296,41 @@ class NemoCEngine:
         self._lib.nemo_set_att_right(self._ctx, value)
         actual = self._lib.nemo_get_att_right(self._ctx)
         _LOGGER.info("att_right=%d (requested %d)", actual, value)
+
+    def set_hotwords(self, phrases: list[str], boost: float) -> None:
+        """Tokenize phrases and pass token IDs to the C runtime.
+
+        Hotwords are applied globally to the shared model context.  Call once
+        at boot; subsequent calls replace the previous phrase list.
+
+        Args:
+            phrases: List of text phrases (e.g. device names). Must be
+                     lowercase for Nemotron (which outputs lowercase).
+            boost: Logit bonus for matching tokens during greedy decode.
+        """
+        if not phrases or not self._sp:
+            return
+        ids_flat: list[int] = []
+        lens: list[int] = []
+        for phrase in phrases:
+            p = phrase.strip()
+            if not p:
+                continue
+            ids = list(self._sp.EncodeAsIds(p))  # type: ignore[union-attr]
+            if ids:
+                ids_flat.extend(ids)
+                lens.append(len(ids))
+        if not lens:
+            return
+        ids_arr = (ctypes.c_int32 * len(ids_flat))(*ids_flat)
+        lens_arr = (ctypes.c_int * len(lens))(*lens)
+        self._lib.nemo_set_hotwords(
+            self._ctx, ids_arr, lens_arr, len(lens), ctypes.c_float(boost),
+        )
+        _LOGGER.info(
+            "Hotwords set: %d phrase(s) (%d total tokens), boost=%.1f",
+            len(lens), len(ids_flat), boost,
+        )
 
     def create_stream(self, language: str | None = None) -> NemoCStream:
         """Create a new streaming session for one utterance.
