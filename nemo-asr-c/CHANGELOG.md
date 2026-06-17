@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.8...nemo-asr-c-v0.2.9) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** disable zeroconf by default to prevent boot crash ([#94](https://github.com/saya6k/ha-apps/issues/94)) ([26fda73](https://github.com/saya6k/ha-apps/commit/26fda73f3ba4058df86601138cb28f4f1c81868d))
+
 ## [0.2.8](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.7...nemo-asr-c-v0.2.8) (2026-06-17)
 
 
