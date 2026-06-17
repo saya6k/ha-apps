@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -27,6 +28,25 @@ _LOGGER = logging.getLogger(__name__)
 def _repo_slug(repo_id: str) -> str:
     """Turn 'nvidia/nemotron-3.5-asr-streaming-0.6b' into a safe dir name."""
     return repo_id.replace("/", "_")
+
+
+def cleanup_old_models(models_dir: str, repo_id: str) -> None:
+    """Remove model directories that don't match the currently configured repo.
+
+    Each model is ~650 MiB (q8p .bin).  When the user changes the model in
+    config.yaml, the old directory stays on disk forever unless we clean it up.
+    """
+    current_slug = _repo_slug(repo_id)
+    models_path = Path(models_dir)
+    if not models_path.is_dir():
+        return
+    for entry in models_path.iterdir():
+        if not entry.is_dir() or entry.name.startswith("."):
+            continue
+        if entry.name == current_slug:
+            continue
+        _LOGGER.info("Removing unused model: %s", entry)
+        shutil.rmtree(entry)
 
 
 def _find_nemo_file(repo_id: str, token: str | None) -> Path:

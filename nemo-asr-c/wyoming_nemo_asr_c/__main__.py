@@ -25,7 +25,7 @@ from .const import (
 )
 from .engine import NemoCEngine
 from .handler import NemoCHandler
-from .models import ensure_bin
+from .models import cleanup_old_models, ensure_bin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -138,11 +138,12 @@ async def main() -> None:
         )
         att_right = CHUNK_CHOICES[DEFAULT_CHUNK_SIZE]
 
-    # 1. Download .nemo + convert to .bin (cached).
+    # 1. Clean up models from previous configuration, then download + convert.
     _LOGGER.info(
         "Model: %s (quant=%s, chunk=%s)",
         args.model, args.quantization, args.chunk_size,
     )
+    cleanup_old_models(args.model_dir, args.model)
     token = args.hf_token or os.environ.get("HF_TOKEN") or None
     bin_path = ensure_bin(args.model, args.quantization, args.model_dir, token)
     _LOGGER.info("Model .bin ready: %s", bin_path)
