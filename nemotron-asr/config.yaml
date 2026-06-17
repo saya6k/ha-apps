@@ -1,4 +1,4 @@
-version: 0.2.1
+version: 0.2.2
 slug: nemotron-asr
 stage: experimental
 name: Nemotron ASR
@@ -38,5 +38,4 @@ ports:
   10350/tcp: null
 ports_description:
   10350/tcp: Nemotron ASR Wyoming Protocol
-# image: ghcr.io/saya6k/{arch}-addon-nemotron-asr
 homeassistant: 2023.8.0.dev20230718
