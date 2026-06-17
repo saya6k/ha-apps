@@ -11,9 +11,8 @@ configuration:
     name: 가중치 양자화
     description: >-
       변환된 .bin 런타임 파일의 가중치 정밀도입니다. f32 = 양자화 없음 (가장
-      큼, 비트 정확); bf16 = bfloat16 선형 가중치; w8a16 = int8 가중치 + fp16
-      연산; q8p = W8A8 패킹 int8 (기본값, 가장 빠름); q4p = 4비트 패킹.
-      변경하면 다음 시작 시 다시 변환합니다.
+      큼, 비트 정확); bf16 = bfloat16 선형 가중치; q8p = W8A8 패킹 int8 (기본값,
+      가장 빠름). 변경하면 다음 시작 시 다시 변환합니다.
   chunk_size:
     name: 청크 크기 (정확도 vs 속도)
     description: >-

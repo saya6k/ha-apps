@@ -25,15 +25,11 @@ VERSION = 1
 DTYPE_F32 = 1
 DTYPE_BF16 = 2
 DTYPE_Q8P = 4
-DTYPE_W8A16 = 5
-DTYPE_Q4P = 6
 
 QUANT_MAP = {
-    "f32":   (DTYPE_F32,   False, False),
-    "bf16":  (DTYPE_BF16,  True,  False),
-    "w8a16": (DTYPE_W8A16, False, False),  # same as q8p packing, different dtype
-    "q8p":   (DTYPE_Q8P,   False, True),
-    "q4p":   (DTYPE_Q4P,   False, False),  # not yet implemented
+    "f32":  (DTYPE_F32,  False, False),
+    "bf16": (DTYPE_BF16, True,  False),
+    "q8p":  (DTYPE_Q8P,  False, True),
 }
 
 
@@ -114,31 +110,8 @@ def should_write_q8(key: str, tensor: torch.Tensor, enabled: bool) -> bool:
     return should_write_bf16(key, tensor, enabled)
 
 
-def should_write_w8a16(key: str, tensor: torch.Tensor, enabled: bool) -> bool:
-    """W8A16 quantises the same tensors as Q8P (int8 weights, fp16 compute)."""
-    return should_write_bf16(key, tensor, enabled)
+# No w8a16 or q4p — upstream C runtime supports only f32, bf16, q8p.
 
-
-def should_write_q4p(key: str, tensor: torch.Tensor, enabled: bool) -> bool:
-    """Q4P quantises the same tensors as Q8P (4-bit packed weights)."""
-    return should_write_bf16(key, tensor, enabled)
-
-
-def tensor_w8a16_bytes(tensor: torch.Tensor) -> bytes:
-    """W8A16: same packing as Q8P (per-row int8 + f32 scales).
-
-    The compute path differs at runtime (fp16 activations instead of int8), but
-    the storage format is identical.
-    """
-    return tensor_q8p_bytes(tensor)
-
-
-def tensor_q4p_bytes(tensor: torch.Tensor) -> bytes:
-    """Q4P: 4-bit block-wise quantization (not yet implemented)."""
-    raise NotImplementedError(
-        "Q4P quantization is not yet implemented. "
-        "C kernels + converter packing TBD."
-    )
 
 
 def tensor_bf16_bytes(tensor: torch.Tensor) -> bytes:
@@ -182,7 +155,7 @@ def write_model(out_path: Path, cfg: dict, state: dict, quant: str = "f32"):
         out_path: Destination .bin file path.
         cfg: Parsed model_config.yaml.
         state: PyTorch checkpoint state dict.
-        quant: One of "f32", "bf16", "w8a16", "q8p", "q4p".
+        quant: One of "f32", "bf16", "q8p".
     """
     if quant not in QUANT_MAP:
         raise ValueError(f"Unknown quantization: {quant}")
@@ -202,13 +175,7 @@ def write_model(out_path: Path, cfg: dict, state: dict, quant: str = "f32"):
                 raise ValueError(f"tensor name too long: {key}")
             dims = list(tensor.shape)
             dims4 = dims + [1] * (4 - len(dims))
-            if target_dtype == DTYPE_Q4P and should_write_q4p(key, tensor, True):
-                dtype = DTYPE_Q4P
-                raw = tensor_q4p_bytes(tensor)
-            elif target_dtype == DTYPE_W8A16 and should_write_w8a16(key, tensor, True):
-                dtype = DTYPE_W8A16
-                raw = tensor_w8a16_bytes(tensor)
-            elif target_dtype == DTYPE_Q8P and should_write_q8(key, tensor, use_q8p):
+            if target_dtype == DTYPE_Q8P and should_write_q8(key, tensor, use_q8p):
                 dtype = DTYPE_Q8P
                 raw = tensor_q8p_bytes(tensor)
             elif target_dtype == DTYPE_BF16 and should_write_bf16(key, tensor, use_bf16):
@@ -262,9 +229,6 @@ def main():
 
     stem = args.nemo.stem
     for quant in args.quants:
-        if quant == "q4p":
-            print(f"WARNING: {quant} is not yet implemented — skipping", file=__import__("sys").stderr)
-            continue
         out_path = args.output or Path(f"{stem}-{quant}.bin")
         if len(args.quants) > 1 and args.output:
             # If multiple quants with a single output name, derive per-quant names.

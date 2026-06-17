@@ -11,9 +11,9 @@ configuration:
     name: Weight quantization
     description: >-
       Weight precision for the converted .bin runtime file. f32 = no
-      quantization (largest, bit-exact); bf16 = bfloat16 linear weights; w8a16
-      = int8 weights with fp16 compute; q8p = W8A8 packed int8 (default,
-      fastest); q4p = 4-bit packed. Changing this re-converts on next start.
+      quantization (largest, bit-exact); bf16 = bfloat16 linear weights; q8p =
+      W8A8 packed int8 (default, fastest). Changing this re-converts on next
+      start.
   chunk_size:
     name: Chunk size (accuracy vs speed)
     description: >-
