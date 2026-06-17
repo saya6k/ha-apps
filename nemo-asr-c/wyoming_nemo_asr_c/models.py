@@ -73,25 +73,45 @@ def _find_nemo_file(repo_id: str, token: str | None) -> Path:
     )
 
 
+def _invalidate_bin_caches(slug_dir: Path) -> None:
+    """Delete all quantised .bin directories under *slug_dir*."""
+    for entry in slug_dir.iterdir():
+        if entry.is_dir() and not entry.name.startswith("."):
+            _LOGGER.info("Removing stale .bin: %s", entry)
+            shutil.rmtree(entry)
+
+
 def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path:
     """Download the .nemo file from HF, caching in models_dir.
 
-    Returns the path to the cached .nemo file.
+    Always resolves the latest version from HF so upstream model updates are
+    detected.  hf_hub_download handles ETag-based caching internally — unchanged
+    models return instantly from the local HF cache without re-downloading.
     """
     slug = _repo_slug(repo_id)
     cache_dir = Path(models_dir) / slug
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     nemo_path = cache_dir / f"{slug}.nemo"
-    if nemo_path.exists() and nemo_path.stat().st_size > 0:
-        _LOGGER.info("Using cached .nemo: %s", nemo_path)
-        return nemo_path
 
-    _LOGGER.info("Downloading .nemo from %s ...", repo_id)
+    # Always resolve the latest download (ETag-cached by huggingface_hub).
+    _LOGGER.info("Resolving .nemo from %s ...", repo_id)
     downloaded = _find_nemo_file(repo_id, token)
-    # Symlink or copy to our managed cache.
-    if not nemo_path.exists():
-        os.symlink(downloaded, nemo_path)
+
+    if nemo_path.exists():
+        try:
+            if nemo_path.resolve() == Path(downloaded).resolve():
+                _LOGGER.info("Using cached .nemo: %s", nemo_path)
+                return nemo_path
+            _LOGGER.info("Model updated on HF — invalidating .bin caches")
+            nemo_path.unlink()
+            _invalidate_bin_caches(cache_dir)
+        except OSError:
+            _LOGGER.warning("Broken symlink at %s — re-creating", nemo_path)
+            if nemo_path.exists():
+                nemo_path.unlink()
+
+    os.symlink(downloaded, nemo_path)
     _LOGGER.info("Cached .nemo at %s", nemo_path)
     return nemo_path
 
