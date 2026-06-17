@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.10](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.9...nemo-asr-c-v0.2.10) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** add graceful shutdown via s6 down and halt-on-failure finish ([#96](https://github.com/saya6k/ha-apps/issues/96)) ([df9e8c5](https://github.com/saya6k/ha-apps/commit/df9e8c55363a5f6afb62c7247487b174854dcfb1))
+
 ## [0.2.9](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.8...nemo-asr-c-v0.2.9) (2026-06-17)
 
 
