@@ -8,7 +8,7 @@ Guidance for AI coding agents working on the **Nemotron ASR** add-on. Read
 
 A single Home Assistant add-on running **NVIDIA Nemotron 3.5 Streaming ASR
 (0.6B)** as a Wyoming **speech-to-text** service. It runs the **ONNX export**
-([`tonythethompson/Nemotron-3.5-ASR-Streaming-0.6B-ONNX`](https://huggingface.co/tonythethompson/Nemotron-3.5-ASR-Streaming-0.6B-ONNX))
+([`nub235/nemotron-3.5-asr-streaming-onnx`](https://huggingface.co/nub235/nemotron-3.5-asr-streaming-onnx))
 on CPU via `onnxruntime` — no NeMo/PyTorch, no GPU, no CoreML. Created as an
 alternative to sherpa-onnx whose ASR accuracy was unsatisfactory.
 
