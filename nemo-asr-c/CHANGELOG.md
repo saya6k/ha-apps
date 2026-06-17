@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.2...nemo-asr-c-v0.3.3) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** send TranscriptStart on Transcribe, not AudioStart ([#116](https://github.com/saya6k/ha-apps/issues/116)) ([7171bf2](https://github.com/saya6k/ha-apps/commit/7171bf25e0c3bad3715c7533a76d95f0a586da36))
+
 ## [0.3.2](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.1...nemo-asr-c-v0.3.2) (2026-06-17)
 
 
