@@ -1,5 +1,5 @@
---- a/nemotron_asr.h
-+++ b/nemotron_asr.h
+--- nemotron_asr.h
++++ nemotron_asr.h
 @@ -143,6 +143,8 @@
  nemo_ctx_t *nemo_load(const char *model_path);
  void nemo_free(nemo_ctx_t *ctx);
@@ -9,8 +9,8 @@
  char *nemo_transcribe(nemo_ctx_t *ctx, const char *wav_path);
  char *nemo_transcribe_audio(nemo_ctx_t *ctx, const float *samples, int n_samples);
 
---- a/nemotron_asr.c
-+++ b/nemotron_asr.c
+--- nemotron_asr.c
++++ nemotron_asr.c
 @@ -63,6 +63,18 @@
      fprintf(stderr, "nemotron: unknown language '%s' (try en-US, ko-KR, auto)\n", lang);
      return -1;
