@@ -164,9 +164,9 @@ jobs:
             --severity=warning --shell=bash "${FILES[@]}"
 
   # ---------------------------------------------------------------------
-  # Version consistency: __init__.py, pyproject.toml, and config.yaml must
-  # agree on the version string.  Release-please bumps config.yaml +
-  # pyproject.toml; __init__.py is hand-maintained and must match.
+  # Version consistency: pyproject.toml and config.yaml must agree on the
+  # version string.  Release-please bumps both; __init__.py derives its
+  # version from pyproject.toml at runtime.
   # ---------------------------------------------------------------------
   version-check:
     name: Version check (${{ matrix.addon }})
@@ -197,22 +197,9 @@ jobs:
             TOML_VER=""
           fi
 
-          # __init__.py __version__
-          PKG_DIR=$(find "${ADDON}" -maxdepth 2 -name '__init__.py' -exec grep -l '__version__' {} \; | head -1)
-          if [ -n "${PKG_DIR}" ]; then
-            INIT_VER=$(grep -Po '__version__\s*=\s*"\K[^"]*' "${PKG_DIR}" || grep -Po "__version__\s*=\s*'\K[^']*" "${PKG_DIR}" || true)
-            echo "$(dirname "${PKG_DIR}")/__init__.py: ${INIT_VER}"
-          else
-            INIT_VER=""
-          fi
-
           FAIL=0
           if [ -n "${TOML_VER}" ] && [ "${TOML_VER}" != "${CFG_VER}" ]; then
             echo "::error::pyproject.toml version ${TOML_VER} != config.yaml version ${CFG_VER}"
-            FAIL=1
-          fi
-          if [ -n "${INIT_VER}" ] && [ "${INIT_VER}" != "${CFG_VER}" ]; then
-            echo "::error::__init__.py version ${INIT_VER} != config.yaml version ${CFG_VER}"
             FAIL=1
           fi
           exit $FAIL
