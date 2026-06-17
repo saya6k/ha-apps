@@ -18,8 +18,13 @@ first.
    - `Dockerfile` (+ `build.yaml` if needed). s6 silently ignores non-executable
      scripts — add a wildcard `chmod +x` block:
      `RUN shopt -s nullglob && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}`
-   - `rootfs/etc/s6-overlay/s6-rc.d/<slug>/{run,type}` (+ `discovery` oneshot for
-     Wyoming). LF line endings only.
+   - `rootfs/etc/s6-overlay/s6-rc.d/<slug>/{run,finish,type}` (+ `discovery` oneshot
+     for Wyoming). LF line endings only.
+     - `run` — exec the service (see [[conventional-commit]] for go template).
+     - **`finish` — MUST use the 3-way template below.** The common copy-paste
+       `halt`-on-any-error pattern causes a restart loop on bootstrap failure
+       (model download, dependency, etc.). Distinguish transient exits (signal /
+       exit 0 → halt) from permanent failure (exit >0 → stay down).
    - `translations/{en,ko}.yaml` for the option UI strings.
    - `AGENTS.md` (deep invariants/build/don'ts), `DOCS.md` (user knobs),
      `CHANGELOG.md`, `README.md`. Symlink `CLAUDE.md -> AGENTS.md`.
@@ -43,6 +48,58 @@ first.
   but NOT in the directory slug.
 - An unregistered slug = release-please can't route its commits. Don't skip
   step 2.
+
+## s6 finish template
+
+Every app's `rootfs/etc/s6-overlay/s6-rc.d/<slug>/finish` must use this pattern.
+The common copy-paste from s6-overlay docs halts on **any** non-zero exit, which
+causes a restart loop when a startup dependency (model download, C library, etc.)
+fails permanently. This template distinguishes transient from permanent:
+
+```bash
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Service finish handler.
+#
+# s6-supervise restarts the service ONLY when finish exits 0.  Bootstrap /
+# non-transient failures exit non-zero -> service stays down (no restart loop).
+# A manual add-on stop sends SIGTERM -> the run script exits cleanly (0) or is
+# killed by signal (256).  Both are transient -> halt the container.
+# ==============================================================================
+# shellcheck disable=SC2155
+readonly exit_code_container=$(</run/s6-linux-init-container-results/exitcode)
+readonly exit_code_service="${1}"
+readonly exit_code_signal="${2}"
+
+bashio::log.info \
+  "Service exited with code ${exit_code_service}" \
+  "(by signal ${exit_code_signal})"
+
+if [[ "${exit_code_signal}" -ne 0 ]]; then
+  # Killed by signal — transient (manual stop / resource limit).  Halt.
+  if [[ "${exit_code_container}" -eq 0 ]]; then
+    echo $((128 + exit_code_signal)) > /run/s6-linux-init-container-results/exitcode
+  fi
+  exec /run/s6/basedir/bin/halt
+elif [[ "${exit_code_service}" -eq 0 ]]; then
+  # Clean exit — transient (graceful shutdown).  Halt.
+  exec /run/s6/basedir/bin/halt
+else
+  # Non-zero exit — permanent failure (bootstrap, model download, conversion,
+  # etc.).  Exit non-zero so s6-supervise does NOT restart.  Container stays up
+  # so the user can read logs via the HA UI and fix the configuration.
+  bashio::log.error \
+    "<slug>: permanent failure (exit ${exit_code_service}) —" \
+    "service will not be restarted. Fix the configuration and restart the add-on."
+  if [[ "${exit_code_container}" -eq 0 ]]; then
+    echo "${exit_code_service}" > /run/s6-linux-init-container-results/exitcode
+  fi
+  exit "${exit_code_service}"
+fi
+```
+
+Replace `<slug>` with the app directory name.
 
 ## Output format
 - A checklist of files created and each registration touched, with anything
