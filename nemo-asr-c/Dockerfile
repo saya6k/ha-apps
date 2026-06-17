@@ -78,7 +78,7 @@ COPY tools/ /usr/src/app/tools/
 
 COPY rootfs /
 
-RUN chmod +x /etc/s6-overlay/s6-rc.d/*/run /etc/s6-overlay/s6-rc.d/*/up /etc/s6-overlay/s6-rc.d/*/finish /etc/s6-overlay/s6-rc.d/*/down
+RUN shopt -s nullglob && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}
 
 HEALTHCHECK --start-period=10m \
     CMD echo '{ "type": "describe" }' \
