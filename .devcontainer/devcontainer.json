@@ -1,11 +1,13 @@
 {
-  "name": "ha-apps (Home Assistant add-ons)",
+  "name": "ha-apps (Home Assistant apps)",
   "image": "ghcr.io/home-assistant/devcontainer:2-addons",
+  "overrideCommand": false,
+  "remoteUser": "vscode",
   "appPort": [
     "7123:8123",
     "7357:4357"
   ],
-  "postStartCommand": "sudo mkdir -p /run/supervisor && bash devcontainer_bootstrap",
+  "postStartCommand": "bash devcontainer_bootstrap",
   "runArgs": [
     "-e",
     "GIT_EDITOR=code --wait",
@@ -14,7 +16,8 @@
   "workspaceFolder": "/mnt/supervisor/addons/local/${localWorkspaceFolderBasename}",
   "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
   "containerEnv": {
-    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}"
+    "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}",
+    "SUPERVISOR_CHANNEL": "beta"
   },
   "customizations": {
     "vscode": {
@@ -39,6 +42,8 @@
   },
   "mounts": [
     "type=volume,target=/var/lib/docker",
-    "type=volume,target=/mnt/supervisor"
+    "type=volume,target=/var/lib/containerd",
+    "type=volume,target=/mnt/supervisor",
+    "type=tmpfs,target=/tmp"
   ]
 }
