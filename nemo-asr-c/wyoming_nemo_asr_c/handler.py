@@ -1,9 +1,8 @@
 """Wyoming protocol handler for nemo-asr-c.
 
-Streaming ASR: AudioStart -> TranscriptStart, each AudioChunk -> incremental
-TranscriptChunk deltas, AudioStop -> TranscriptStop + final Transcript.
-
-Follows the nemotron-asr streaming pattern closely.
+Streaming ASR: TranscriptStart on Transcribe (acknowledges session),
+incremental TranscriptChunk deltas per encoder chunk,
+TranscriptStop + final Transcript on AudioStop.
 """
 
 from __future__ import annotations
@@ -56,7 +55,6 @@ class NemoCHandler(AsyncEventHandler):
         self._n_samples: int = 0
         self._last_emitted: str = ""
         self._have_lock: bool = False
-        self._streaming: bool = True  # always streaming for this add-on
 
     async def handle_event(self, event: Event) -> bool:
         try:
@@ -65,14 +63,19 @@ class NemoCHandler(AsyncEventHandler):
                 return True
 
             if event.type == "transcribe":
-                # Wyoming Transcribe event carries an optional language override.
                 data = event.data if hasattr(event, "data") else {}
                 lang = data.get("language") if isinstance(data, dict) else None
                 if lang:
                     self._language = lang
+                _LOGGER.info("Transcribe request (language=%s)", self._language)
+                # Streaming protocol: acknowledge session before client sends audio.
+                await self.write_event(
+                    TranscriptStart(language=self._language).event()
+                )
                 return True
 
             if AudioStart.is_type(event.type):
+                _LOGGER.info("Utterance start")
                 await self._start()
                 return True
 
@@ -81,9 +84,11 @@ class NemoCHandler(AsyncEventHandler):
                 return True
 
             if AudioStop.is_type(event.type):
+                _LOGGER.info("Utterance stop")
                 await self._stop()
                 return True
 
+            _LOGGER.debug("Unhandled event type: %s", event.type)
             return True
         except (ConnectionResetError, BrokenPipeError, asyncio.IncompleteReadError):
             _LOGGER.debug("Client disconnected")
@@ -102,10 +107,6 @@ class NemoCHandler(AsyncEventHandler):
         self._n_samples = 0
         self._last_emitted = ""
         self._stream = self._engine.create_stream(self._language)
-        if self._streaming:
-            await self.write_event(
-                TranscriptStart(language=self._language).event()
-            )
 
     async def _feed(self, chunk: AudioChunk) -> None:
         if self._stream is None:
@@ -114,17 +115,15 @@ class NemoCHandler(AsyncEventHandler):
         self._n_samples += samples.size
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, self._stream.accept_audio, samples)
-        if self._streaming:
-            await self._emit_delta()
+        await self._emit_delta()
 
     async def _stop(self) -> None:
         try:
             if self._stream is not None:
                 loop = asyncio.get_running_loop()
                 await loop.run_in_executor(None, self._stream.finalize)
-                if self._streaming:
-                    await self._emit_delta()
-                    await self.write_event(TranscriptStop().event())
+                await self._emit_delta()
+                await self.write_event(TranscriptStop().event())
                 text = self._stream.text()
                 await self.write_event(
                     Transcript(text=text, language=self._language).event()
