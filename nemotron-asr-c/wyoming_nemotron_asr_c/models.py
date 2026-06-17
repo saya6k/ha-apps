@@ -101,19 +101,55 @@ def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path
     if nemo_path.exists():
         try:
             if nemo_path.resolve() == Path(downloaded).resolve():
-                _LOGGER.info("Using cached .nemo: %s", nemo_path)
-                return nemo_path
-            _LOGGER.info("Model updated on HF — invalidating .bin caches")
-            nemo_path.unlink()
-            _invalidate_bin_caches(cache_dir)
+                # Validate that the cached file is a real .nemo (not a stale Xet
+                # pointer file from an older huggingface_hub).
+                if _is_gzip_file(nemo_path):
+                    _LOGGER.info("Using cached .nemo: %s", nemo_path)
+                    return nemo_path
+                _LOGGER.warning(
+                    "Cached .nemo is not a valid gzip archive (likely a stale "
+                    "Xet pointer file). Re-downloading."
+                )
+                nemo_path.unlink()
+                _invalidate_bin_caches(cache_dir)
+            else:
+                _LOGGER.info("Model updated on HF — invalidating .bin caches")
+                nemo_path.unlink()
+                _invalidate_bin_caches(cache_dir)
         except OSError:
             _LOGGER.warning("Broken symlink at %s — re-creating", nemo_path)
             if nemo_path.exists():
                 nemo_path.unlink()
 
+    # Remove any existing entry (regular file, symlink, or broken symlink)
+    # before creating the new symlink.  Broken symlinks are NOT reported by
+    # Path.exists(), so the OSError handler above cannot reach them.
+    nemo_path.unlink(missing_ok=True)
     os.symlink(downloaded, nemo_path)
+
+    # Validate the downloaded file is a real .nemo archive.
+    if not _is_gzip_file(nemo_path):
+        nemo_path.unlink()
+        raise RuntimeError(
+            f"Downloaded file from {repo_id} is not a valid .nemo (gzip) archive. "
+            "This may be a Xet pointer file — upgrade huggingface_hub to >=0.32."
+        )
     _LOGGER.info("Cached .nemo at %s", nemo_path)
     return nemo_path
+
+
+def _is_gzip_file(path: Path) -> bool:
+    """Check that a file is a valid gzip archive (not a Xet pointer file).
+
+    Xet pointer files start with './' — they're plain text, not gzip.
+    A real .nemo is a gzipped tar archive starting with \\x1f\\x8b.
+    """
+    try:
+        with open(path, "rb") as f:
+            header = f.read(2)
+        return header == b"\x1f\x8b"
+    except OSError:
+        return False
 
 
 def convert_to_bin(nemo_path: Path, quant: str, output_dir: Path) -> Path:
