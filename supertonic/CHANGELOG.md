@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.0...supertonic-v2.2.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
 ## [2.2.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.1.1...supertonic-v2.2.0) (2026-06-16)
 
 
