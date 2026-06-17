@@ -16,9 +16,7 @@ Weight precision of the converted `.bin` runtime file.
 |---|---|
 | `f32` | Float32 — no quantization, bit-exact, largest |
 | `bf16` | BFloat16 linear weights — ~half size |
-| `w8a16` | Int8 weights + fp16 compute (planned) |
 | `q8p` | W8A8 packed int8 — default, fastest |
-| `q4p` | 4-bit packed (planned) |
 
 ### `chunk_size` (list)
 

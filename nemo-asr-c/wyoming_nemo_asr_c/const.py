@@ -22,20 +22,16 @@ SAMPLE_RATE = 16000
 QuantSpec = namedtuple("QuantSpec", ["label", "weight_bits", "activation", "implemented"])
 
 QUANTS: dict[str, QuantSpec] = {
-    "f32":   QuantSpec("Float32",              32, "f32",  True),
-    "bf16":  QuantSpec("BFloat16",             16, "f32",  True),
-    "w8a16": QuantSpec("W8A16 (int8 weights)",  8, "f16",  False),
-    "q8p":   QuantSpec("Q8P (W8A8 packed)",     8, "int8", True),
-    "q4p":   QuantSpec("Q4P (4-bit packed)",    4, "int8", False),
+    "f32":  QuantSpec("Float32",          32, "f32",  True),
+    "bf16": QuantSpec("BFloat16",         16, "f32",  True),
+    "q8p":  QuantSpec("Q8P (W8A8 packed)", 8, "int8", True),
 }
 
 # Converter flag per quant key (matches convert_nemo.py --*-linear-weights).
 QUANT_CONVERTER_FLAGS: dict[str, str | None] = {
-    "f32":   None,                      # default (no flag)
-    "bf16":  "--bf16-linear-weights",
-    "w8a16": "--w8a16-linear-weights",  # not yet supported by converter
-    "q8p":   "--w8a8-linear-weights",
-    "q4p":   "--q4p-linear-weights",    # not yet supported by converter
+    "f32":  None,                      # default (no flag)
+    "bf16": "--bf16-linear-weights",
+    "q8p":  "--w8a8-linear-weights",
 }
 
 # ---- Chunk size presets ----

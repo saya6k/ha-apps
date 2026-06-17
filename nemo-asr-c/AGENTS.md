@@ -60,12 +60,9 @@ rootfs/.../s6-rc.d/             nemo-asr-c (longrun) + discovery (oneshot)
 |---|---|---|---|---|
 | `f32` | Float32 | 32 | f32 | Bit-exact reference |
 | `bf16` | BFloat16 | 16 | f32 | Linear weights only |
-| `w8a16` | W8A16 | 8 | f16 | Int8 weights, fp16 compute (TBD — not in upstream) |
 | `q8p` | Q8P (W8A8) | 8 | int8 | Packed per-row int8, default |
-| `q4p` | Q4P | 4 | int8 | 4-bit packed (TBD — not in upstream) |
 
-Upstream ships: f32, bf16, q8p (W8A8 Q8P packed). w8a16 and q4p are planned
-and require new quantization code in convert_nemo.py + new C kernels.
+Upstream ships: f32, bf16, q8p (W8A8 Q8P packed).
 
 ## Build (Dockerfile)
 
@@ -80,10 +77,8 @@ and require new quantization code in convert_nemo.py + new C kernels.
 Vendored from upstream. Depends on **PyTorch** (`torch.load` for the .ckpt) and
 **PyYAML** (`model_config.yaml`). Runs at boot inside the add-on container.
 
-Key modifications needed (vs upstream):
+Key modifications vs upstream:
 - Output multiple quantization formats in one invocation
-- W8A16 quantization (new)
-- Q4P quantization (new)
 
 ## Sanity checks before PR
 
