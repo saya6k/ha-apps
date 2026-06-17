@@ -35,14 +35,6 @@ def _find_nemo_file(repo_id: str, token: str | None) -> Path:
     The converter needs the exact filename. We download to a temp name first,
     then detect the real filename from the download result.
     """
-    dest = hf_hub_download(
-        repo_id=repo_id,
-        filename=None,  # let HF resolve
-        token=token,
-        cache_dir=None,
-    )
-    # hf_hub_download with filename=None returns a path; we need to find .nemo
-    # among the repo files. Instead, list the repo and pick the first .nemo.
     from huggingface_hub import list_repo_files
 
     files = list_repo_files(repo_id, token=token)
