@@ -147,12 +147,11 @@ async def main() -> None:
         )
         att_right = CHUNK_CHOICES[DEFAULT_CHUNK_SIZE]
 
-    # 1. Clean up models from previous configuration, then download + convert.
+    # 1. Download + convert (before cleanup — keep old model as fallback).
     _LOGGER.info(
         "Model: %s (quant=%s, chunk=%s)",
         args.model, args.quantization, args.chunk_size,
     )
-    cleanup_old_models(args.model_dir, args.model)
     token = args.hf_token or os.environ.get("HF_TOKEN") or None
     bin_path = ensure_bin(args.model, args.quantization, args.model_dir, token)
     _LOGGER.info("Model .bin ready: %s", bin_path)
@@ -165,7 +164,7 @@ async def main() -> None:
         Path(args.model_dir) / slug,
     )
 
-    # 2. Load C engine.
+    # 2. Load C engine (before cleanup — verify new model works first).
     _LOGGER.info("Loading C engine from %s ...", bin_path)
     engine = NemoCEngine(
         args.lib_dir, str(bin_path),
@@ -195,14 +194,17 @@ async def main() -> None:
         _LOGGER.info("Warming up ...")
         engine.warmup(args.language)
 
-        # 4. Build Wyoming Info.
+        # 4. New model fully verified — safe to remove old ones.
+        cleanup_old_models(args.model_dir, args.model)
+
+        # 5. Build Wyoming Info.
         wyoming_info = _build_info(args.model)
 
-        # 5. Start TCP server.
+        # 6. Start TCP server.
         server = AsyncServer.from_uri(args.uri)
         _LOGGER.info("Starting server on %s", args.uri)
 
-        # 6. Optional Zeroconf registration.
+        # 7. Optional Zeroconf registration.
         if args.zeroconf:
             if not isinstance(server, AsyncTcpServer):
                 raise ValueError("Zeroconf requires a tcp:// URI")
@@ -214,7 +216,7 @@ async def main() -> None:
             await hass_zc.register_server()
             _LOGGER.info("Zeroconf registered as %s", args.zeroconf)
 
-        # 7. Run server.
+        # 8. Run server.
         server_task = asyncio.create_task(
             server.run(partial(NemoCHandler, wyoming_info, args, engine))
         )
