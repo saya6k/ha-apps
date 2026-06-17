@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.3...nemo-asr-cpp-v0.3.4) (2026-06-17)
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
 ## [0.3.3](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.2...nemo-asr-cpp-v0.3.3) (2026-06-17)
 
 
