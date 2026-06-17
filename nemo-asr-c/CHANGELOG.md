@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.4...nemo-asr-c-v0.2.5) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** fix debug_logging flag concatenation in run script ([bf03661](https://github.com/saya6k/ha-apps/commit/bf03661c3cc9f967a9077aa0c9f7f9f93aa34bdc))
+
 ## [0.2.4](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.3...nemo-asr-c-v0.2.4) (2026-06-17)
 
 
