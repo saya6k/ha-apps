@@ -99,8 +99,8 @@ def _parse_args() -> argparse.Namespace:
         help="HuggingFace access token for gated/private repos",
     )
     parser.add_argument(
-        "--zeroconf", default="nemo-asr-c",
-        help="Zeroconf service name (empty to disable)",
+        "--zeroconf", default=None,
+        help="Zeroconf service name (omit to disable)",
     )
     parser.add_argument(
         "--debug", action="store_true",
