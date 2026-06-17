@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.9](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.8...nemotron-asr-c-v0.3.9) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** prevent restart loop on bootstrap failure, support Xet models ([f178b29](https://github.com/saya6k/ha-apps/commit/f178b29035a8928407ecd5455317868d702e84cb))
+
 ## [0.3.8](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.7...nemotron-asr-c-v0.3.8) (2026-06-17)
 
 
