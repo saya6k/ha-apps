@@ -3,8 +3,8 @@
 # runs natively per arch, so SIMD kernels (AVX2 / NEON) match the target CPU.
 ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:trixie
 
-# Pin upstream nemotron-asr-streaming.c commit. Bump to follow upstream.
-ARG NEMOTRON_C_REF=main
+# Pin upstream nemotron-asr-streaming.c commit (branch w8a8). Bump to follow.
+ARG NEMOTRON_C_REF=4fde8b47cdc00c3544135c9d8f38c3f66a8431e6
 
 # ---- builder: compile libnemotron_asr.so from source ----
 FROM ${BUILD_FROM} AS builder
@@ -20,7 +20,7 @@ RUN \
         ca-certificates
 
 WORKDIR /src
-RUN git clone --depth 1 https://github.com/kdrkdrkdr/nemotron-asr-streaming.c.git . \
+RUN git clone https://github.com/kdrkdrkdr/nemotron-asr-streaming.c.git . \
     && git checkout "${NEMOTRON_C_REF}"
 
 # Vendored patches: shared-library build target (+ any future patches).
