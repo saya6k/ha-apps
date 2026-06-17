@@ -16,7 +16,8 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind,consistency=cached",
   "containerEnv": {
     "WORKSPACE_DIRECTORY": "${containerWorkspaceFolder}",
-    "SUPERVISOR_CHANNEL": "beta"
+    "SUPERVISOR_CHANNEL": "beta",
+    "SUPERVISOR_UNCONFINED": "true"
   },
   "customizations": {
     "vscode": {
