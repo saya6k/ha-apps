@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.3.0...nemo-asr-c-v0.3.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **nemo-asr-c:** replace typeof() casts with plain void* assigns for -pedantic ([33b904c](https://github.com/saya6k/ha-apps/commit/33b904cb6a4f4e7f5af174538e8ca18fdda3a44a))
+
 ## [0.3.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.15...nemo-asr-c-v0.3.0) (2026-06-17)
 
 
