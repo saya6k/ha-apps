@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.15](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.14...nemo-asr-c-v0.2.15) (2026-06-17)
+
+
+### Code Refactoring
+
+* **nemo-asr-c:** remove unimplemented w8a16 and q4p quantization stubs ([#108](https://github.com/saya6k/ha-apps/issues/108)) ([43b7e70](https://github.com/saya6k/ha-apps/commit/43b7e7041f2f8b2b5688c35c587273a079b8b030))
+
 ## [0.2.14](https://github.com/saya6k/ha-apps/compare/nemo-asr-c-v0.2.13...nemo-asr-c-v0.2.14) (2026-06-17)
 
 
