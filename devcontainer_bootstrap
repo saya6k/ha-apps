@@ -9,7 +9,13 @@
 set -euo pipefail
 
 # Regenerate machine-id so D-Bus works inside the container.
-sudo dbus-uuidgen --ensure=/etc/machine-id 2>/dev/null || true
+# dbus-uuidgen may not exist on newer images (5-apps uses /sbin/init).
+if command -v dbus-uuidgen &>/dev/null; then
+    sudo dbus-uuidgen --ensure=/etc/machine-id 2>/dev/null || true
+elif [ ! -s /etc/machine-id ]; then
+    sudo sh -c 'uuidgen > /etc/machine-id' 2>/dev/null || \
+    sudo sh -c 'cat /proc/sys/kernel/random/uuid > /etc/machine-id' 2>/dev/null || true
+fi
 
 # Ensure /run/supervisor exists (Supervisor binds it).
 sudo mkdir -p /run/supervisor
