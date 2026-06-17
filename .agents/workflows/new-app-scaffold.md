@@ -15,8 +15,9 @@ first.
    - `config.yaml` (slug, name, `stage`, `arch: [amd64, aarch64]`, options +
      schema, ports; `discovery: [wyoming]` for Wyoming services). `config.yaml`
      lives only at the subproject root.
-   - `Dockerfile` (+ `build.yaml` if needed). The s6 scripts get a `chmod +x`
-     block in the `Dockerfile` — s6 silently ignores non-executable scripts.
+   - `Dockerfile` (+ `build.yaml` if needed). s6 silently ignores non-executable
+     scripts — add a wildcard `chmod +x` block:
+     `RUN chmod +x /etc/s6-overlay/s6-rc.d/*/run /etc/s6-overlay/s6-rc.d/*/up /etc/s6-overlay/s6-rc.d/*/finish /etc/s6-overlay/s6-rc.d/*/down`
    - `rootfs/etc/s6-overlay/s6-rc.d/<slug>/{run,type}` (+ `discovery` oneshot for
      Wyoming). LF line endings only.
    - `translations/{en,ko}.yaml` for the option UI strings.
