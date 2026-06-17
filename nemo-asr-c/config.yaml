@@ -19,11 +19,15 @@ options:
   quantization: q8p
   chunk_size: 320ms
   hf_token: ''
+  hotwords: ''
+  hotword_boost: 2.0
 schema:
   model: str
   quantization: list(f32|bf16|q8p)
   chunk_size: list(80ms|160ms|320ms|560ms|1120ms)
   hf_token: password?
+  hotwords: str?
+  hotword_boost: float?
   debug_logging: bool?
 ports:
   10370/tcp: null

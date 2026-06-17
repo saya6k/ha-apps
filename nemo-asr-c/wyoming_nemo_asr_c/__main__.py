@@ -17,6 +17,7 @@ from . import __version__
 from .const import (
     CHUNK_CHOICES,
     DEFAULT_CHUNK_SIZE,
+    HOTWORD_BOOST_DEFAULT,
     LANGUAGES,
     LIB_DIR,
     MODELS_DIR,
@@ -25,7 +26,7 @@ from .const import (
 )
 from .engine import NemoCEngine
 from .handler import NemoCHandler
-from .models import cleanup_old_models, ensure_bin
+from .models import cleanup_old_models, ensure_bin, extract_tokenizer
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -106,6 +107,14 @@ def _parse_args() -> argparse.Namespace:
         help="Zeroconf service name (omit to disable)",
     )
     parser.add_argument(
+        "--hotwords", default="",
+        help="Newline-separated hotword phrases for contextual biasing",
+    )
+    parser.add_argument(
+        "--hotword-boost", type=float, default=HOTWORD_BOOST_DEFAULT,
+        help=f"Logit bonus per hotword token during greedy decode (default: {HOTWORD_BOOST_DEFAULT})",
+    )
+    parser.add_argument(
         "--debug", action="store_true",
         help="Enable debug logging",
     )
@@ -148,10 +157,27 @@ async def main() -> None:
     bin_path = ensure_bin(args.model, args.quantization, args.model_dir, token)
     _LOGGER.info("Model .bin ready: %s", bin_path)
 
+    # Extract SentencePiece tokenizer for hotword biasing.
+    from pathlib import Path
+    slug = args.model.replace("/", "_")
+    tok_path = extract_tokenizer(
+        Path(args.model_dir) / slug / f"{slug}.nemo",
+        Path(args.model_dir) / slug,
+    )
+
     # 2. Load C engine.
     _LOGGER.info("Loading C engine from %s ...", bin_path)
-    engine = NemoCEngine(args.lib_dir, str(bin_path), att_right=att_right)
+    engine = NemoCEngine(
+        args.lib_dir, str(bin_path),
+        att_right=att_right,
+        tokenizer_path=str(tok_path) if tok_path else None,
+    )
     try:
+        # Set hotwords if configured.
+        hotwords = [w.strip() for w in args.hotwords.split("\n") if w.strip()]
+        if hotwords:
+            engine.set_hotwords(hotwords, args.hotword_boost)
+
         # Set thread count.
         cpu_count = os.cpu_count() or 4
         engine.set_threads(min(cpu_count, 16))

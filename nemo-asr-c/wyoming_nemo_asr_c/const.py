@@ -47,6 +47,9 @@ CHUNK_CHOICES: dict[str, int] = {
 
 DEFAULT_CHUNK_SIZE = "320ms"
 
+# ---- Hotword biasing ----
+HOTWORD_BOOST_DEFAULT = 2.0
+
 # ---- Languages (advertised in Wyoming Info) ----
 LANGUAGES = [
     "ar", "bg", "cs", "da", "de", "el", "en", "es", "et", "fi",

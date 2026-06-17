@@ -177,3 +177,35 @@ def ensure_bin(
     bin_path = convert_to_bin(nemo_path, quant, output_dir)
 
     return bin_path
+
+
+def extract_tokenizer(nemo_path: Path, output_dir: Path) -> Path | None:
+    """Extract SentencePiece tokenizer.model from a .nemo archive.
+
+    The .nemo is a tar.gz containing model_config.yaml, model_weights.ckpt,
+    and tokenizer.model.  We extract the tokenizer so the engine can tokenize
+    hotword phrases at runtime.
+
+    Returns the path to tokenizer.model, or None if extraction failed.
+    """
+    import tarfile
+
+    tok_path = output_dir / "tokenizer.model"
+    if tok_path.exists():
+        return tok_path
+    try:
+        with tarfile.open(nemo_path, "r:gz") as tar:
+            for m in tar.getmembers():
+                if m.name.endswith("tokenizer.model"):
+                    with tar.extractfile(m) as src:
+                        if src is None:
+                            continue
+                        with tok_path.open("wb") as fp:
+                            shutil.copyfileobj(src, fp)
+                    _LOGGER.info("Extracted tokenizer to %s", tok_path)
+                    return tok_path
+    except Exception:
+        _LOGGER.warning(
+            "Could not extract tokenizer.model from %s", nemo_path,
+        )
+    return None
