@@ -236,6 +236,7 @@ class NemoCEngine:
 
         # ---- Streaming lookahead ----
         L.nemo_set_att_right.argtypes = [c_void_p, c_int]
+        L.nemo_set_att_right.restype = None  # void — must be explicit for ctypes
         L.nemo_get_att_right.restype = c_int
         L.nemo_get_att_right.argtypes = [c_void_p]
 
