@@ -132,7 +132,8 @@ def ensure_nemo(repo_id: str, models_dir: str, token: str | None = None) -> Path
         nemo_path.unlink()
         raise RuntimeError(
             f"Downloaded file from {repo_id} is not a valid .nemo (gzip) archive. "
-            "This may be a Xet pointer file — upgrade huggingface_hub to >=0.32."
+            "This may be a Xet pointer file — install huggingface_hub with the "
+            "hf-xet extra: pip install 'huggingface_hub[hf-xet]>=0.32'"
         )
     _LOGGER.info("Cached .nemo at %s", nemo_path)
     return nemo_path
