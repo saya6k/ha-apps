@@ -37,8 +37,8 @@ jobs:
         uses: dorny/paths-filter@v4
         with:
           filters: |
-            nemo-asr-c:
-              - 'nemo-asr-c/**'
+            nemotron-asr-c:
+              - 'nemotron-asr-c/**'
             nemo-asr-cpp:
               - 'nemo-asr-cpp/**'
             supertonic:

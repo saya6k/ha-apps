@@ -13,7 +13,7 @@ change never reaches a CHANGELOG. The authoritative tables live in
 1. Inspect what changed: `git status --porcelain` / `git diff --cached --stat`.
 2. **Map paths → scope** (exactly one per commit):
    - a single app dir → that app's slug
-     (`livekit-wakeword`, `nemo-asr-c`, `nemo-asr-cpp`, `nemotron-asr`,
+     (`livekit-wakeword`, `nemotron-asr-c, `nemotron-asr-cp`, `nemotron-asr-c`,
      `supertonic`, `voiceprint`, `wardrowbe`, `zensical`)
    - `.github/`, root docs, `repository.yaml`, `.gitignore` → `repo`
 3. **If the change spans multiple apps, split it** into one commit per scope

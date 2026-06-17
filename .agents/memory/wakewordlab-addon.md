@@ -51,4 +51,4 @@ ubermorgen.land (Ubermorgen LTD; GitHub org profile only, not in the repo).
   English/CMUdict-biased → add manual Korean negatives; README admits
   multilingual accuracy < English (English-trained embeddings).
 
-Related: [[nemotron-asr-addon]]
+Related: [[nemotron-asr-c-addon]]

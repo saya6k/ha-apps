@@ -18,6 +18,7 @@ and release cycle.
 
 | Directory | Add-on |
 | --- | --- |
+| [`nemotron-asr-c/`](nemotron-asr-c/) | Buffered Wyoming STT running NVIDIA Nemotron ASR on a pure C runtime ([`kdrkdrkdr/nemotron-asr-streaming.c`](https://github.com/kdrkdrkdr/nemotron-asr-streaming.c)), with hotword boosting. |
 | [`nemo-asr-cpp/`](nemo-asr-cpp/) | Streaming Wyoming STT running NVIDIA Nemotron ASR on the ggml runtime via [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp), with hotword boosting. |
 | [`supertonic/`](supertonic/) | Lightweight multilingual Wyoming TTS service running the [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) engine. |
 | [`voiceprint/`](voiceprint/) | Speaker-verifying Wyoming STT proxy — a pass-through gate that only forwards utterances from enrolled voices to a downstream ASR. |

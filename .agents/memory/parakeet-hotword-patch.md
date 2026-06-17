@@ -39,4 +39,4 @@ bump to **5→6** (upstream now owns 5), rebase the hotword hunks onto the new
 context (`git apply --reject`). Upstream still has no hotword PR/issue, so the
 patch can't be dropped yet.
 
-Related: [[nemotron-asr-addon]]
+Related: [[nemotron-asr-c-addon]]

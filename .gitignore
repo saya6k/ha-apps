@@ -73,9 +73,8 @@ super-linter-output/
 /[!.]*/
 # Registered apps — tracked:
 !/livekit-wakeword/
-!/nemo-asr-c/
+!/nemotron-asr-c/
 !/nemo-asr-cpp/
-!/nemotron-asr/
 !/supertonic/
 !/voiceprint/
 !/wardrowbe/

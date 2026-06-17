@@ -12,7 +12,7 @@ body:
       description: Which add-on does this affect?
       options:
         - livekit-wakeword
-        - nemo-asr-c
+        - nemotron-asr-c
         - nemo-asr-cpp
         - nemotron-asr
         - supertonic

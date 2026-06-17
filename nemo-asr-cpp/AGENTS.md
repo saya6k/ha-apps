@@ -9,14 +9,14 @@ edit `AGENTS.md`, the symlink follows.
 A Home Assistant add-on for **streaming, hotword-boosted** speech-to-text over
 Wyoming, running NVIDIA NeMo streaming ASR on the **ggml** runtime via
 [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp) (C++/GGUF). It's
-the **fast/light** sibling of the `nemotron-asr` add-on (which runs Nemotron on
-onnxruntime): ggml is ~1.4× faster on CPU and the q4_k GGUF is ~720 MB
+the **fast/light** sibling of the `nemotron-asr-c` add-on (which runs Nemotron on
+a pure C runtime): ggml is ~1.4× faster on CPU and the q4_k GGUF is ~720 MB
 (vs ~1.5 GB) — chosen for resource-limited HAOS (N100, Pi 4/5).
 
 The add-on's identity is **streaming + hotword boost**, so every entry in the
 `model` dropdown (`const.MODELS`) is a streaming RNN-T transducer our vendored
 hotword patch can bias. Current models: **Nemotron 3.5 Streaming 0.6b**
-(multilingual, the only entry; same Korean/40-locale support as `nemotron-asr`).
+(multilingual, the only entry; same Korean/40-locale support as `nemotron-asr-c`).
 parakeet.cpp auto-detects the architecture from the GGUF and `decoder=0` picks
 the right head, so the engine is model-agnostic — `ModelSpec` flags
 (`multilingual`, `hotwords`) only drive UX/metadata.

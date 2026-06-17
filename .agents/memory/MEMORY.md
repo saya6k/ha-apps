@@ -1,6 +1,5 @@
 # Memory index
 
-- [nemotron-asr add-on](nemotron-asr-addon.md) — new ONNX/CPU Wyoming STT add-on replacing sherpa-onnx; scaffolded, validated, experimental/local-only
 - [container runtime preference](container-runtime-preference.md) — use Docker Desktop on this Mac; podman + Apple container CLI both removed 2026-06-15 to free space
 - [devcontainer HA boot](devcontainer-ha-boot.md) — boot HA via scripts/devcontainer-ha.sh; 3 gotchas (entrypoint idles, no manual dockerd, supervisor_run needs a TTY)
 - [parakeet.cpp hotword patch](parakeet-hotword-patch.md) — hotwords vendored in nemo-asr-cpp/patches (ABI v5); GGUF lacks SPM scores → dual greedy variants per phrase; bare-'▁' boost hazard
@@ -14,3 +13,4 @@
 - [zeroconf default=None](zeroconf-default-none.md) — Wyoming --zeroconf must default to None, not a truthy string; truthy default imports wyoming.zeroconf → uninstalled zeroconf package → ModuleNotFoundError at boot
 - [patch-path-prefix-consistency](patch-path-prefix-consistency.md) — git apply fails when .patch files mix a/b prefix styles in a single invocation; keep all patches consistent
 - [nemo-asr-cpp .nemo source](nemo-asr-cpp-nemo-source.md) — .nemo → GGUF conversion evaluated 2026-06-18 and rejected; nemo_toolkit ~3 GB image bloat kills the value prop for HAOS targets
+- [nemo-asr-c-streaming-decoder-limitation](nemo-asr-c-streaming-decoder-limitation.md) — RNN-T greedy decoder looping artifact with chunk-by-chunk feed; buffered mode required until C runtime fix
