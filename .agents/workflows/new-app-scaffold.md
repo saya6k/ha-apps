@@ -17,7 +17,7 @@ first.
      lives only at the subproject root.
    - `Dockerfile` (+ `build.yaml` if needed). s6 silently ignores non-executable
      scripts — add a wildcard `chmod +x` block:
-     `RUN chmod +x /etc/s6-overlay/s6-rc.d/*/run /etc/s6-overlay/s6-rc.d/*/up /etc/s6-overlay/s6-rc.d/*/finish /etc/s6-overlay/s6-rc.d/*/down`
+     `RUN shopt -s nullglob && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}`
    - `rootfs/etc/s6-overlay/s6-rc.d/<slug>/{run,type}` (+ `discovery` oneshot for
      Wyoming). LF line endings only.
    - `translations/{en,ko}.yaml` for the option UI strings.
