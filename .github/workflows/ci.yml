@@ -215,10 +215,13 @@ jobs:
   build-image:
     name: build image (${{ matrix.addon }})
     needs: changes
-    # Skip for release-please PRs (version bump only, no code change)
+    # Skip for release-please PRs (version bump only, no code change).
+    # Skip on direct push to main: promotion PRs already validate builds on dev;
+    # rebuilding after merge is redundant and wastes 30-40 min per promotion.
     if: >-
       needs.changes.outputs.addons != '[]' &&
-      !startsWith(github.head_ref, 'release-please--')
+      !startsWith(github.head_ref, 'release-please--') &&
+      github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
