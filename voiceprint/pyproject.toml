@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wyoming-voiceprint"
-version = "0.7.0"
+version = "0.8.0"
 description = "Wyoming STT proxy with speaker verification (ha-voiceprint add-on bridge)"
 requires-python = ">=3.11"
 dependencies = [
