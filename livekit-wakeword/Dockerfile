@@ -14,7 +14,8 @@ RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends \
         python3 \
-        python3-pip
+        python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 COPY pyproject.toml /usr/src/app/
