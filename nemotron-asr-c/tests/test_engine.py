@@ -144,5 +144,23 @@ class TestMelDoneDeltaFeeding(unittest.TestCase):
         self.assertEqual(stream._mel_done, 160)
 
 
+    @patch("wyoming_nemotron_asr_c.engine._libc")
+    def test_delta_mel_is_c_contiguous(self, _mock_libc):
+        """Delta slice fed to encoder must be C-contiguous so ctypes pointer is valid."""
+        engine, _ = _make_engine([60, 90])
+        stream = _make_stream(engine)
+
+        received_mels: list[np.ndarray] = []
+        stream._feed_encoder = lambda mel, n: received_mels.append(mel)
+
+        stream.accept_audio(np.zeros(8000, dtype=np.float32))
+        stream.accept_audio(np.zeros(4000, dtype=np.float32))
+
+        self.assertEqual(len(received_mels), 2)
+        for mel in received_mels:
+            self.assertTrue(mel.flags["C_CONTIGUOUS"],
+                            "mel fed to encoder must be C-contiguous for ctypes")
+
+
 if __name__ == "__main__":
     unittest.main()

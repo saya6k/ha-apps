@@ -91,7 +91,10 @@ class NemoCStream:
             ).copy()  # copy so we can free the C buffer
 
             # Feed only new mel frames (delta since last call).
-            new_mel = mel_arr[:, self._mel_done:]
+            # ascontiguousarray is required: column slicing produces a strided
+            # view that ctypes passes as a raw pointer, causing the C function
+            # to read wrong row data for every row after the first.
+            new_mel = np.ascontiguousarray(mel_arr[:, self._mel_done:])
             if new_mel.shape[1] > 0:
                 self._feed_encoder(new_mel, new_mel.shape[1])
             self._mel_done = mel_frames
