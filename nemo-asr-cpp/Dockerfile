@@ -23,7 +23,8 @@ RUN \
         cmake \
         ninja-build \
         build-essential \
-        ca-certificates
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
 RUN git init -q . \
@@ -55,7 +56,8 @@ RUN cmake -B build -G Ninja \
     && cmake --install build \
     # The install may not place ggml's own shared libs; gather every built .so.
     && mkdir -p /opt/parakeet/lib \
-    && find build -name '*.so*' -type f -exec cp -a {} /opt/parakeet/lib/ \;
+    && find build -name '*.so*' -type f -exec cp -a {} /opt/parakeet/lib/ \; \
+    && find /opt/parakeet/lib -name '*.so' -type f -exec strip --strip-unneeded {} \;
 
 # ---- builder-py: install Python deps + our bridge ----
 FROM ${BUILD_FROM} AS builder-py
@@ -66,10 +68,11 @@ WORKDIR /usr/src/app
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends python3 python3-pip \
-    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub" "numpy" "gguf"
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --no-cache-dir --no-compile "wyoming>=1.9,<2" "huggingface_hub" "numpy" "gguf"
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_nemo_asr_cpp/ /usr/src/app/wyoming_nemo_asr_cpp/
-RUN pip3 install --no-cache-dir --no-deps /usr/src/app
+RUN pip3 install --no-cache-dir --no-compile --no-deps /usr/src/app
 
 # ---- runtime ----
 FROM ${BUILD_FROM}
