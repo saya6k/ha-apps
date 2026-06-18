@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.4.0...nemotron-asr-c-v0.5.0) (2026-06-18)
+
+
+### Features
+
+* **nemotron-asr-c:** implement true streaming with TranscriptChunk events ([#147](https://github.com/saya6k/ha-apps/issues/147)) ([1cd6c8b](https://github.com/saya6k/ha-apps/commit/1cd6c8be90124fd1a2e0f7144df6383a39ed0f78))
+
 ## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.11...nemotron-asr-c-v0.4.0) (2026-06-18)
 
 
