@@ -1,8 +1,9 @@
 """Wyoming protocol handler for nemotron-asr-c.
 
-Streaming: each AudioChunk is fed immediately to the C stream (now that the
-_mel_done delta-feeding fix prevents RNN-T looping). Partial transcripts are
-emitted as TranscriptChunk events; the final Transcript is sent on AudioStop.
+Streaming: each AudioChunk's new PCM samples are fed to the C streaming cascade
+(mel -> encoder -> RNN-T, each stateful across calls). Partial transcripts are
+emitted as TranscriptChunk delta events; the final Transcript is sent on
+AudioStop.
 """
 
 from __future__ import annotations
@@ -100,7 +101,14 @@ class NemoCHandler(AsyncEventHandler):
                     await loop.run_in_executor(None, self._stream.accept_audio, samples)
                     partial = self._stream.text()
                 if partial and partial != self._last_partial:
-                    await self.write_event(TranscriptChunk(text=partial).event())
+                    # TranscriptChunk.text is a delta — emit only the new tail.
+                    delta = (
+                        partial[len(self._last_partial):]
+                        if partial.startswith(self._last_partial)
+                        else partial
+                    )
+                    if delta:
+                        await self.write_event(TranscriptChunk(text=delta).event())
                     self._last_partial = partial
                 return True
 

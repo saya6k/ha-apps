@@ -273,3 +273,27 @@ def test_mel_done_advances():
 
 - **att_right와 chunk 크기의 관계:** 청크가 너무 작으면 인코더의 right-context가 부족해 정확도 저하. Phase 2에서 HA가 보내는 청크 크기(HA VAD가 ~80ms 청크 사용)를 확인하고 필요 시 최소 버퍼 추가.
 - **`_mel_done` 슬라이싱의 mel 경계 정확도:** mel 스펙트로그램은 오버래핑 윈도우를 사용하므로 전체 오디오로 계산 후 새 프레임만 슬라이싱하는 방식이 정확함 (현재 코드도 이렇게 되어 있음).
+
+---
+
+## Resolution (implemented)
+
+Phase 1/2의 delta-slicing 접근(#147)은 **잘못된 진단**이었다. 실제 근본 원인은 더 깊었다:
+
+- 브리지가 C 런타임의 **stateful 스트리밍 API를 전혀 쓰지 않았다.** `engine.py`는
+  매 청크마다 one-shot `nemo_mel_spectrogram`으로 전체 mel을 재계산하고
+  `nemo_encoder_forward_chunks`를 호출했는데, 이 함수는 **호출마다 인코더 스트림을
+  새로 만들고 해제**하는 래퍼다(`nemotron_asr_encoder.c:567`). 따라서 conformer
+  left-context가 매번 사라져, delta 프레임만 받은 인코더가 chunk를 채우지 못해
+  **출력이 비고(빈 transcript)**, 전체 mel 재계산이 **O(n²)로 폭발(RTF 8.66)**했다.
+- upstream은 이미 완전한 3단 stateful 캐스케이드를 제공한다:
+  `nemo_mel_stream_*` → `nemo_encoder_stream_*` → `nemo_rnnt_stream_*`
+  (참조 소비자: `mic.c`의 `live_asr_accept`).
+
+**Phase 3은 C 패치 불필요.** 수정은 전부 Python:
+- `engine.py` `NemoCStream`이 세 스트림을 영속 생성하고, `accept_audio()`는 **새 PCM
+  샘플만** `nemo_mel_stream_accept(final=0)`에 투입. mel→encoder→rnnt 콜백이 연쇄.
+  `finalize()`는 `nemo_mel_stream_accept(final=1)`로 flush 후 `nemo_rnnt_stream_finish`.
+- `handler.py`는 `TranscriptChunk.text`를 **delta**로 전송(누적 아님).
+- `0004-rnnt-blank-suppression.patch`는 **만들지 않았다** (불필요).
+- `tests/test_engine.py`는 캐스케이드 배선·delta 샘플 투입을 검증하도록 재작성.
