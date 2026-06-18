@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.4...livekit-wakeword-v0.3.0) (2026-06-18)
+
+
+### Features
+
+* **livekit-wakeword:** add custom AppArmor profile ([dbd72a9](https://github.com/saya6k/ha-apps/commit/dbd72a9b1f909132acb3109ab75d73069ae4c0a2))
+
+
+### Documentation
+
+* **livekit-wakeword:** add Show add-on badge and arch shields to README ([b00064d](https://github.com/saya6k/ha-apps/commit/b00064d15d2e1b8fcfac083ce16167876995d8e7))
+
 ## [0.2.4](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.3...livekit-wakeword-v0.2.4) (2026-06-18)
 
 
