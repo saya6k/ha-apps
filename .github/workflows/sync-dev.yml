@@ -22,13 +22,18 @@ jobs:
       - name: Fast-forward dev to main if behind
         run: |
           git switch dev
-          if git merge-base --is-ancestor origin/main HEAD; then
-            echo "dev is already ahead of or equal to main — nothing to do."
-            exit 0
-          fi
-          if git merge --ff-only origin/main; then
+          MAIN=$(git rev-parse origin/main)
+          DEV=$(git rev-parse HEAD)
+          BASE=$(git merge-base origin/main HEAD)
+          if [ "$MAIN" = "$DEV" ]; then
+            echo "Already in sync."
+          elif [ "$BASE" = "$DEV" ]; then
+            # dev is behind main (main is ahead) — FF
+            git merge --ff-only origin/main
             git push origin dev
             echo "dev synced to $(git rev-parse --short HEAD)."
+          elif [ "$BASE" = "$MAIN" ]; then
+            echo "dev is ahead of main — nothing to do."
           else
             echo "dev has diverged from main — skipping auto-sync."
             echo "Run 'git merge origin/main' on dev before next promotion."

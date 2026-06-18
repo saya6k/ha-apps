@@ -46,11 +46,13 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 | 파일 | 역할 |
 |---|---|
 | `new-app-scaffold.md` | 새 앱 추가 절차 (파일 생성 → `.github/` 등록) |
-| `app-dev-pr.md` | dev-first 흐름: `dev`에 통합 → 승인된 `dev → main` 승격 시 main에서 release |
+| `app-dev-pr.md` | 브랜치 생성 → preflight → `dev`에 통합 |
+| `app-promote-to-main.md` | 승인된 `dev → main` 승격 → 릴리즈 검증 → 로컬 sync |
 
 **Typical flow:**
 - New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
 - Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
+- Promotion: (user approval) → `app-promote-to-main`
 
 **`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Memory can go stale; always verify against current files.
 
