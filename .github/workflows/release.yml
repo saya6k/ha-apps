@@ -3,8 +3,11 @@ name: Release
 
 # yamllint disable-line rule:truthy
 on:
-  push:
+  # Run only after CI passes on main — never on a failing commit.
+  workflow_run:
+    workflows: ["CI"]
     branches: [main]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -20,6 +23,10 @@ concurrency:
 jobs:
   release-please:
     name: release-please
+    # Skip if CI failed (workflow_run); always run on manual dispatch.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v5
