@@ -1,0 +1,77 @@
+#include <tunables/global>
+
+profile ha_addon_zensical flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Alpine system binaries and libraries
+  /bin/**      mrix,
+  /sbin/**     mrix,
+  /usr/bin/**  mrix,
+  /usr/sbin/** mrix,
+  /usr/lib/**  mr,
+  /lib/**      mr,
+
+  # s6-overlay v3
+  /command/**  mrix,
+  /etc/s6-overlay/**      r,
+  /etc/s6-overlay/**/run    ix,
+  /etc/s6-overlay/**/finish ix,
+  /run/s6/** rw,
+  /run/s6-linux-init-container-results/** rw,
+  /run/nginx/** rw,
+
+  # Python venv
+  /opt/venv/** mr,
+  /opt/venv/bin/** ix,
+
+  # Zensical app scripts and templates
+  /opt/zensical/** r,
+  /opt/zensical/bin/** ix,
+
+  # nginx runtime state
+  /etc/nginx/** r,
+  /var/log/nginx/** rw,
+  /var/lib/nginx/** rw,
+  /var/tmp/nginx/** rw,
+
+  # Site output
+  /var/lib/zensical/** rw,
+
+  # HA-mounted volumes
+  /config/**       rw,
+  /addon_config/** rw,
+  /data/**         rw,
+  /tmp/**          rw,
+
+  # /proc: Python and system utilities read process/system info
+  /proc/ r,
+  /proc/** r,
+
+  # nginx privilege-dropping and ingress port binding
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability setgid,
+  capability setuid,
+  capability net_bind_service,
+  capability kill,
+
+  # Ingress (nginx TCP) + s6 IPC (Unix sockets) + DNS (UDP)
+  network inet tcp,
+  network inet6 tcp,
+  network inet udp,
+  network inet6 udp,
+  network unix,
+
+  # Hard blocks — deny takes precedence over any allow above
+  deny capability sys_admin,
+  deny capability sys_module,
+  deny capability sys_rawio,
+  deny capability net_admin,
+  deny capability sys_ptrace,
+  deny /proc/sysrq-trigger rw,
+  deny /proc/*/mem rw,
+  deny /proc/kcore r,
+  deny /sys/firmware/** rw,
+}

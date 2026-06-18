@@ -10,7 +10,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 | App | What it is |
 |---|---|
 | [`livekit-wakeword/`](livekit-wakeword/AGENTS.md) | Wyoming wake word — livekit-wakeword runtime + our incremental oWW-compatible bridge. Serves oWW zoo + custom `/share` models. |
-| [`nemotron-asr-c/`](nemotron-asr-c/AGENTS.md) | Wyoming STT — Nemotron 0.6B on pure C (nemotron-asr-streaming.c). Boot-time .nemo conversion, buffered, hotword biasing. |
+| [`nemotron-asr-c/`](nemotron-asr-c/AGENTS.md) | Wyoming STT — Nemotron 0.6B on pure C (nemotron-asr-streaming.c). Boot-time .nemo conversion, true-streaming (stateful mel→encoder→rnnt cascade), hotword biasing. |
 | [`nemo-asr-cpp/`](nemo-asr-cpp/AGENTS.md) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling; ctypes over a flat C API. |
 | [`supertonic/`](supertonic/AGENTS.md) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. |
 | [`voiceprint/`](voiceprint/AGENTS.md) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. |
