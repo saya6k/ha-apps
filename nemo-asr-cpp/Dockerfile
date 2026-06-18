@@ -92,17 +92,16 @@ RUN \
 
 # parakeet.cpp shared libs (libparakeet + libggml*) -> default loader path.
 COPY --from=builder /opt/parakeet/lib/ /usr/local/lib/
-RUN ldconfig
-
 # Python deps + our bridge.
 COPY --from=builder-py /usr/local /usr/local
 
 COPY rootfs /
 
-RUN chmod +x \
-    /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/run \
-    /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/finish \
-    /etc/s6-overlay/s6-rc.d/discovery/run
+RUN ldconfig \
+    && chmod +x \
+        /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/run \
+        /etc/s6-overlay/s6-rc.d/nemo-asr-cpp/finish \
+        /etc/s6-overlay/s6-rc.d/discovery/run
 
 HEALTHCHECK --start-period=10m \
     CMD echo '{ "type": "describe" }' \
