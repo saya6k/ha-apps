@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.2...livekit-wakeword-v0.2.3) (2026-06-18)
+
+
+### Build System
+
+* **livekit-wakeword:** build add-on locally, drop GHCR image reference ([416892c](https://github.com/saya6k/ha-apps/commit/416892cbf7f4a627b3591703b2c6b62d65a3785a))
+
 ## [0.2.2](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.1...livekit-wakeword-v0.2.2) (2026-06-17)
 
 
