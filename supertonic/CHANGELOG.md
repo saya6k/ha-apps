@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.4.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.4.0...supertonic-v2.4.1) (2026-06-18)
+
+
+### Bug Fixes
+
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([6ccfe5d](https://github.com/saya6k/ha-apps/commit/6ccfe5d4b5daf805d66b7dbcdc1c71ab95e106e1))
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([a8b8a61](https://github.com/saya6k/ha-apps/commit/a8b8a6163024fa611e2b661b90f37093640419fa))
+* **repo:** remove redundant apparmor: true (linter default) ([423ac7f](https://github.com/saya6k/ha-apps/commit/423ac7ff0c4fbde79abdec4e86a08f5c91f6fe1f))
+
 ## [2.4.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.3.0...supertonic-v2.4.0) (2026-06-18)
 
 
