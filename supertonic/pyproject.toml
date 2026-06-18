@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wyoming-supertonic"
-version = "2.7.0"
+version = "2.8.0"
 description = "Wyoming protocol server for Supertonic text-to-speech (MNN backend)"
 readme = "README.md"
 requires-python = ">=3.10"
