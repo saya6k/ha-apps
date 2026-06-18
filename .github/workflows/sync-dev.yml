@@ -1,0 +1,35 @@
+---
+name: Sync dev from main
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync-dev:
+    name: Fast-forward dev to main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Fast-forward dev to main if behind
+        run: |
+          git switch dev
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "dev is already ahead of or equal to main — nothing to do."
+            exit 0
+          fi
+          if git merge --ff-only origin/main; then
+            git push origin dev
+            echo "dev synced to $(git rev-parse --short HEAD)."
+          else
+            echo "dev has diverged from main — skipping auto-sync."
+            echo "Run 'git merge origin/main' on dev before next promotion."
+          fi
