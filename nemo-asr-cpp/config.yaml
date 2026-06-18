@@ -5,7 +5,6 @@ description: >-
   Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron
   ASR on ggml (parakeet.cpp)
 url: https://github.com/mudler/parakeet.cpp
-apparmor: true
 arch:
   - amd64
   - aarch64

@@ -5,7 +5,6 @@ description: >-
   Speaker-verifying Wyoming STT proxy — only enrolled voices reach your
   speech-to-text
 url: https://github.com/saya6k/ha-apps
-apparmor: true
 arch:
   - amd64
   - aarch64
