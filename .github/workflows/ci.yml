@@ -220,6 +220,7 @@ jobs:
       needs.changes.outputs.addons != '[]' &&
       !startsWith(github.head_ref, 'release-please--')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
