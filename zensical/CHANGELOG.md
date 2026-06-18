@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.4...zensical-v0.2.0) (2026-06-18)
+
+
+### Features
+
+* **zensical:** add custom AppArmor profile ([a116f7d](https://github.com/saya6k/ha-apps/commit/a116f7dded460feee3dda60e471864bbd68a7510))
+
+
+### Documentation
+
+* **zensical:** add Show add-on badge to README ([57ccc5c](https://github.com/saya6k/ha-apps/commit/57ccc5c3f992cedb2f76b78cc5dac01b2054746c))
+
 ## [0.1.4](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.3...zensical-v0.1.4) (2026-06-18)
 
 
