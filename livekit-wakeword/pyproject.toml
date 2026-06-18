@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wyoming-livekit-wakeword"
-version = "0.10.0"
+version = "0.11.0"
 description = "Wyoming wake word server on the livekit-wakeword runtime (ha-livekit-wakeword add-on bridge)"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
