@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.30.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.29.0...livekit-wakeword-v0.30.0) (2026-06-18)
+
+
+### Features
+
+* **livekit-wakeword:** add custom AppArmor profile ([dbd72a9](https://github.com/saya6k/ha-apps/commit/dbd72a9b1f909132acb3109ab75d73069ae4c0a2))
+* **livekit-wakeword:** add Wyoming wake word add-on with incremental oWW-compatible bridge ([8355f66](https://github.com/saya6k/ha-apps/commit/8355f6608fc638fb8b8c6ac103d2d60482513b6c))
+
+
+### Bug Fixes
+
+* **livekit-wakeword:** add yaml document start, gitignore training data ([66356f3](https://github.com/saya6k/ha-apps/commit/66356f3f24f39f9c9628a7dcbbb32abb46640fdd))
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
+
+### Documentation
+
+* **livekit-wakeword:** add Show add-on badge and arch shields to README ([b00064d](https://github.com/saya6k/ha-apps/commit/b00064d15d2e1b8fcfac083ce16167876995d8e7))
+* **livekit-wakeword:** update Git tracking section — app is now tracked in git ([079b62d](https://github.com/saya6k/ha-apps/commit/079b62d1ac3148a692bc8b5bcfeaee770ae3984e))
+
+
+### Build System
+
+* **livekit-wakeword:** --no-compile pip install in builder stage ([04536c4](https://github.com/saya6k/ha-apps/commit/04536c4866ca7302361b8134bc378cd3bc86b82a))
+* **livekit-wakeword:** add GHCR image reference to config.yaml ([#51](https://github.com/saya6k/ha-apps/issues/51)) ([c43289d](https://github.com/saya6k/ha-apps/commit/c43289de9d83ac0f06346e34298c867eb1b7a9f9))
+* **livekit-wakeword:** build add-on locally, drop GHCR image reference ([416892c](https://github.com/saya6k/ha-apps/commit/416892cbf7f4a627b3591703b2c6b62d65a3785a))
+* **livekit-wakeword:** clean apt cache in builder stage ([0f62e04](https://github.com/saya6k/ha-apps/commit/0f62e047f19cef40c58c4410328c30df56ab3ec4))
+
+
+### CI
+
+* **repo:** promote dev to main (CI hardening + workflow automation) ([#171](https://github.com/saya6k/ha-apps/issues/171)) ([c0f9c03](https://github.com/saya6k/ha-apps/commit/c0f9c03dded8e86a1b09df2d0ea5d366684cfa6e))
+
 ## [0.29.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.28.0...livekit-wakeword-v0.29.0) (2026-06-18)
 
 
