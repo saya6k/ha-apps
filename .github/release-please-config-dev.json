@@ -26,6 +26,8 @@
       "package-name": "livekit-wakeword",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["livekit-wakeword/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml",    "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -36,6 +38,8 @@
       "package-name": "nemotron-asr-c",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["nemotron-asr-c/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml",    "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -45,6 +49,8 @@
       "component": "nemo-asr-cpp",
       "package-name": "nemo-asr-cpp",
       "changelog-path": "CHANGELOG.md",
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml",    "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -55,6 +61,8 @@
       "package-name": "supertonic",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["supertonic/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml",    "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -65,6 +73,8 @@
       "package-name": "voiceprint",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["voiceprint/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml",    "jsonpath": "$.version"},
         {"type": "toml", "path": "pyproject.toml", "jsonpath": "$.project.version"}
@@ -75,6 +85,8 @@
       "package-name": "wardrowbe",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["wardrowbe/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
       ]
@@ -84,6 +96,8 @@
       "package-name": "zensical",
       "changelog-path": "CHANGELOG.md",
       "exclude-paths": ["zensical/.agents"],
+      "prerelease": true,
+      "prerelease-type": "dev",
       "extra-files": [
         {"type": "yaml", "path": "config.yaml", "jsonpath": "$.version"}
       ]
