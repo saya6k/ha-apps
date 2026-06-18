@@ -1,0 +1,34 @@
+---
+name: Release (dev)
+
+# yamllint disable-line rule:truthy
+on:
+  # Run only after CI passes on dev.
+  workflow_run:
+    workflows: ["CI"]
+    branches: [dev]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-please-dev
+  cancel-in-progress: false
+
+jobs:
+  release-please-dev:
+    name: release-please (dev)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v5
+        with:
+          target-branch: dev
+          config-file: .github/release-please-config-dev.json
+          manifest-file: .github/.release-please-manifest-dev.json
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
