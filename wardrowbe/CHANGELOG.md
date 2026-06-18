@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [2.0.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.1...wardrowbe-v2.0.2) (2026-06-18)
+
+
+### Documentation
+
+* **wardrowbe:** add Show add-on badge to README ([e0e2a38](https://github.com/saya6k/ha-apps/commit/e0e2a38faa38a1f9fdfe43e6754aeeda5a80221b))
+
+
+### Build System
+
+* **wardrowbe:** remove npm rebuild sharp from frontend build ([91fb4a5](https://github.com/saya6k/ha-apps/commit/91fb4a5f5d3dcfab2aab871c3c1a1376a229d23e))
+* **wardrowbe:** remove npm, py3-virtualenv, debug layer, pip upgrade ([e9ce8ae](https://github.com/saya6k/ha-apps/commit/e9ce8aee06b2cdaa7281965543963f3716af9ca7))
+
 ## [2.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.0...wardrowbe-v2.0.1) (2026-06-18)
 
 
