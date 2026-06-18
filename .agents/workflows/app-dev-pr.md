@@ -46,15 +46,15 @@ Two long-lived branches:
   (`git log --oneline origin/main..origin/dev`).
 - Pre-conditions before you ask: `dev` CI green, and the app smoke-tested on a
   real HA pipeline (not just unit tests).
-- On approval, fast-forward `main` to `dev`:
+- On approval, open a PR from `dev` to `main` and merge after CI passes:
   ```
-  git fetch origin
-  git switch main
-  git merge --ff-only origin/dev
-  git push origin main
+  gh pr create --base main --head dev \
+    --title "chore(repo): promote dev to main" \
+    --body "Fast-forward promotion. CI must pass before merge."
   ```
-  `--ff-only` fails loudly if `main` has diverged — resolve explicitly. Never
-  force-push `main`.
+  Wait for CI to pass, then merge. `main` has branch protection: PR + "CI
+  passed" required (`enforce_admins: false` — admin can bypass if needed).
+  `release-please` triggers via `workflow_run` only after CI succeeds on `main`.
 
 ## 5. Release on `main`, then re-sync `dev`
 - The promotion push to `main` triggers release-please, which opens
