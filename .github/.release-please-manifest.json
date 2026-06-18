@@ -1,5 +1,5 @@
 {
-  "livekit-wakeword": "0.2.4",
+  "livekit-wakeword": "0.3.0",
   "nemotron-asr-c": "0.7.0",
   "nemo-asr-cpp": "0.3.5",
   "supertonic": "2.4.0",
