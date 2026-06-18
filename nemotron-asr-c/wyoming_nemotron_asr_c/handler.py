@@ -1,9 +1,8 @@
 """Wyoming protocol handler for nemotron-asr-c.
 
-Buffered: accumulates audio in a bytearray and transcribes once on AudioStop
-(same pattern as nemo-asr-cpp).  The RNN-T greedy decoder produces token-boundary
-artifacts when fed chunk-by-chunk — one-shot transcription avoids that.
-Only the final Transcript is sent.
+Streaming: each AudioChunk is fed immediately to the C stream (now that the
+_mel_done delta-feeding fix prevents RNN-T looping). Partial transcripts are
+emitted as TranscriptChunk events; the final Transcript is sent on AudioStop.
 """
 
 from __future__ import annotations
@@ -14,7 +13,7 @@ import time
 from typing import TYPE_CHECKING
 
 import numpy as np
-from wyoming.asr import Transcript
+from wyoming.asr import Transcript, TranscriptChunk, TranscriptStart, TranscriptStop
 from wyoming.audio import AudioChunk, AudioStart, AudioStop
 from wyoming.event import Event
 from wyoming.info import Describe, Info
@@ -51,9 +50,15 @@ class NemoCHandler(AsyncEventHandler):
         self._args = cli_args
         self._engine = engine
         self._language: str | None = cli_args.language
-        self._buffer: bytearray = bytearray()
+        self._stream: NemoCStream | None = None
+        self._last_partial: str = ""
         self._t0: float = 0.0
         self._n_samples: int = 0
+
+    def _close_stream(self) -> None:
+        if self._stream is not None:
+            self._stream.close()
+            self._stream = None
 
     async def handle_event(self, event: Event) -> bool:
         try:
@@ -74,54 +79,64 @@ class NemoCHandler(AsyncEventHandler):
 
             if AudioStart.is_type(event.type):
                 _LOGGER.info("Utterance start")
-                self._buffer = bytearray()
+                self._close_stream()
+                self._stream = self._engine.create_stream(self._language)
+                self._last_partial = ""
                 self._t0 = time.monotonic()
                 self._n_samples = 0
+                await self.write_event(TranscriptStart(language=self._language).event())
                 return True
 
             if AudioChunk.is_type(event.type):
-                # Buffer raw PCM — no C call, no lock.
+                if self._stream is None:
+                    return True
                 chunk = AudioChunk.from_event(event)
-                self._buffer.extend(chunk.audio)
                 self._n_samples += len(chunk.audio) // 2
+                samples = _pcm16_to_float32(chunk.audio)
+                loop = asyncio.get_running_loop()
+                async with _ASR_LOCK:
+                    await loop.run_in_executor(None, self._stream.accept_audio, samples)
+                    partial = self._stream.text()
+                if partial and partial != self._last_partial:
+                    await self.write_event(TranscriptChunk(text=partial).event())
+                    self._last_partial = partial
                 return True
 
             if AudioStop.is_type(event.type):
                 _LOGGER.info("Utterance stop")
-                await self._transcribe()
+                await self._finalize()
                 return True
 
             _LOGGER.debug("Unhandled event type: %s", event.type)
             return True
         except (ConnectionResetError, BrokenPipeError, asyncio.IncompleteReadError):
             _LOGGER.debug("Client disconnected")
+            self._close_stream()
             return False
         except Exception:
             _LOGGER.exception("Unexpected error in handle_event")
+            self._close_stream()
             await self.write_event(
                 Event("error", {"text": "Internal server error", "code": "internal"})
             )
             return False
 
-    async def _transcribe(self) -> None:
-        """Convert buffered audio and transcribe in one C call (buffered)."""
-        if not self._buffer:
-            _LOGGER.debug("No audio buffered")
+    async def _finalize(self) -> None:
+        """Finalize the active stream and emit TranscriptStop + Transcript."""
+        if self._stream is None:
+            _LOGGER.debug("No active stream on AudioStop")
+            await self.write_event(TranscriptStop().event())
+            await self.write_event(Transcript(text="", language=self._language).event())
             return
-        samples = _pcm16_to_float32(bytes(self._buffer))
         loop = asyncio.get_running_loop()
-        async with _ASR_LOCK:
-            stream = self._engine.create_stream(self._language)
-            try:
-                await loop.run_in_executor(None, stream.accept_audio, samples)
-                await loop.run_in_executor(None, stream.finalize)
-                text = stream.text()
-            finally:
-                stream.close()
-        await self.write_event(
-            Transcript(text=text, language=self._language).event()
-        )
-        # Log real-time factor.
+        try:
+            async with _ASR_LOCK:
+                await loop.run_in_executor(None, self._stream.finalize)
+                text = self._stream.text()
+        finally:
+            self._close_stream()
+        await self.write_event(TranscriptStop().event())
+        await self.write_event(Transcript(text=text, language=self._language).event())
         audio_dt = self._n_samples / 16000.0 if self._n_samples else 0.0
         dt = time.monotonic() - self._t0
         rtf = f"{dt / audio_dt:.2f}" if audio_dt > 0 else "?"

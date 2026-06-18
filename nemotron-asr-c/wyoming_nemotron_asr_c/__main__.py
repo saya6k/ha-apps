@@ -47,7 +47,7 @@ def _build_info(model_repo: str) -> Info:
                 ),
                 installed=True,
                 version=__version__,
-                supports_transcript_streaming=False,
+                supports_transcript_streaming=True,
                 models=[
                     AsrModel(
                         name=model_repo,
