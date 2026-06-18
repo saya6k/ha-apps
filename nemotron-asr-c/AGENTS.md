@@ -17,11 +17,9 @@ sibling of `nemo-asr-cpp` (ggml/GGUF, buffered).
 
 ## Git / repo tracking
 
-**This add-on:** `stage: experimental` → committed with `stage: experimental` in
-`config.yaml`. The `nemotron-asr-c` scope is registered in allowed-scope tables,
-release-please config/manifest, labels, labeler, and issue templates — commits
-already use the scope. To promote: remove `stage: experimental` from
-`config.yaml` (no gitignore change needed).
+**This add-on:** `stage: stable` — promoted 2026-06-18. The `nemotron-asr-c` scope
+is registered in allowed-scope tables, release-please config/manifest, labels,
+labeler, and issue templates.
 
 ## Architecture
 
