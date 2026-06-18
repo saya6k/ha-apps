@@ -19,7 +19,7 @@ RUN \
 WORKDIR /usr/src/app
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_voiceprint/ /usr/src/app/wyoming_voiceprint/
-RUN pip3 install --no-cache-dir /usr/src/app
+RUN pip3 install --no-cache-dir --no-compile /usr/src/app
 
 # ---- runtime: no pip, no build tooling ----
 FROM ${BUILD_FROM}
