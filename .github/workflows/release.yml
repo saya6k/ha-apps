@@ -1,10 +1,15 @@
 ---
 name: Release
 
+# Dev-first flow: release-please watches `dev` and opens its release PRs against
+# `dev`. `main` is the released/stable branch, advanced only by an explicit,
+# user-approved `dev -> main` promotion (see .agents/workflows/app-dev-pr.md).
+# This file triggers on `dev` only, so a promotion push to `main` does not cut a
+# release on `main`.
 # yamllint disable-line rule:truthy
 on:
   push:
-    branches: [main]
+    branches: [dev]
   workflow_dispatch:
 
 permissions:
@@ -27,6 +32,8 @@ jobs:
         with:
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
+          # Cut release PRs against `dev`, not the default branch (`main`).
+          target-branch: dev
           # Use a PAT/App token (not the default GITHUB_TOKEN): GitHub does not
           # trigger workflows from GITHUB_TOKEN-authored events, so the release
           # PR would get no CI and the tags release-please pushes would not
