@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [2.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.0...wardrowbe-v2.0.1) (2026-06-18)
+
+
+### Build System
+
+* **wardrowbe:** build add-on locally, drop GHCR image reference ([f7cf363](https://github.com/saya6k/ha-apps/commit/f7cf363b0b0163df4ee09fd0827821ff99caa218))
+
 ## [2.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v1.4.2...wardrowbe-v2.0.0) (2026-06-15)
 
 
