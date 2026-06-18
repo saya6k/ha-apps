@@ -83,3 +83,5 @@ super-linter-output/
 # hosted as a pinned release asset — never commit a local dev copy. (Listed
 # after the re-include above so this narrower exclusion wins.)
 /voiceprint/models/
+# livekit-wakeword training data — local only, never committed
+/livekit-wakeword/.agents/training/
