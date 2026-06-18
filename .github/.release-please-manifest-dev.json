@@ -1,7 +1,7 @@
 {
   "livekit-wakeword": "0.5.0",
   "nemotron-asr-c": "0.6.0",
-  "nemo-asr-cpp": "0.6.0",
+  "nemo-asr-cpp": "0.7.0",
   "supertonic": "2.3.0",
   "voiceprint": "0.6.0",
   "wardrowbe": "2.0.1",
