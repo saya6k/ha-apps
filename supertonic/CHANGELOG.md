@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.1...supertonic-v2.2.2) (2026-06-18)
+
+
+### Build System
+
+* **supertonic:** build add-on locally, drop GHCR image reference ([424e282](https://github.com/saya6k/ha-apps/commit/424e2826d53715e1ec68f8923753d1a5ced19279))
+
 ## [2.2.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.0...supertonic-v2.2.1) (2026-06-17)
 
 
