@@ -1,0 +1,57 @@
+#include <tunables/global>
+
+profile ha_addon_livekit_wakeword flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Debian system binaries and libraries
+  /bin/**           mrix,
+  /usr/bin/**       mrix,
+  /lib/**           mr,
+  /lib64/**         mr,
+  /usr/lib/**       mr,
+  /usr/local/bin/** mrix,
+  /usr/local/lib/** mr,
+
+  # s6-overlay v3
+  /command/**  mrix,
+  /etc/s6-overlay/**      r,
+  /etc/s6-overlay/**/run    ix,
+  /etc/s6-overlay/**/finish ix,
+  /run/s6/** rw,
+  /run/s6-linux-init-container-results/** rw,
+
+  # TLS CA bundle — urllib.request uses the system cert store (not certifi)
+  /etc/ssl/certs/              r,
+  /etc/ssl/certs/**            r,
+  /usr/share/ca-certificates/** r,
+
+  # HA volumes: model storage (rw for download) + custom models (ro)
+  /data/**                   rw,
+  /share/livekit-wakeword/   r,
+  /share/livekit-wakeword/** r,
+  /tmp/**                    rw,
+
+  # /proc: needed by Python and ONNX Runtime
+  /proc/ r,
+  /proc/** r,
+
+  capability kill,
+  capability dac_override,
+
+  # Wyoming TCP (listen 10400) + HTTPS for model download + DNS
+  network inet tcp,
+  network inet6 tcp,
+  network inet udp,
+  network inet6 udp,
+  network unix,
+
+  deny capability sys_admin,
+  deny capability sys_module,
+  deny capability sys_rawio,
+  deny capability net_admin,
+  deny capability sys_ptrace,
+  deny /proc/sysrq-trigger rw,
+  deny /proc/*/mem rw,
+  deny /proc/kcore r,
+  deny /sys/firmware/** rw,
+}

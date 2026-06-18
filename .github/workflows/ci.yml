@@ -272,7 +272,7 @@ jobs:
           provenance: false
           sbom: false
           cache-from: type=gha,scope=${{ matrix.addon }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.addon }}
+          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}
 
   # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
