@@ -17,7 +17,8 @@ RUN \
     && apt-get install -y --no-install-recommends \
         git \
         build-essential \
-        ca-certificates
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
 RUN git init -q . \
@@ -33,6 +34,7 @@ RUN git apply --stat /tmp/patches/*.patch \
 # Build shared library (position-independent, no CLI). SIMD kernels: NEON on
 # aarch64, AVX2/FMA on amd64, generic C fallback otherwise.
 RUN make -j"$(nproc)" shared \
+    && strip --strip-unneeded libnemotron_asr.so \
     && mkdir -p /opt/nemotron-c/lib \
     && cp libnemotron_asr.so /opt/nemotron-c/lib/
 
@@ -45,10 +47,11 @@ WORKDIR /usr/src/app
 RUN \
     apt-get update \
     && apt-get install -y --no-install-recommends python3 python3-pip \
-    && pip3 install --no-cache-dir "wyoming>=1.9,<2" "huggingface_hub[hf-xet]>=0.32" "numpy" "torch" "pyyaml" "sentencepiece"
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --no-cache-dir --no-compile "wyoming>=1.9,<2" "huggingface_hub[hf-xet]>=0.32" "numpy" "torch" "pyyaml" "sentencepiece"
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_nemotron_asr_c/ /usr/src/app/wyoming_nemotron_asr_c/
-RUN pip3 install --no-cache-dir --no-deps /usr/src/app
+RUN pip3 install --no-cache-dir --no-compile --no-deps /usr/src/app
 
 # ---- runtime ----
 FROM ${BUILD_FROM}
