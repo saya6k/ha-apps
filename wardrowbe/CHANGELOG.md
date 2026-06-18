@@ -1,6 +1,35 @@
 # Changelog
 
 
+## [4.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v3.0.0...wardrowbe-v4.0.0) (2026-06-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wardrowbe:** clothing photos move from /config/photos to /data/photos. Existing photos are migrated automatically on first start; the addon_config photos dir is no longer used.
+
+### Features
+
+* **wardrowbe:** move clothing photos to /data/photos ([34c50e7](https://github.com/saya6k/ha-apps/commit/34c50e7c2bd63171fd700267b0d61e16294b9b36))
+
+
+### Bug Fixes
+
+* **wardrowbe:** add HEALTHCHECK to restore health-based auto-restart ([cdbbd7f](https://github.com/saya6k/ha-apps/commit/cdbbd7f1a76521732530a5806805b0572f2c4044))
+
+
+### Documentation
+
+* **wardrowbe:** add Show add-on badge to README ([e0e2a38](https://github.com/saya6k/ha-apps/commit/e0e2a38faa38a1f9fdfe43e6754aeeda5a80221b))
+
+
+### Build System
+
+* **wardrowbe:** build add-on locally, drop GHCR image reference ([f7cf363](https://github.com/saya6k/ha-apps/commit/f7cf363b0b0163df4ee09fd0827821ff99caa218))
+* **wardrowbe:** migrate off build.yaml, pin base image, bump upstream ([560218f](https://github.com/saya6k/ha-apps/commit/560218f23144833cf571ce45706edd69780322a3))
+* **wardrowbe:** remove npm rebuild sharp from frontend build ([91fb4a5](https://github.com/saya6k/ha-apps/commit/91fb4a5f5d3dcfab2aab871c3c1a1376a229d23e))
+* **wardrowbe:** remove npm, py3-virtualenv, debug layer, pip upgrade ([e9ce8ae](https://github.com/saya6k/ha-apps/commit/e9ce8aee06b2cdaa7281965543963f3716af9ca7))
+
 ## [3.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.2...wardrowbe-v3.0.0) (2026-06-18)
 
 
