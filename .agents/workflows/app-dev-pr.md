@@ -48,12 +48,17 @@ Two long-lived branches:
   gh pr create --base main --head dev \
     --title "chore(repo): promote dev to main" \
     --body "Promotion. CI must pass before merge."
-  gh pr merge <number> --rebase --auto
+  gh pr merge <number> --merge --auto
   ```
-  **Must use `--rebase`, not `--squash`.** Squash collapses all commits into
-  the PR title (`ci(repo): ...`), which release-please ignores. Rebase
-  preserves every `fix`/`feat`/`docs` commit individually so release-please
-  can route them to the correct app CHANGELOG. See [[release-please-squash-gotcha]].
+  **Must use `--merge` (merge commit), not `--squash` or `--rebase`.**
+  - `--squash`: collapses everything into the PR title — release-please
+    ignores it. See [[release-please-squash-gotcha]].
+  - `--rebase`: rebases each commit onto main, creating new SHAs. dev's
+    original SHAs are no longer ancestors of main, so sync-dev's FF fails
+    every time, requiring a manual force-push to re-sync.
+  - `--merge`: creates a merge commit on main with dev as a parent. dev's
+    commits remain ancestors of main → sync-dev FF works cleanly. release-
+    please reads commits through the merge commit and routes them correctly.
   `main` branch protection requires PR + "CI passed". release-please fires via
   `workflow_run` only after CI succeeds on `main` — never on a failing commit.
 
