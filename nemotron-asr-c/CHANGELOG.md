@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.6.0...nemotron-asr-c-v0.6.1) (2026-06-18)
+
+
+### Build System
+
+* **nemotron-asr-c:** merge builder stages and fold tools/ into rootfs ([f9315f8](https://github.com/saya6k/ha-apps/commit/f9315f8f89e42bb3c507bb2255e82ff01ea52577))
+* **nemotron-asr-c:** shallow fetch + merge ldconfig+chmod into one RUN ([a6e1441](https://github.com/saya6k/ha-apps/commit/a6e1441ff0dcdfdad41dbb79dfcf72c2c527257d))
+* **nemotron-asr-c:** strip .so symbols, --no-compile pip, clean builder apt cache ([fec74b5](https://github.com/saya6k/ha-apps/commit/fec74b55227c67fcaae6560387af88e91479a819))
+* **wardrowbe:** remove npm rebuild sharp from frontend build ([91fb4a5](https://github.com/saya6k/ha-apps/commit/91fb4a5f5d3dcfab2aab871c3c1a1376a229d23e))
+
 ## [0.6.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.5.0...nemotron-asr-c-v0.6.0) (2026-06-18)
 
 
