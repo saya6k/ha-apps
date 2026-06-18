@@ -13,7 +13,7 @@ authors = [{ name = "ha-supertonic contributors" }]
 keywords = ["home-assistant", "wyoming", "tts", "supertonic", "supertone", "mnn"]
 
 dependencies = [
-    "wyoming>=1.5,<2",
+    "wyoming>=1.7,<2",
     "sentence-stream>=1.0.4",
     "numpy",
     # Language-aware number-to-words (CLDR RBNF spellout). Same rule data
