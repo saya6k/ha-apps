@@ -275,10 +275,9 @@ exposed to the host network.
   further base bump.
 - `HEALTHCHECK` probes the ingress port; nginx returning 200 on
   `/index.html` proves both init and serve worked.
-- `image:` line in `config.yaml` points at the public GHCR image
-  (`ghcr.io/saya6k/{arch}-addon-zensical`), published per release tag by
-  `.github/workflows/build.yml`, so users pull a prebuilt image instead of
-  a long local build.
+- No `image:` line in `config.yaml` — HA builds this add-on locally from its
+  Dockerfile. CI build-tests the Dockerfile (`.github/workflows/ci.yml`,
+  `push: false`); nothing is published to a registry.
 
 ## Zensical-specific gotchas
 
@@ -310,7 +309,6 @@ exposed to the host network.
   title/description/source.
 - `HEALTHCHECK` probes the ingress port; nginx returning 200 on
   `/index.html` proves both init and serve worked.
-- `image:` line in `config.yaml` points at the public GHCR image
-  (`ghcr.io/saya6k/{arch}-addon-zensical`), published per release tag by
-  `.github/workflows/build.yml`, so users pull a prebuilt image instead of
-  a long local build.
+- No `image:` line in `config.yaml` — HA builds this add-on locally from its
+  Dockerfile. CI build-tests the Dockerfile (`.github/workflows/ci.yml`,
+  `push: false`); nothing is published to a registry.
