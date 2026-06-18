@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.5...nemo-asr-cpp-v0.4.0) (2026-06-18)
+
+
+### Features
+
+* **nemo-asr-cpp:** add custom AppArmor profile ([eb25e7d](https://github.com/saya6k/ha-apps/commit/eb25e7d7c8c8b79e114a052ada9e508a0d4cb996))
+
+
+### Documentation
+
+* **nemo-asr-cpp:** add Show add-on badge to README ([95d5f40](https://github.com/saya6k/ha-apps/commit/95d5f4032065bfd200a501804167441e6433c98e))
+
+
+### Build System
+
+* **nemo-asr-cpp:** merge builder stages; .so direct to /usr/local/lib ([ab90c73](https://github.com/saya6k/ha-apps/commit/ab90c73f63102a8f260e09fb9f08dd06f8c049ad))
+* **nemo-asr-cpp:** merge ldconfig + chmod into single RUN layer ([873e7ec](https://github.com/saya6k/ha-apps/commit/873e7ec65db88b122310c3e36e075aef48a644cf))
+* **nemo-asr-cpp:** strip .so symbols, --no-compile pip, clean builder apt cache ([bface7d](https://github.com/saya6k/ha-apps/commit/bface7dd338e9eafcb1a0c982017be8c84c87149))
+
 ## [0.9.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.8.0...nemo-asr-cpp-v0.9.0) (2026-06-18)
 
 
