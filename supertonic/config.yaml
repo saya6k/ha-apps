@@ -1,4 +1,4 @@
-version: 2.10.0
+version: 2.11.0
 slug: supertonic
 name: Supertonic
 description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
