@@ -29,6 +29,7 @@ RUN \
         python3-pip \
         git \
         patchelf \
+    && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
         "wyoming==1.7.2" \
