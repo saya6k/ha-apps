@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.2...supertonic-v2.3.0) (2026-06-18)
+
+
+### Features
+
+* **supertonic:** add custom AppArmor profile ([30d2bcd](https://github.com/saya6k/ha-apps/commit/30d2bcd4a0763c4f4b94b27d9ae0fa566c2c85d5))
+
+
+### Documentation
+
+* **supertonic:** add Show add-on badge to README ([84470bf](https://github.com/saya6k/ha-apps/commit/84470bf3c204fbb0adb2e491f44af4a7037132cf))
+
 ## [2.2.2](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.1...supertonic-v2.2.2) (2026-06-18)
 
 
