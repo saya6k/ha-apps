@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.8.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.7.0...voiceprint-v0.8.0) (2026-06-18)
+
+
+### Features
+
+* **voiceprint:** add custom AppArmor profile ([3c39a1f](https://github.com/saya6k/ha-apps/commit/3c39a1fe6b8175c1d5a47d2c2247d19ecef72e9b))
+* **voiceprint:** add speaker-verifying Wyoming STT proxy add-on ([eaac8c1](https://github.com/saya6k/ha-apps/commit/eaac8c1bc7dd2f26246fb8c5b23234b4a47ba22e))
+* **voiceprint:** default upstream to nemo-asr-cpp and ship GHCR image ([03f0096](https://github.com/saya6k/ha-apps/commit/03f0096020ebdebacac7be16be7444436339407d))
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+
+
+### Documentation
+
+* **voiceprint:** add Show add-on badge and arch shields to README ([e3f0429](https://github.com/saya6k/ha-apps/commit/e3f0429717ecddf93ec69583ba783cae2c3e50bc))
+
+
+### Build System
+
+* **voiceprint:** --no-compile pip install in builder stage ([e7493ab](https://github.com/saya6k/ha-apps/commit/e7493abc414174faf975425d65095ac4b4aeee54))
+* **voiceprint:** build add-on locally, drop GHCR image reference ([e2ad20f](https://github.com/saya6k/ha-apps/commit/e2ad20fec1e9a28e32bfc83bf11f32416e5ffdf1))
+* **voiceprint:** clean apt cache in builder stage ([1cc8700](https://github.com/saya6k/ha-apps/commit/1cc8700a585e8b9ed1de0008ea7ecdccc878e120))
+
 ## [0.7.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.6.0...voiceprint-v0.7.0) (2026-06-18)
 
 
