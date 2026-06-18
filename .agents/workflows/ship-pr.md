@@ -5,10 +5,16 @@ description: Drives this monorepo's commit → push → PR → merge flow so rel
 
 # Ship a change (commit → push → PR → merge)
 
-This monorepo's release pipeline (release-please) parses commits on `main`. A
-malformed commit/PR title, or the wrong merge method, silently drops a change
-from its app CHANGELOG. This skill is the end-to-end flow; defer to
-[[conventional-commit]] for message wording and to [[app-preflight]] for the
+> **Dev-first flow:** app changes now base on **`dev`**, not `main` — see
+> [[app-dev-pr]]. release-please cuts release PRs on `dev`, and `dev → main` is a
+> separate, user-approved promotion. The steps below are the mechanics; wherever
+> they say `main` as the PR base, read `dev` (a `chore(<addon>): release` PR is
+> still merged on `dev`). `main` is moved only by the [[app-dev-pr]] promotion.
+
+This monorepo's release pipeline (release-please) parses commits on its tracked
+branch (`dev`). A malformed commit/PR title, or the wrong merge method, silently
+drops a change from its app CHANGELOG. This skill is the end-to-end flow; defer
+to [[conventional-commit]] for message wording and to [[app-preflight]] for the
 per-app sanity checks.
 
 ## 1. Branch
