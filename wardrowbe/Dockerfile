@@ -22,7 +22,7 @@ RUN apk add --no-cache libc6-compat nodejs npm
 WORKDIR /build
 
 COPY --from=source /src/frontend/package.json /src/frontend/package-lock.json ./
-RUN npm ci --ignore-scripts && npm rebuild sharp
+RUN npm ci --ignore-scripts
 
 COPY --from=source /src/frontend ./
 
