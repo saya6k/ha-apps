@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [2.0.3](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.2...wardrowbe-v2.0.3) (2026-06-18)
+
+
+### Bug Fixes
+
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([a8b8a61](https://github.com/saya6k/ha-apps/commit/a8b8a6163024fa611e2b661b90f37093640419fa))
+* **repo:** remove redundant apparmor: true (linter default) ([423ac7f](https://github.com/saya6k/ha-apps/commit/423ac7ff0c4fbde79abdec4e86a08f5c91f6fe1f))
+
 ## [2.0.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.1...wardrowbe-v2.0.2) (2026-06-18)
 
 
