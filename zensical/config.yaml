@@ -9,6 +9,7 @@ arch:
   - amd64
   - aarch64
 init: false
+apparmor: true
 ingress: true
 panel_icon: mdi:book-open-page-variant
 panel_title: Docs
