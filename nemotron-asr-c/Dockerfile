@@ -20,8 +20,10 @@ RUN \
         ca-certificates
 
 WORKDIR /src
-RUN git clone https://github.com/kdrkdrkdr/nemotron-asr-streaming.c.git . \
-    && git checkout "${NEMOTRON_C_REF}"
+RUN git init -q . \
+    && git remote add origin https://github.com/kdrkdrkdr/nemotron-asr-streaming.c.git \
+    && git fetch --depth 1 origin "${NEMOTRON_C_REF}" \
+    && git checkout FETCH_HEAD
 
 # Vendored patches: shared-library build target (+ any future patches).
 COPY patches/ /tmp/patches/
@@ -68,8 +70,6 @@ RUN \
 
 # C shared library.
 COPY --from=builder /opt/nemotron-c/lib/libnemotron_asr.so /usr/local/lib/
-RUN ldconfig
-
 # Python deps + our bridge (includes torch, numpy, wyoming, huggingface_hub).
 COPY --from=builder-py /usr/local /usr/local
 
@@ -78,7 +78,9 @@ COPY tools/ /usr/src/app/tools/
 
 COPY rootfs /
 
-RUN shopt -s nullglob && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}
+RUN ldconfig \
+    && shopt -s nullglob \
+    && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}
 
 HEALTHCHECK --start-period=10m \
     CMD echo '{ "type": "describe" }' \
