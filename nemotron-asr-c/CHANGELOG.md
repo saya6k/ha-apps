@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.4.0...nemotron-asr-c-v0.5.0) (2026-06-18)
+
+
+### Features
+
+* **nemotron-asr-c:** implement true streaming with TranscriptChunk events ([#147](https://github.com/saya6k/ha-apps/issues/147)) ([1cd6c8b](https://github.com/saya6k/ha-apps/commit/1cd6c8be90124fd1a2e0f7144df6383a39ed0f78))
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** drive the stateful C streaming cascade ([c74503b](https://github.com/saya6k/ha-apps/commit/c74503b78d31af01e3ab9a4e6f916b63fa5d6875))
+
+
+### Build System
+
+* **nemotron-asr-c:** add GHCR image reference to config.yaml ([22a7488](https://github.com/saya6k/ha-apps/commit/22a7488c2d3a66934a0cb33a1aa02897bc4767db))
+
 ## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.11...nemotron-asr-c-v0.4.0) (2026-06-18)
 
 
