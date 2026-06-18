@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.3...livekit-wakeword-v0.2.4) (2026-06-18)
+
+
+### CI
+
+* **repo:** promote dev to main (CI hardening + workflow automation) ([#171](https://github.com/saya6k/ha-apps/issues/171)) ([c0f9c03](https://github.com/saya6k/ha-apps/commit/c0f9c03dded8e86a1b09df2d0ea5d366684cfa6e))
+
 ## [0.2.3](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.2...livekit-wakeword-v0.2.3) (2026-06-18)
 
 
