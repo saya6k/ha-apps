@@ -6,6 +6,7 @@ description: >-
   AI-tagged details, and receive daily outfit suggestions based on weather and
   occasion.
 url: https://github.com/Anyesh/wardrowbe
+apparmor: true
 arch:
   - aarch64
   - amd64
