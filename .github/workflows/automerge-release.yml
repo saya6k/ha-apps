@@ -1,0 +1,25 @@
+---
+name: Auto-merge release PRs
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: Enable auto-merge
+    if: startsWith(github.head_ref, 'release-please--')
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          gh pr merge "$PR" --repo "$REPO" --squash --auto
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.number }}
+          REPO: ${{ github.repository }}

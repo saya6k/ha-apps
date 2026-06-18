@@ -31,10 +31,12 @@ is for humans and AI agents working on the code.
 
 ## Installing
 
-In Home Assistant, go to **Settings → Add-ons → Add-on Store**, open the
-overflow menu (⋮) in the top right, choose **Repositories**, paste the
-URL of this repository, and click **Add**. The add-ons listed above will
-appear under their own section in the store.
+[![Add repository to Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps)
+
+Or manually: go to **Settings → Add-ons → Add-on Store**, open the overflow
+menu (⋮) in the top right, choose **Repositories**, paste the URL of this
+repository, and click **Add**. The add-ons listed above will appear under
+their own section in the store.
 
 ## Contributing
 
