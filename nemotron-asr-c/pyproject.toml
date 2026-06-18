@@ -1,6 +1,6 @@
 [project]
 name = "wyoming_nemo_asr_c"
-version = "0.5.0"
+version = "0.7.0"
 description = "Wyoming bridge for nemotron-asr-streaming.c (pure-C Nemotron ASR)"
 requires-python = ">=3.11"
 dependencies = [
