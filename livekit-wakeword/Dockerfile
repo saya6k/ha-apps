@@ -20,7 +20,7 @@ RUN \
 WORKDIR /usr/src/app
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_livekit_wakeword/ /usr/src/app/wyoming_livekit_wakeword/
-RUN pip3 install --no-cache-dir /usr/src/app
+RUN pip3 install --no-cache-dir --no-compile /usr/src/app
 
 # ---- runtime: no pip, no build tooling ----
 FROM ${BUILD_FROM}
