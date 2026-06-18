@@ -78,8 +78,9 @@ BREAKING CHANGE: removes the `provider` option; users on 1.x must reconfigure.
    `voiceprint`).
 4. Merging that PR tags `<addon>-v<ver>` and creates a GitHub Release.
 
-Image build/publish to GHCR is currently manual — that's tracked as a
-future task.
+Add-on images are not published to a registry — HA builds each add-on
+locally from its Dockerfile. CI build-tests the Dockerfile on every PR and on
+pushes to `main`/`dev` (`.github/workflows/ci.yml`, no registry publish).
 
 ## Issues
 

@@ -61,7 +61,8 @@ Two long-lived branches:
   `chore(main): release <ver>` against `main`. Its diff (CHANGELOG / config.yaml
   / pyproject.toml / manifest) is auto-generated — review, don't edit.
 - Merge that release PR to land the version bump on `main` and tag
-  `<addon>-v<ver>` (the tag fires `build.yml`).
+  `<addon>-v<ver>` (no image is published — HA builds the add-on locally from
+  its Dockerfile; CI build-tests it on PRs and `main`/`dev` pushes).
 - `main` now carries a release commit `dev` lacks. Fast-forward `dev` back up so
   the next promotion stays linear:
   ```

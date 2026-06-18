@@ -14,12 +14,14 @@ The ha-apps repo (github.com/saya6k/ha-apps) is now **public**. Key deployment f
   dir is `/addon_configs/03f32180_<slug>` (underscore) — replacing the
   `local-`/`local_` prefix used for locally-built add-ons. voiceprint defaults
   its `upstream_uri` to `tcp://03f32180-nemo-asr-cpp:10360`.
-- **Prebuilt images:** each published add-on's `config.yaml` has
-  `image: ghcr.io/saya6k/{arch}-addon-<slug>`, built per release tag by
-  `.github/workflows/build.yml`. The images exist but are **private by
-  default** — GHCR package visibility must be flipped to Public via the web UI
-  (https://github.com/users/saya6k/packages → each package → settings); there
-  is no REST API for this and `gh` needs `write:packages` scope to even list.
+- **Local build (no prebuilt images, since 2026-06-18).** Add-ons have **no
+  `image:` key** — HA builds each from its Dockerfile on the host. CI
+  build-tests the Dockerfile (`.github/workflows/ci.yml` `build-image` job, all
+  configured arches, `push: false`); nothing is published to GHCR and the old
+  `build.yml` publish workflow was deleted. The `03f32180-<slug>` hostname is
+  **unaffected** — repo-installed add-ons keep the repo identifier whether built
+  locally or pulled, so voiceprint's `tcp://03f32180-nemo-asr-cpp:10360` default
+  still holds.
 - **voiceprint model release `voiceprint-model-v1` now exists** (published
   2026-06-15) with `campplus_zh_en_fp16.tflite` attached — fixes the first-run
   404 in `models.ensure_model`. See [[voiceprint-verification-plan]].
