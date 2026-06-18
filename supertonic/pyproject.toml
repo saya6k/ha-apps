@@ -19,6 +19,9 @@ dependencies = [
     # Language-aware number-to-words (CLDR RBNF spellout). Same rule data
     # Piper 2 uses via ICU; covers all 31 Supertonic v3 languages.
     "unicode-rbnf>=2.0,<3",
+    # Language detection for number normalization. HA's Wyoming integration
+    # does not forward the pipeline language to us, so we detect it from text.
+    "langid",
     # 0.2.0+ (with v3 + lang= support) — installed from git in the Dockerfile
     # until upstream publishes a release. The image installs this package with
     # --no-deps so the version spec here is informational.

@@ -16,9 +16,17 @@ import logging
 import re
 from typing import Dict, Optional
 
+import langid
 from unicode_rbnf import FormatPurpose, RbnfEngine
 
 _LOGGER = logging.getLogger(__name__)
+
+# Pre-load the langid model at import time so the first TTS request does not
+# pay the ~800 ms cold-start penalty. The model is loaded once per process.
+try:
+    langid.classify("")
+except Exception:  # noqa: BLE001
+    _LOGGER.warning("langid pre-load failed; language detection will be slower on first request")
 
 # A signed integer or simple decimal. Bounded by ASCII alphanumerics + dot
 # (not `\w`) on both sides. This approximates how Piper 2 spells out numbers:
@@ -33,6 +41,18 @@ _LOGGER = logging.getLogger(__name__)
 # handled — see the module docstring / decision log; such numbers are spelled
 # out group-by-group.
 _NUMBER_RE = re.compile(r"(?<![A-Za-z0-9.])(-?\d+(?:\.\d+)?)(?![A-Za-z0-9.])")
+
+
+def detect_norm_lang(text: str) -> Optional[str]:
+    """Detect the language of *text* and return its ISO 639-1 code.
+
+    Returns None on any failure so callers can fall back gracefully.
+    """
+    try:
+        lang, _ = langid.classify(text)
+        return lang or None
+    except Exception:  # noqa: BLE001
+        return None
 
 
 class TextNormalizer:

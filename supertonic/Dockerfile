@@ -35,6 +35,7 @@ RUN \
         "wyoming==1.9.0" \
         "sentence-stream" \
         "unicode-rbnf" \
+        "langid" \
         "numpy" \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
     # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack

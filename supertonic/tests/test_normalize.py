@@ -1,9 +1,9 @@
 """Unit tests for the language-aware number normalizer.
 
-Pure-Python (unicode-rbnf only), so these run in the local uv venv without
-the MNN engine:  .venv/bin/python -m pytest tests/test_normalize.py
+Requires langid + unicode-rbnf; run in the local uv venv without the MNN
+engine:  .venv/bin/python -m pytest tests/test_normalize.py
 """
-from wyoming_supertonic.normalize import TextNormalizer
+from wyoming_supertonic.normalize import TextNormalizer, detect_norm_lang
 
 
 def test_english_integer():
@@ -81,6 +81,41 @@ def test_streaming_decimal_not_split_at_period():
         "I have three point five apples.",
         "Done.",
     ]
+
+
+def test_detect_norm_lang_korean():
+    assert detect_norm_lang("오늘 온도는 23도입니다.") == "ko"
+
+
+def test_detect_norm_lang_japanese():
+    assert detect_norm_lang("今日の気温は23度です。") == "ja"
+
+
+def test_detect_norm_lang_english():
+    assert detect_norm_lang("The temperature is 23 degrees today.") == "en"
+
+
+def test_detect_norm_lang_german():
+    assert detect_norm_lang("Die Temperatur beträgt 23 Grad.") == "de"
+
+
+def test_detect_norm_lang_arabic():
+    assert detect_norm_lang("درجة الحرارة اليوم 23 درجة.") == "ar"
+
+
+def test_detect_norm_lang_russian():
+    assert detect_norm_lang("Сегодня температура 23 градуса.") == "ru"
+
+
+def test_normalize_korean_with_english_fallback_lang():
+    # Simulates the real scenario: HA sends no language (defaults to "en"),
+    # but text is Korean. detect_norm_lang picks "ko" and normalization
+    # produces Korean number words instead of English.
+    n = TextNormalizer()
+    detected = detect_norm_lang("오늘 온도는 23도입니다.")
+    norm_lang = detected or "en"
+    assert norm_lang == "ko"
+    assert n.normalize("오늘 온도는 23도입니다.", norm_lang) == "오늘 온도는 이십삼도입니다."
 
 
 def test_streaming_number_split_across_chunks():
