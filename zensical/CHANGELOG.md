@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.1](https://github.com/saya6k/ha-apps/compare/zensical-v0.2.0...zensical-v0.2.1) (2026-06-18)
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+* **zensical:** persist example-seeded marker so a deleted example stays gone ([29d198e](https://github.com/saya6k/ha-apps/commit/29d198ee3b34c37313bf52c6b54b23008c9fd5d5))
+
+
+### Documentation
+
+* **zensical:** note local build instead of prebuilt GHCR image ([a17591c](https://github.com/saya6k/ha-apps/commit/a17591ce79675f1ef7ab99e8b853811979f61ef2))
+
+
+### Build System
+
+* **zensical:** build add-on locally, drop GHCR image reference ([55d524c](https://github.com/saya6k/ha-apps/commit/55d524c0df052a4f9e77ffbca9e7fce3fbdeacc7))
+* **zensical:** migrate off build.yaml, pin base image, mark stable ([84f46d1](https://github.com/saya6k/ha-apps/commit/84f46d188f544041dd1a3dabbf3b8c0daca43515))
+* **zensical:** reference prebuilt public GHCR image ([e49b1be](https://github.com/saya6k/ha-apps/commit/e49b1bedba90e33967ae71561ef39a2ee69338ad))
+
 ## [0.1.4](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.3...zensical-v0.1.4) (2026-06-18)
 
 
