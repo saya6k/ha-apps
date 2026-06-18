@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.4](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.3...zensical-v0.1.4) (2026-06-18)
+
+
+### Documentation
+
+* **zensical:** note local build instead of prebuilt GHCR image ([a17591c](https://github.com/saya6k/ha-apps/commit/a17591ce79675f1ef7ab99e8b853811979f61ef2))
+
+
+### Build System
+
+* **zensical:** build add-on locally, drop GHCR image reference ([55d524c](https://github.com/saya6k/ha-apps/commit/55d524c0df052a4f9e77ffbca9e7fce3fbdeacc7))
+
 ## [0.1.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.1.2...zensical-v0.1.3) (2026-06-17)
 
 
