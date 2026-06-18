@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.5.0...nemotron-asr-c-v0.6.0) (2026-06-18)
+
+
+### Features
+
+* **nemotron-asr-c:** add custom AppArmor profile ([93132e3](https://github.com/saya6k/ha-apps/commit/93132e385ce4cfb8f80ca6d878d645bd0e3fb342))
+
+
+### Documentation
+
+* **nemotron-asr-c:** fix streaming description, add badge and arch shields ([d3d8f29](https://github.com/saya6k/ha-apps/commit/d3d8f29c7fe98849998d92ddc14ed4814b0fc71f))
+
 ## [0.5.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.4.0...nemotron-asr-c-v0.5.0) (2026-06-18)
 
 
