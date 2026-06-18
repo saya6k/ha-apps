@@ -52,6 +52,7 @@ class NemoCHandler(AsyncEventHandler):
         self._language: str | None = cli_args.language
         self._stream: NemoCStream | None = None
         self._last_partial: str = ""
+        self._transcript_started: bool = False
         self._t0: float = 0.0
         self._n_samples: int = 0
 
@@ -85,6 +86,7 @@ class NemoCHandler(AsyncEventHandler):
                 self._t0 = time.monotonic()
                 self._n_samples = 0
                 await self.write_event(TranscriptStart(language=self._language).event())
+                self._transcript_started = True
                 return True
 
             if AudioChunk.is_type(event.type):
@@ -116,6 +118,9 @@ class NemoCHandler(AsyncEventHandler):
         except Exception:
             _LOGGER.exception("Unexpected error in handle_event")
             self._close_stream()
+            if self._transcript_started:
+                self._transcript_started = False
+                await self.write_event(TranscriptStop().event())
             await self.write_event(
                 Event("error", {"text": "Internal server error", "code": "internal"})
             )
@@ -125,16 +130,18 @@ class NemoCHandler(AsyncEventHandler):
         """Finalize the active stream and emit TranscriptStop + Transcript."""
         if self._stream is None:
             _LOGGER.debug("No active stream on AudioStop")
-            await self.write_event(TranscriptStop().event())
-            await self.write_event(Transcript(text="", language=self._language).event())
-            return
+            return  # no TranscriptStart was sent — don't emit orphaned Stop/Transcript
         loop = asyncio.get_running_loop()
+        text = ""
         try:
             async with _ASR_LOCK:
                 await loop.run_in_executor(None, self._stream.finalize)
                 text = self._stream.text()
+        except Exception:
+            _LOGGER.exception("Error during stream finalization")
         finally:
             self._close_stream()
+        self._transcript_started = False
         await self.write_event(TranscriptStop().event())
         await self.write_event(Transcript(text=text, language=self._language).event())
         audio_dt = self._n_samples / 16000.0 if self._n_samples else 0.0
