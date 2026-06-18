@@ -30,7 +30,7 @@ RUN \
         git \
         patchelf \
     && rm -rf /var/lib/apt/lists/* \
-    && pip3 install --no-cache-dir \
+    && pip3 install --no-cache-dir --no-compile \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
         "wyoming==1.7.2" \
         "sentence-stream" \
@@ -50,7 +50,7 @@ RUN \
 # rides along in the COPY of /usr/local into the runtime stage.
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_supertonic/ /usr/src/app/wyoming_supertonic/
-RUN pip3 install --no-cache-dir --no-deps /usr/src/app
+RUN pip3 install --no-cache-dir --no-compile --no-deps /usr/src/app
 
 # ---- final: runtime only — no pip, no setuptools, no git, no build tooling ----
 FROM ${BUILD_FROM}
