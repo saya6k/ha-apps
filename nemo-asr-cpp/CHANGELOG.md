@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.5...nemo-asr-cpp-v0.4.0) (2026-06-18)
+
+
+### Features
+
+* **nemo-asr-cpp:** add custom AppArmor profile ([eb25e7d](https://github.com/saya6k/ha-apps/commit/eb25e7d7c8c8b79e114a052ada9e508a0d4cb996))
+
+
+### Documentation
+
+* **nemo-asr-cpp:** add Show add-on badge to README ([95d5f40](https://github.com/saya6k/ha-apps/commit/95d5f4032065bfd200a501804167441e6433c98e))
+
 ## [0.3.5](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.4...nemo-asr-cpp-v0.3.5) (2026-06-18)
 
 
