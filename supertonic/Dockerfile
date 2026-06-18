@@ -32,9 +32,10 @@ RUN \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir --no-compile \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
-        "wyoming==1.7.2" \
+        "wyoming==1.9.0" \
         "sentence-stream" \
         "unicode-rbnf" \
+        "langid" \
         "numpy" \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
     # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack

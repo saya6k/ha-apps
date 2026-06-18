@@ -42,7 +42,7 @@ from wyoming.tts import (
 
 from .const import DEFAULT_LANGUAGE, DEFAULT_VOICE, resolve_language
 from .engine import SupertonicEngine, float_to_pcm16
-from .normalize import TextNormalizer
+from .normalize import TextNormalizer, detect_norm_lang
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -201,10 +201,21 @@ class SupertonicEventHandler(AsyncEventHandler):
             voice_name = self.engine.available_voices[0]
 
         # Number-to-words normalization runs on the full (post-sentence-split)
-        # text, with the resolved language, *before* auto-punctuation — a
-        # trailing "." appended next to a number would otherwise mask it.
+        # text, *before* auto-punctuation — a trailing "." appended next to a
+        # number would otherwise mask it.
+        # HA's Wyoming integration never forwards the pipeline language to us
+        # (SynthesizeVoice carries only name+speaker), so we detect it from the
+        # text itself. The detected language is used for normalization only;
+        # the engine still receives the pipeline language for synthesis.
         if not self.cli_args.no_text_normalization:
-            text = self.normalizer.normalize(text, language)
+            norm_lang = detect_norm_lang(text) or language
+            if norm_lang != language:
+                _LOGGER.debug(
+                    "Script detection overrides normalization language: %r → %r",
+                    language,
+                    norm_lang,
+                )
+            text = self.normalizer.normalize(text, norm_lang)
 
         if self.cli_args.auto_punctuation:
             if text[-1] not in self.cli_args.auto_punctuation:
