@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.11...nemotron-asr-c-v0.4.0) (2026-06-18)
+
+
+### Features
+
+* **nemotron-asr-c:** promote to stable ([2c526a8](https://github.com/saya6k/ha-apps/commit/2c526a877fdc1709c7381d48e6a78443436ce8fb))
+
 ## [0.3.11](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.3.10...nemotron-asr-c-v0.3.11) (2026-06-17)
 
 
