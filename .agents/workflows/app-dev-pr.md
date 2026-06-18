@@ -1,19 +1,18 @@
 ---
 name: app-dev-pr
-description: Drives this monorepo's dev-first flow — work integrates on `dev`, and a user-approved `dev → main` promotion is what triggers a release (release-please runs on `main` only). Use when committing and shipping any app change. Defer to [[conventional-commit]] for message wording.
+description: Drives this monorepo's dev-first flow — work integrates on `dev`, and a user-approved `dev → main` promotion triggers a release (release-please runs on `main` only, gated on CI success). Use when committing and shipping any app change. Defer to [[conventional-commit]] for message wording.
 ---
 
 # App dev flow (integrate on `dev`, release on `main`)
 
 Two long-lived branches:
 
-- **`dev`** — integration branch. All app work lands here first (a PR based on
-  `dev`, or a local merge pushed to `origin/dev`). **release-please does NOT run
-  on `dev`** — no releases are cut here.
-- **`main`** (default, released/stable) — advanced **only** by an explicit,
-  user-approved `dev → main` promotion. release-please runs on `main`
-  (`.github/workflows/release.yml`, `on: push: branches: [main]`) and opens the
-  `chore(main): release <ver>` PR there.
+- **`dev`** — integration branch. All app work lands here first. Branch
+  protection: "CI passed" required on PRs (`enforce_admins: false`). No
+  release-please here.
+- **`main`** (released/stable) — advanced **only** by an explicit,
+  user-approved `dev → main` PR. Branch protection: PR + "CI passed" required
+  (`enforce_admins: false`). Deletion blocked on both branches.
 
 > Commit message wording: [[conventional-commit]]. Per-app sanity checks:
 > [[app-preflight]].
@@ -30,46 +29,49 @@ Two long-lived branches:
 - Commit per [[conventional-commit]] — exactly one scope per commit; split
   commits that span apps. Never `--no-verify` / `--no-gpg-sign` — fix hook
   failures at the root cause.
-- Land it on `dev`: a PR with `gh pr create --base dev ...` (GitHub defaults the
-  base to `main`, so pass `--base dev` explicitly; the PR title must itself be a
-  valid Conventional Commit), or a local merge into `dev` pushed to `origin/dev`.
-- **Merge method:** single-scope PR → squash is fine (the title becomes the one
-  commit). Multi-scope PR → **do not squash** — it collapses every scope into the
-  title's, so release-please drops the rest; rebase-merge to keep each commit
-  intact, or split into one PR per scope. See [[release-please-squash-gotcha]].
+- Land it on `dev`: `gh pr create --base dev ...` (GitHub defaults base to
+  `main` — always pass `--base dev`; the PR title must be a valid Conventional
+  Commit).
+- **Merge method:** single-scope PR → squash is fine. Multi-scope PR → **do
+  not squash** — rebase-merge or split into one PR per scope.
+  See [[release-please-squash-gotcha]].
 - No release is cut at this step.
 
 ## 4. Promote `dev → main` — REQUIRES explicit user approval
 - **STOP. Never advance `main` without the user's explicit approval for that
   specific promotion.** Approval of dev-side work does NOT imply approval to
-  promote; ask every time, naming what is promoted
-  (`git log --oneline origin/main..origin/dev`).
-- Pre-conditions before you ask: `dev` CI green, and the app smoke-tested on a
-  real HA pipeline (not just unit tests).
-- On approval, open a PR from `dev` to `main` and merge after CI passes:
+  promote; ask every time, naming what is promoted:
+  `git log --oneline origin/main..origin/dev`
+- Pre-conditions: `dev` CI green + app smoke-tested on a real HA pipeline.
+- On approval, open a PR and let auto-merge handle it:
   ```
   gh pr create --base main --head dev \
     --title "chore(repo): promote dev to main" \
-    --body "Fast-forward promotion. CI must pass before merge."
+    --body "Promotion. CI must pass before merge."
+  gh pr merge <number> --squash --auto
   ```
-  Wait for CI to pass, then merge. `main` has branch protection: PR + "CI
-  passed" required (`enforce_admins: false` — admin can bypass if needed).
-  `release-please` triggers via `workflow_run` only after CI succeeds on `main`.
+  `main` branch protection requires PR + "CI passed". release-please fires via
+  `workflow_run` only after CI succeeds on `main` — never on a failing commit.
 
-## 5. Release on `main`, then re-sync `dev`
-- The promotion push to `main` triggers release-please, which opens
-  `chore(main): release <ver>` against `main`. Its diff (CHANGELOG / config.yaml
-  / pyproject.toml / manifest) is auto-generated — review, don't edit.
-- Merge that release PR to land the version bump on `main` and tag
-  `<addon>-v<ver>` (no image is published — HA builds the add-on locally from
-  its Dockerfile; CI build-tests it on PRs and `main`/`dev` pushes).
-- `main` now carries a release commit `dev` lacks. Fast-forward `dev` back up so
-  the next promotion stays linear:
-  ```
-  git switch dev && git merge --ff-only origin/main && git push origin dev
-  ```
+## 5. Release (fully automatic after promotion merges)
+
+The pipeline runs without manual steps:
+
+1. **release-please** (`release.yml`, `workflow_run` on CI success on `main`)
+   opens `chore(main): release <ver>` PRs — one per changed app.
+2. **automerge-release** (`automerge-release.yml`) detects `release-please--`
+   head branches and immediately enables squash auto-merge.
+3. **CI** runs on each release PR — build-image is **skipped** for
+   `release-please--` branches (CHANGELOG + version bump only, no code change);
+   lint and version-check still run.
+4. Each release PR merges automatically once CI passes → tags `<addon>-v<ver>`.
+5. **sync-dev** (`sync-dev.yml`, triggered on every `main` push) fast-forwards
+   `dev` to `main` if dev is behind. Skips if dev is ahead (active dev) or has
+   diverged (manual `git merge origin/main` needed before next promotion).
+
+Review the auto-generated release PR diff (CHANGELOG / config.yaml /
+pyproject.toml) — don't edit it.
 
 ## Never
 - Commit directly on `main`, or advance `main` without explicit per-promotion approval.
-- **Force-push `main`.** (The one-time backward reset that set up this flow was a
-  deliberate setup step, not the steady state.)
+- Force-push `main` or `dev`.
