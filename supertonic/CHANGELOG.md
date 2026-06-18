@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.3.0...supertonic-v2.3.1) (2026-06-18)
+
+
+### Build System
+
+* **supertonic:** --no-compile pip install in builder stage ([c08322d](https://github.com/saya6k/ha-apps/commit/c08322d95d984cdde0c228d07a6cad600e86c7c6))
+* **supertonic:** clean apt cache in builder stage ([5d7dd53](https://github.com/saya6k/ha-apps/commit/5d7dd53c8a37efe3ba5d0a47f43ee97df136da03))
+
 ## [2.3.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.2.2...supertonic-v2.3.0) (2026-06-18)
 
 
