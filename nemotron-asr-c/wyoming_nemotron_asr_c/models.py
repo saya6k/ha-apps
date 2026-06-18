@@ -242,7 +242,7 @@ def extract_tokenizer(nemo_path: Path, output_dir: Path) -> Path | None:
     if tok_path.exists():
         return tok_path
     try:
-        with tarfile.open(nemo_path, "r:") as tar:
+        with tarfile.open(nemo_path, "r:*") as tar:
             for m in tar.getmembers():
                 if m.name.endswith("tokenizer.model"):
                     with tar.extractfile(m) as src:
