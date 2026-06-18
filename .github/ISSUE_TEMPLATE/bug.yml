@@ -20,7 +20,6 @@ body:
         - livekit-wakeword
         - nemotron-asr-c
         - nemo-asr-cpp
-        - nemotron-asr
         - supertonic
         - voiceprint
         - wardrowbe

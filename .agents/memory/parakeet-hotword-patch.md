@@ -15,7 +15,7 @@ upstream ships the feature, delete the patch + apply step, bump PARAKEET_REF.
 Working copies of the patched checkout live in /tmp/parakeet.cpp and
 /tmp/parakeet-clean (volatile; the repo patch file is the durable artifact).
 
-Hard-won tokenization findings (apply to nemotron-asr's Python hotwords too):
+Hard-won tokenization findings (apply to nemotron-asr-c's Python hotwords too):
 - The GGUF embeds vocab pieces (`parakeet.tokenizer.pieces`, logit index
   order) but **no SentencePiece scores**, so exact unigram segmentation can't
   be reproduced; greedy longest-match diverges ('▁일' vs SPM's '▁'+'일') and a
