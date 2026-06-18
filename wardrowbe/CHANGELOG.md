@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [2.0.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.1...wardrowbe-v2.0.2) (2026-06-18)
+
+
+### Documentation
+
+* **wardrowbe:** add Show add-on badge to README ([e0e2a38](https://github.com/saya6k/ha-apps/commit/e0e2a38faa38a1f9fdfe43e6754aeeda5a80221b))
+
 ## [2.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v2.0.0...wardrowbe-v2.0.1) (2026-06-18)
 
 
