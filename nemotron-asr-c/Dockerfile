@@ -60,7 +60,8 @@ FROM ${BUILD_FROM}
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    HF_HUB_DISABLE_TELEMETRY=1
+    HF_HUB_DISABLE_TELEMETRY=1 \
+    HF_HOME=/data/models/.hf_cache
 
 # Runtime deps: python3 for the bridge, netcat for healthcheck.
 # PyTorch comes from builder (for boot-time .nemo -> .bin conversion).
