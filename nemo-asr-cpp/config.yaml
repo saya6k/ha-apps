@@ -9,7 +9,6 @@ arch:
   - amd64
   - aarch64
 init: false
-apparmor: true
 discovery:
   - wyoming
 backup_exclude:
