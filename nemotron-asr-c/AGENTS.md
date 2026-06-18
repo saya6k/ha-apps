@@ -26,7 +26,6 @@ labeler, and issue templates.
 ```
 config.yaml / Dockerfile        packaging; Dockerfile BUILDS libnemotron_asr.so
                                 from kdrkdrkdr/nemotron-asr-streaming.c source
-tools/convert_nemo.py           vendored from upstream; .nemo → .bin conversion
 pyproject.toml                  bridge package metadata
 wyoming_nemotron_asr_c/
   __main__.py   download .nemo → convert to .bin(s) → load → serve
@@ -34,6 +33,8 @@ wyoming_nemotron_asr_c/
   handler.py    Wyoming ASR; streaming (feed each AudioChunk, TranscriptChunk deltas)
   models.py     hf_hub_download .nemo → convert_nemo.py → data/${model}/${quant}/
   const.py      port, dirs, model registry, quants, chunk choices
+rootfs/usr/src/app/tools/
+  convert_nemo.py               vendored from upstream; .nemo → .bin conversion
 rootfs/.../s6-rc.d/             nemotron-asr-c (longrun) + discovery (oneshot)
 ```
 
