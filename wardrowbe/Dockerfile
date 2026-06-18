@@ -93,12 +93,10 @@ RUN apk add --no-cache \
     libstdc++ \
     nginx \
     nodejs \
-    npm \
     postgresql \
     postgresql-client \
     python3 \
     py3-pip \
-    py3-virtualenv \
     redis \
     su-exec
 
@@ -121,12 +119,8 @@ COPY --from=source /src/backend /app/backend
 
 RUN python3 -m venv /opt/venv \
  && . /opt/venv/bin/activate \
- && pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir /wheels/* \
  && rm -rf /wheels
-
-# Verify backend app exists
-RUN ls -la /app/backend/app/__init__.py
 
 # Create worker launcher that auto-detects WorkerSettings location
 # v1.2.2+ has app.workers.worker, v1.2.1 has app.workers.tagging
