@@ -7,7 +7,7 @@ metadata:
   originSessionId: 1136ae39-745d-4f72-9141-14c373fa49fa
 ---
 
-Adding a `chunk_size` (accuracy↔speed) option to **nemo-asr-cpp** (decided 2026-06-15; user chose this add-on over nemotron-asr because it needs no engine refactor).
+Adding a `chunk_size` (accuracy↔speed) option to **nemo-asr-cpp** (decided 2026-06-15; user chose this add-on over nemotron-asr-c because it needs no engine refactor).
 
 **Mechanism (verified by parakeet.cpp source @ pinned REF e270af7 + live GGUF metadata):**
 - The cache-aware operating point is the scalar GGUF KV `parakeet.encoder.att_context_right` (with `att_context_style=chunked_limited`). `model_loader.cpp:143` reads the scalar; `relpos_attention.cpp` builds the chunked-limited mask from it; `conformer.cpp` uses it in the **offline** encoder path too (parity.md 5a: offline limited-context WER 0). So our buffered `transcribe_pcm_lang` honors it.

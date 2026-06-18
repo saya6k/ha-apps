@@ -26,7 +26,6 @@ on:
           - livekit-wakeword
           - nemotron-asr-c
           - nemo-asr-cpp
-          - nemotron-asr
           - supertonic
           - voiceprint
           - wardrowbe
@@ -40,12 +39,10 @@ permissions:
   contents: read
   packages: write
 
-# Per-add-on group so different add-ons build in parallel; only repeat builds
-# of the *same* add-on queue. (ref-based grouping serialized everything since
-# every dispatch runs on main.)
-concurrency:
-  group: build-${{ github.event.inputs.addon || github.ref_name }}
-  cancel-in-progress: false
+# Per-add-on group so different add-ons build in parallel; only one build
+# per add-on runs at a time — a newer release cancels an in-progress build
+# of the same add-on (the newer image supersedes the older one).
+# Grouped at job level so needs.prepare.outputs.slug is available.
 
 jobs:
   # -------------------------------------------------------------------
@@ -79,7 +76,7 @@ jobs:
 
           # Only the published add-ons get an image; ignore any stray tag.
           case "$slug" in
-            livekit-wakeword|nemotron-asr-c|nemo-asr-cpp|nemotron-asr|supertonic|voiceprint|wardrowbe|zensical) ;;
+            livekit-wakeword|nemotron-asr-c|nemo-asr-cpp|supertonic|voiceprint|wardrowbe|zensical) ;;
             *)
               echo "skip=true" >> "$GITHUB_OUTPUT"
               echo "::notice::'$slug' is not a published add-on — skipping image build."
@@ -99,6 +96,9 @@ jobs:
     name: ${{ needs.prepare.outputs.slug }} (${{ matrix.arch }})
     needs: prepare
     if: ${{ needs.prepare.outputs.skip != 'true' }}
+    concurrency:
+      group: build-${{ needs.prepare.outputs.slug }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
