@@ -10,6 +10,7 @@ arch:
   - amd64
   - aarch64
 init: false
+apparmor: true
 discovery:
   - wyoming
 map:
