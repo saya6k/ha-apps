@@ -5,7 +5,6 @@ description: >-
   Streaming speech-to-text over Wyoming — NVIDIA Nemotron ASR on pure C
   (nemotron-asr-streaming.c), converts .nemo at boot
 url: https://github.com/kdrkdrkdr/nemotron-asr-streaming.c
-stage: experimental
 arch:
   - amd64
   - aarch64
