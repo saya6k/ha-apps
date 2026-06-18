@@ -57,21 +57,32 @@ Two long-lived branches:
   `main` branch protection requires PR + "CI passed". release-please fires via
   `workflow_run` only after CI succeeds on `main` — never on a failing commit.
 
-## 5. Release (fully automatic after promotion merges)
+## 5. Verify and sync after promotion
 
-The pipeline runs without manual steps:
+Once the promotion PR merges, wait for and confirm this sequence before doing
+anything else:
 
-1. **release-please** (`release.yml`, `workflow_run` on CI success on `main`)
-   opens `chore(main): release <ver>` PRs — one per changed app.
-2. **automerge-release** (`automerge-release.yml`) detects `release-please--`
-   head branches and immediately enables squash auto-merge.
-3. **CI** runs on each release PR — build-image is **skipped** for
-   `release-please--` branches (CHANGELOG + version bump only, no code change);
-   lint and version-check still run.
-4. Each release PR merges automatically once CI passes → tags `<addon>-v<ver>`.
-5. **sync-dev** (`sync-dev.yml`, triggered on every `main` push) fast-forwards
-   `dev` to `main` if dev is behind. Skips if dev is ahead (active dev) or has
-   diverged (manual `git merge origin/main` needed before next promotion).
+1. **CI passes on `main`** — check Actions tab or:
+   ```
+   gh run list --repo saya6k/ha-apps --workflow CI --branch main --limit 1 \
+     --json status,conclusion
+   ```
+2. **release-please opens release PRs** (`release.yml` fires via `workflow_run`
+   after CI succeeds). **automerge-release** immediately sets squash auto-merge
+   on each. CI on release PRs skips build-image; lint/version-check still run.
+   Each PR auto-merges once CI passes → tags `<addon>-v<ver>`.
+3. **sync-dev runs** (`sync-dev.yml`) — fast-forwards `dev` to `main` after
+   each release PR merge. Confirm dev is in sync:
+   ```
+   git fetch origin && git log --oneline origin/main..origin/dev
+   ```
+   Should be empty. If dev diverged (cherry-pick or force-reset scenario), sync
+   it manually with a temporary force-push window (see Never section caveat).
+4. **Pull locally** once dev and main are confirmed in sync:
+   ```
+   git switch dev && git pull --ff-only origin dev
+   git switch main && git pull --ff-only origin main
+   ```
 
 Review the auto-generated release PR diff (CHANGELOG / config.yaml /
 pyproject.toml) — don't edit it.
