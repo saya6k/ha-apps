@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   push:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
@@ -37,6 +37,8 @@ jobs:
         uses: dorny/paths-filter@v4
         with:
           filters: |
+            livekit-wakeword:
+              - 'livekit-wakeword/**'
             nemotron-asr-c:
               - 'nemotron-asr-c/**'
             nemo-asr-cpp:
@@ -205,6 +207,70 @@ jobs:
           exit $FAIL
 
   # ---------------------------------------------------------------------
+  # Build the changed add-on's image for every configured arch as a TEST
+  # (push: false — no registry publish). HA builds the add-on locally from
+  # its Dockerfile, so this only validates the Dockerfile still builds;
+  # nothing is published. Independent of release-please (versioning only).
+  # ---------------------------------------------------------------------
+  build-image:
+    name: build image (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check Dockerfile exists
+        id: dockerfile
+        run: |
+          if [ -f "${{ matrix.addon }}/Dockerfile" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping build"
+          fi
+
+      - name: Resolve platforms from config.yaml arch
+        id: platforms
+        if: steps.dockerfile.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+          declare -A MAP=(
+            [amd64]=linux/amd64 [aarch64]=linux/arm64
+            [armv7]=linux/arm/v7 [armhf]=linux/arm/v6 [i386]=linux/386
+          )
+          platforms=""
+          while read -r arch; do
+            [ -z "$arch" ] && continue
+            p="${MAP[$arch]:-}"
+            if [ -z "$p" ]; then echo "::error::Unsupported arch $arch"; exit 1; fi
+            platforms="${platforms:+$platforms,}$p"
+          done < <(yq '.arch[]' "${{ matrix.addon }}/config.yaml")
+          echo "value=$platforms" >> "$GITHUB_OUTPUT"
+          echo "::notice::Building ${{ matrix.addon }} for $platforms"
+
+      - uses: docker/setup-qemu-action@v4
+        if: steps.dockerfile.outputs.found == 'true'
+      - uses: docker/setup-buildx-action@v4
+        if: steps.dockerfile.outputs.found == 'true'
+
+      - uses: docker/build-push-action@v7
+        if: steps.dockerfile.outputs.found == 'true'
+        with:
+          context: ${{ matrix.addon }}
+          file: ${{ matrix.addon }}/Dockerfile
+          platforms: ${{ steps.platforms.outputs.value }}
+          push: false
+          provenance: false
+          sbom: false
+          cache-from: type=gha,scope=${{ matrix.addon }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.addon }}
+
+  # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
   # downstream lint succeeded OR was cleanly skipped because no add-on
   # directory changed in this push.
@@ -212,7 +278,7 @@ jobs:
   ci-ok:
     name: CI passed
     if: always()
-    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell, version-check]
+    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell, version-check, build-image]
     runs-on: ubuntu-latest
     steps:
       - name: Verify all lint jobs succeeded (or cleanly skipped)
@@ -227,7 +293,8 @@ jobs:
             "${{ needs.lint-yaml.result }}" \
             "${{ needs.lint-dockerfile.result }}" \
             "${{ needs.lint-shell.result }}" \
-            "${{ needs.version-check.result }}"; do
+            "${{ needs.version-check.result }}" \
+            "${{ needs.build-image.result }}"; do
             case "$result" in
               success|skipped) ;;
               *) echo "downstream lint failed: $result"; exit 1 ;;
