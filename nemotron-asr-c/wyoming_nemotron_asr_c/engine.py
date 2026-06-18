@@ -1,10 +1,15 @@
 """ctypes bridge to nemotron-asr-streaming.c (libnemotron_asr.so).
 
 The model is loaded ONCE into a resident context (nemo_load), then each
-connection creates its own encoder + decoder streams. Audio is fed
-incrementally: the mel spectrogram is recomputed on each chunk (cheap, <1% of
-inference time), fed through the encoder chunk callback to the RNN-T decoder,
-and partial text is available via nemo_rnnt_stream_text().
+connection creates its own three-stage streaming cascade:
+
+    PCM samples -> nemo_mel_stream    (overlapping-window FFT state)
+                -> nemo_encoder_stream (conformer KV + conv left-context cache)
+                -> nemo_rnnt_stream    (predictor/decoder state, accumulated text)
+
+Only NEW samples are fed on each accept_audio() call; every stage keeps its own
+cross-call state, so there is no quadratic mel recompute and the encoder never
+loses left-context. Partial text grows monotonically via nemo_rnnt_stream_text().
 """
 
 from __future__ import annotations
@@ -28,9 +33,11 @@ _TAG_RE = re.compile(r"\s*<[^>]*>\s*")
 # ---- C callback signatures ----
 # int (*nemo_encoder_chunk_cb)(void *user, const float *enc, int enc_frames);
 _ENCODER_CHUNK_CB = CFUNCTYPE(c_int, c_void_p, POINTER(c_float), c_int)
+# int (*nemo_mel_chunk_cb)(void *user, const float *mel, int mel_frames, int final);
+_MEL_CHUNK_CB = CFUNCTYPE(c_int, c_void_p, POINTER(c_float), c_int, c_int)
 
-# libc free() for malloc'd float arrays returned by nemo_mel_spectrogram and
-# nemo_encoder_forward.
+# libc free() for the malloc'd char* returned by nemo_rnnt_stream_finish
+# (ownership transferred to the caller).
 _libc = ctypes.CDLL(None)
 _libc.free.argtypes = [c_void_p]
 
@@ -38,108 +45,80 @@ _libc.free.argtypes = [c_void_p]
 class NemoCStream:
     """Per-connection streaming state.
 
-    Holds the audio buffer, encoder stream, RNN-T stream, and tracks emitted
-    text for delta computation. Created by :meth:`NemoCEngine.create_stream`.
+    Holds the persistent mel/encoder/RNN-T streams and the C callbacks that
+    chain them. New PCM samples flow through the cascade on each
+    :meth:`accept_audio`; partial text is read from the RNN-T stream. Created
+    by :meth:`NemoCEngine.create_stream`.
     """
 
     def __init__(self, engine: NemoCEngine, prompt_id: int) -> None:
         self._e = engine
         self._prompt_id = prompt_id
-        self._audio = np.zeros(0, dtype=np.float32)
-        self._tokens: list[int] = []
-        self._last_emitted = ""
+        self._ctx = engine._ctx
         self._final_text: str | None = None  # cached after finalize() frees rnnt
+        # Set inside a C callback when a nested C call fails; re-raised by the
+        # caller (ctypes swallows exceptions raised in callbacks).
+        self._cb_error: Exception | None = None
 
-        # Create the RNN-T stream (decoder side — we feed encoder output to it).
-        self._rnnt: c_void_p | None = engine._lib.nemo_rnnt_stream_create(engine._ctx)
+        # Pre-initialize so close() is safe if a later create() fails partway.
+        self._rnnt: c_void_p | None = None
+        self._enc: c_void_p | None = None
+        self._mel: c_void_p | None = None
+
+        L = engine._lib
+        self._rnnt = L.nemo_rnnt_stream_create(self._ctx)
         if not self._rnnt:
             raise RuntimeError("nemo_rnnt_stream_create failed")
+        self._enc = L.nemo_encoder_stream_create(self._ctx)
+        if not self._enc:
+            self.close()
+            raise RuntimeError("nemo_encoder_stream_create failed")
+        self._mel = L.nemo_mel_stream_create(self._ctx)
+        if not self._mel:
+            self.close()
+            raise RuntimeError("nemo_mel_stream_create failed")
 
-        # Encoder stream is created lazily on first accept_audio() because we
-        # need to know mel frame count for the callback wiring.
-        self._enc: c_void_p | None = None
-        self._mel_done = 0  # total mel frames fed to encoder so far
+        # Keep callback objects alive for the stream's lifetime — they are
+        # invoked from C and must not be garbage-collected mid-stream.
+        self._enc_cb = _ENCODER_CHUNK_CB(self._on_encoder_chunk)
+        self._mel_cb = _MEL_CHUNK_CB(self._on_mel_chunk)
+
+    def _on_mel_chunk(self, user, mel_ptr, mel_frames: int, final: int) -> int:
+        """C callback: feed new mel frames into the encoder stream."""
+        try:
+            return self._e._lib.nemo_encoder_stream_accept(
+                self._ctx, self._enc, mel_ptr, mel_frames, final, self._enc_cb, None,
+            )
+        except Exception as exc:  # noqa: BLE001 — surface through caller
+            self._cb_error = exc
+            return -1
+
+    def _on_encoder_chunk(self, user, enc_ptr, enc_frames: int) -> int:
+        """C callback: feed encoder output frames into the RNN-T decoder."""
+        try:
+            if enc_frames <= 0:
+                return 0
+            return self._e._lib.nemo_rnnt_stream_accept(
+                self._ctx, self._rnnt, enc_ptr, enc_frames,
+            )
+        except Exception as exc:  # noqa: BLE001 — surface through caller
+            self._cb_error = exc
+            return -1
 
     def accept_audio(self, samples: np.ndarray) -> None:
-        """Feed new float32 audio samples. Updates partial transcript."""
+        """Feed new float32 audio samples through the streaming cascade."""
         a = np.ascontiguousarray(samples, dtype=np.float32)
-        if a.size == 0:
+        if a.size == 0 or self._mel is None:
             return
-        self._audio = np.concatenate([self._audio, a])
-
-        # Recompute the full mel spectrogram (cheap; <1% of inference time).
-        n_samples = self._audio.shape[0]
-        out_frames = c_int(0)
-        mel_ptr = self._e._lib.nemo_mel_spectrogram(
-            self._e._ctx,
-            self._audio.ctypes.data_as(POINTER(c_float)),
-            n_samples,
-            ctypes.byref(out_frames),
+        self._cb_error = None
+        rc = self._e._lib.nemo_mel_stream_accept(
+            self._mel, a.ctypes.data_as(POINTER(c_float)), a.size, 0,
+            self._mel_cb, None,
         )
-        if not mel_ptr:
-            _LOGGER.error("nemo_mel_spectrogram failed")
-            return
-        try:
-            mel_frames = out_frames.value
-            if mel_frames == 0:
-                return
-            # Cast to numpy array (zero-copy view into C allocation — read-only).
-            mel_shape = (self._e._n_mels, mel_frames)
-            mel_arr = np.ctypeslib.as_array(
-                ctypes.cast(mel_ptr, POINTER(c_float)),
-                shape=mel_shape,
-            ).copy()  # copy so we can free the C buffer
-
-            # Feed only new mel frames (delta since last call).
-            # ascontiguousarray is required: column slicing produces a strided
-            # view that ctypes passes as a raw pointer, causing the C function
-            # to read wrong row data for every row after the first.
-            new_mel = np.ascontiguousarray(mel_arr[:, self._mel_done:])
-            if new_mel.shape[1] > 0:
-                self._feed_encoder(new_mel, new_mel.shape[1])
-            self._mel_done = mel_frames
-        finally:
-            _libc.free(mel_ptr)
-
-    def _feed_encoder(self, mel: np.ndarray, total_frames: int) -> None:
-        """Feed mel frames through encoder chunks, into the RNN-T decoder."""
-        engine = self._e
-        e = engine._lib
-
-        # Build the encoder chunk callback — feeds encoder output to the RNN-T
-        # stream and accumulates tokens.
-        rnnt_ptr = self._rnnt
-
-        @_ENCODER_CHUNK_CB
-        def _on_encoder_chunk(user: c_void_p, enc_ptr, enc_frames: c_int) -> c_int:
-            n = enc_frames
-            if n <= 0:
-                return 0
-            # Feed to RNN-T stream.
-            ret = e.nemo_rnnt_stream_accept(
-                engine._ctx, rnnt_ptr, enc_ptr, n
-            )
-            if ret != 0:
-                return ret
-            return 0
-
-        # The encoder takes the full mel and calls _on_encoder_chunk once per
-        # chunk with the encoded frames. This uses the persistent encoder stream
-        # (created lazily) so caches carry across calls.
-        if self._enc is None:
-            self._enc = e.nemo_encoder_stream_create(engine._ctx)
-            if not self._enc:
-                raise RuntimeError("nemo_encoder_stream_create failed")
-
-        # nemo_encoder_forward_chunks processes ALL mel frames and calls the
-        # callback for each chunk. The encoder stream handles chunking
-        # internally based on ctx->att_right.
-        ret = e.nemo_encoder_forward_chunks(
-            engine._ctx, mel.ctypes.data_as(POINTER(c_float)), total_frames,
-            _on_encoder_chunk, None,
-        )
-        if ret != 0:
-            _LOGGER.error("nemo_encoder_forward_chunks returned %d", ret)
+        if self._cb_error is not None:
+            raise self._cb_error
+        if rc != 0:
+            _LOGGER.error("nemo_mel_stream_accept returned %d", rc)
 
     def text(self) -> str:
         """Return the current partial transcript (language tags stripped)."""
@@ -151,12 +130,22 @@ class NemoCStream:
         return self._final_text or ""
 
     def finalize(self) -> None:
-        """Finish the RNN-T stream and return the final text."""
+        """Flush the cascade and cache the final text."""
+        L = self._e._lib
+        # Flush the mel stream (final=1, no new samples) so the encoder emits
+        # its trailing pending frames and the RNN-T sees the full sequence.
+        if self._mel is not None and self._rnnt is not None:
+            self._cb_error = None
+            rc = L.nemo_mel_stream_accept(self._mel, None, 0, 1, self._mel_cb, None)
+            if self._cb_error is not None:
+                raise self._cb_error
+            if rc != 0:
+                _LOGGER.error("nemo_mel_stream_accept(final) returned %d", rc)
         if self._rnnt is None:
             return
         # nemo_rnnt_stream_finish frees the rnnt stream internally and returns
         # a malloc'd char* with the final text (ownership transferred to caller).
-        p = self._e._lib.nemo_rnnt_stream_finish(self._rnnt)
+        p = L.nemo_rnnt_stream_finish(self._rnnt)
         self._rnnt = None  # already freed by nemo_rnnt_stream_finish
         if p:
             try:
@@ -174,6 +163,9 @@ class NemoCStream:
     def close(self) -> None:
         """Free C stream objects."""
         e = self._e._lib
+        if self._mel is not None:
+            e.nemo_mel_stream_free(self._mel)
+            self._mel = None
         if self._enc is not None:
             e.nemo_encoder_stream_free(self._enc)
             self._enc = None
@@ -218,18 +210,22 @@ class NemoCEngine:
         L.nemo_set_language.restype = c_int
         L.nemo_set_language.argtypes = [c_void_p, c_char_p]
 
-        # ---- Mel ----
-        L.nemo_mel_spectrogram.restype = c_void_p
-        L.nemo_mel_spectrogram.argtypes = [
-            c_void_p, POINTER(c_float), c_int, POINTER(c_int),
+        # ---- Mel streaming ----
+        L.nemo_mel_stream_create.restype = c_void_p
+        L.nemo_mel_stream_create.argtypes = [c_void_p]
+        L.nemo_mel_stream_accept.restype = c_int
+        L.nemo_mel_stream_accept.argtypes = [
+            c_void_p, POINTER(c_float), c_int, c_int, _MEL_CHUNK_CB, c_void_p,
         ]
+        L.nemo_mel_stream_free.argtypes = [c_void_p]
 
         # ---- Encoder streaming ----
         L.nemo_encoder_stream_create.restype = c_void_p
         L.nemo_encoder_stream_create.argtypes = [c_void_p]
-        L.nemo_encoder_forward_chunks.restype = c_int
-        L.nemo_encoder_forward_chunks.argtypes = [
-            c_void_p, POINTER(c_float), c_int, _ENCODER_CHUNK_CB, c_void_p,
+        L.nemo_encoder_stream_accept.restype = c_int
+        L.nemo_encoder_stream_accept.argtypes = [
+            c_void_p, c_void_p, POINTER(c_float), c_int, c_int,
+            _ENCODER_CHUNK_CB, c_void_p,
         ]
         L.nemo_encoder_stream_free.argtypes = [c_void_p]
 
@@ -271,10 +267,6 @@ class NemoCEngine:
 
         # Set streaming lookahead.
         self._set_att_right(att_right)
-
-        # Cache encoder output dimension (1024 for Nemotron).
-        self._n_mels = 128
-        self._n_enc = 1024
 
         # Load SentencePiece tokenizer for hotword phrase tokenization.
         self._sp: object | None = None
