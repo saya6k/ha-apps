@@ -35,7 +35,9 @@ RUN sed -i \
 # Disable Next.js built-in compression (nginx handles this)
 # Disable Next.js Image Optimization — images are served directly from backend
 # This avoids all remotePatterns/rewrites issues with the /_next/image proxy
-RUN sed -i "s|output: 'standalone'|output: 'standalone', compress: false, images: { unoptimized: true }|" next.config.js
+# Disable font optimization — next/font/google fetches from googleapis at build
+# time; QEMU-emulated arm64 CI runners have no external network access.
+RUN sed -i "s|output: 'standalone'|output: 'standalone', compress: false, images: { unoptimized: true }, optimizeFonts: false|" next.config.js
 
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set backend URL at build time — rewrites() bakes this into standalone output
