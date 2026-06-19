@@ -51,7 +51,10 @@ RUN \
         "nemo_text_processing==1.2.0" \
     # pynini with --no-build-isolation links against the system libfst-dev
     # directly, avoiding the 400MB bundled pynini.libs that pip's isolated
-    # build would otherwise include via auditwheel.
+    # build would otherwise include via auditwheel. aarch64 has no pre-built
+    # wheel so pip builds from source; --no-build-isolation skips pip's
+    # isolated build env, so setuptools must already be present.
+    && pip3 install --no-cache-dir --no-compile setuptools \
     && pip3 install --no-cache-dir --no-compile --no-build-isolation \
         "pynini==2.1.6.post1" \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
