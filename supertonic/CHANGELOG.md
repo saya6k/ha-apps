@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.28.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.27.0...supertonic-v2.28.0) (2026-06-19)
+
+
+### Features
+
+* **supertonic:** add custom AppArmor profile ([30d2bcd](https://github.com/saya6k/ha-apps/commit/30d2bcd4a0763c4f4b94b27d9ae0fa566c2c85d5))
+* **supertonic:** add language-aware number normalizer ([3bb7f5b](https://github.com/saya6k/ha-apps/commit/3bb7f5b11bfae8209fbd014200e1e8682bf6ebfc))
+* **supertonic:** add text_normalization app option (hidden, default on) ([9a5e153](https://github.com/saya6k/ha-apps/commit/9a5e1530ac0c3369ebcb0ad41c9a5ee4233af4d9))
+* **supertonic:** take TTS language from the pipeline per request ([7f06db1](https://github.com/saya6k/ha-apps/commit/7f06db17d385328fdd4c6017fa080db45710dc1a))
+* **supertonic:** wire number normalization into the synth path ([4b8da88](https://github.com/saya6k/ha-apps/commit/4b8da886c885d0af2e3a5f12cfc0ba987fd518ac))
+
+
+### Bug Fixes
+
+* **repo:** use 3-way finish template across all apps, add to scaffold ([b1a4d01](https://github.com/saya6k/ha-apps/commit/b1a4d011fdadfc7451faa57904da81c31591ddfb))
+* **supertonic:** clear executable-stack flag on MNN x86_64 .so ([0fafddf](https://github.com/saya6k/ha-apps/commit/0fafddfe9cbb76e9df8e42314d8bfa665d977c47))
+
+
+### Documentation
+
+* **supertonic:** add Show add-on badge to README ([84470bf](https://github.com/saya6k/ha-apps/commit/84470bf3c204fbb0adb2e491f44af4a7037132cf))
+* **supertonic:** clarify number-normalization boundary matches Piper 2 ([d8c70b8](https://github.com/saya6k/ha-apps/commit/d8c70b875a5e9e41a5b1cfacf215bd0f4bef303a))
+* **supertonic:** document text_normalization option ([8e7b130](https://github.com/saya6k/ha-apps/commit/8e7b13011bc67064c4d50eaacb0c91a894f6beb0))
+
+
+### Build System
+
+* **supertonic:** --no-compile pip install in builder stage ([c08322d](https://github.com/saya6k/ha-apps/commit/c08322d95d984cdde0c228d07a6cad600e86c7c6))
+* **supertonic:** build add-on locally, drop GHCR image reference ([424e282](https://github.com/saya6k/ha-apps/commit/424e2826d53715e1ec68f8923753d1a5ced19279))
+* **supertonic:** clean apt cache in builder stage ([5d7dd53](https://github.com/saya6k/ha-apps/commit/5d7dd53c8a37efe3ba5d0a47f43ee97df136da03))
+* **supertonic:** multi-stage image and inline base, drop retired build.yaml ([f27c0e3](https://github.com/saya6k/ha-apps/commit/f27c0e372d0968989ed8ee6579a09534c264afe3))
+* **supertonic:** reference prebuilt public GHCR image ([c24ed8c](https://github.com/saya6k/ha-apps/commit/c24ed8c6c9a948227ae860f538d81f15d252dc47))
+* **supertonic:** swap orphan num2words for unicode-rbnf ([3686f09](https://github.com/saya6k/ha-apps/commit/3686f0983c0e61cbef2a18b4b34bd834c5d8fdcf))
+* **supertonic:** switch base image to Debian trixie, unpin numpy ([e81b444](https://github.com/saya6k/ha-apps/commit/e81b444b925ebf59696d933b2498a41816a44f80))
+* **supertonic:** upgrade wyoming 1.7.2 → 1.9.0 ([#237](https://github.com/saya6k/ha-apps/issues/237)) ([a704b8d](https://github.com/saya6k/ha-apps/commit/a704b8d586a5dffa53d60f855ccf8ff78bf13703))
+
 ## [2.27.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.26.0...supertonic-v2.27.0) (2026-06-18)
 
 
