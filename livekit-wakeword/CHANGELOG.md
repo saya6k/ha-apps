@@ -3,6 +3,14 @@
 ## [0.9.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.8.0...livekit-wakeword-v0.9.0) (2026-06-18)
 
 
+### Bug Fixes
+
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([a8b8a61](https://github.com/saya6k/ha-apps/commit/a8b8a6163024fa611e2b661b90f37093640419fa))
+* **repo:** remove redundant apparmor: true (linter default) ([423ac7f](https://github.com/saya6k/ha-apps/commit/423ac7ff0c4fbde79abdec4e86a08f5c91f6fe1f))
+
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.2.4...livekit-wakeword-v0.3.0) (2026-06-18)
+
+
 ### Features
 
 * **livekit-wakeword:** add custom AppArmor profile ([dbd72a9](https://github.com/saya6k/ha-apps/commit/dbd72a9b1f909132acb3109ab75d73069ae4c0a2))

@@ -3,6 +3,14 @@
 ## [0.10.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.9.0...nemo-asr-cpp-v0.10.0) (2026-06-18)
 
 
+### Bug Fixes
+
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([a8b8a61](https://github.com/saya6k/ha-apps/commit/a8b8a6163024fa611e2b661b90f37093640419fa))
+* **repo:** remove redundant apparmor: true (linter default) ([423ac7f](https://github.com/saya6k/ha-apps/commit/423ac7ff0c4fbde79abdec4e86a08f5c91f6fe1f))
+
+## [0.4.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.3.5...nemo-asr-cpp-v0.4.0) (2026-06-18)
+
+
 ### Features
 
 * **nemo-asr-cpp:** add chunk_size accuracy/speed option ([#13](https://github.com/saya6k/ha-apps/issues/13)) ([1d8f683](https://github.com/saya6k/ha-apps/commit/1d8f6833b78ecc021f521a4e208a7e356a3168e2))
