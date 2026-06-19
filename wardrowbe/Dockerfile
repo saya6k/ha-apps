@@ -59,7 +59,11 @@ RUN apk add --no-cache \
 WORKDIR /build
 COPY --from=source /src/backend/requirements.txt ./
 RUN pip install --no-cache-dir --break-system-packages wheel \
- && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+ && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt \
+ && python3 -m venv /opt/venv \
+ && /opt/venv/bin/pip install --no-cache-dir /wheels/* \
+ && find /opt/venv -name '*.so' -exec strip --strip-unneeded {} \; \
+ && rm -rf /wheels
 
 # =========================================================================
 # Stage 3 — Final image (HA add-on base + all services)
@@ -96,7 +100,6 @@ RUN apk add --no-cache \
     postgresql \
     postgresql-client \
     python3 \
-    py3-pip \
     redis \
     su-exec
 
@@ -114,13 +117,8 @@ RUN mkdir -p \
  && chmod 700 /var/lib/postgresql/data
 
 # ---- Backend (Python) ---------------------------------------------------
-COPY --from=backend-builder /wheels /wheels
+COPY --from=backend-builder /opt/venv /opt/venv
 COPY --from=source /src/backend /app/backend
-
-RUN python3 -m venv /opt/venv \
- && . /opt/venv/bin/activate \
- && pip install --no-cache-dir /wheels/* \
- && rm -rf /wheels
 
 # Create worker launcher that auto-detects WorkerSettings location
 # v1.2.2+ has app.workers.worker, v1.2.1 has app.workers.tagging
