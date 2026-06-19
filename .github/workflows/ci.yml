@@ -199,9 +199,23 @@ jobs:
             TOML_VER=""
           fi
 
+          # release-please manifest version. In the main-only release model
+          # only release-please bumps versions (it updates config.yaml and the
+          # manifest together), so config.yaml and the manifest must always
+          # agree. Drift means a version was hand-bumped without release-please
+          # — a "phantom" release that never gets tagged. This is the exact
+          # failure that desynced this repo; fail fast on it.
+          MAN_VER=$(jq -r --arg k "${ADDON}" '.[$k] // ""' \
+            .github/.release-please-manifest.json)
+          echo "manifest: ${MAN_VER}"
+
           FAIL=0
           if [ -n "${TOML_VER}" ] && [ "${TOML_VER}" != "${CFG_VER}" ]; then
             echo "::error::pyproject.toml version ${TOML_VER} != config.yaml version ${CFG_VER}"
+            FAIL=1
+          fi
+          if [ -n "${MAN_VER}" ] && [ "${MAN_VER}" != "${CFG_VER}" ]; then
+            echo "::error::${ADDON}: manifest ${MAN_VER} != config.yaml ${CFG_VER} (release-please bumps only)"
             FAIL=1
           fi
           exit $FAIL
