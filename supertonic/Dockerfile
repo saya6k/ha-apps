@@ -8,6 +8,9 @@ ARG BUILD_FROM=ghcr.io/home-assistant/base-debian:trixie
 # ---- builder: install the Python deps (needs git + pip), discarded after ----
 FROM ${BUILD_FROM} AS builder
 
+# BuildKit injects TARGETARCH (amd64 / arm64) automatically.
+ARG TARGETARCH
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /usr/src/app
@@ -49,14 +52,18 @@ RUN \
         "cdifflib" \
     && pip3 install --no-cache-dir --no-compile --no-deps \
         "nemo_text_processing==1.2.0" \
-    # pynini with --no-build-isolation links against the system libfst-dev
-    # directly, avoiding the 400MB bundled pynini.libs that pip's isolated
-    # build would otherwise include via auditwheel. aarch64 has no pre-built
-    # wheel so pip builds from source; --no-build-isolation skips pip's
-    # isolated build env, so setuptools must already be present.
-    && pip3 install --no-cache-dir --no-compile setuptools Cython \
-    && pip3 install --no-cache-dir --no-compile --no-build-isolation \
-        "pynini==2.1.6.post1" \
+    # pynini: amd64 only. A prebuilt manylinux_2_28_x86_64 wheel exists and
+    # is installed with --no-build-isolation so pip uses it directly without
+    # invoking auditwheel (which would otherwise bundle a 400 MB copy of the
+    # OpenFst libs). On aarch64 there is no prebuilt wheel, and source builds
+    # fail because Debian Trixie's libfst-dev uses fst::StrJoin while pynini
+    # 2.1.6.post1 expects fst::StringJoin — incompatible API. aarch64 falls
+    # back to the unicode-rbnf path at runtime (NeMo TN gracefully disabled).
+    && if [ "${TARGETARCH}" = "amd64" ]; then \
+           pip3 install --no-cache-dir --no-compile setuptools Cython \
+           && pip3 install --no-cache-dir --no-compile --no-build-isolation \
+               "pynini==2.1.6.post1"; \
+       fi \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
     # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack
     # marker. Newer loaders reject it at import ("cannot enable executable
@@ -67,10 +74,11 @@ RUN \
         /usr/local/lib/python3.*/dist-packages/_tools*.so \
     && find /usr/local/lib -name '*.so*' -type f -exec strip --strip-unneeded {} \; 2>/dev/null || true
 
-# Pre-compile NeMo WFST grammars for ko + en at build time so the runtime
-# pays no compilation cost. Cache lands at /opt/nemo-cache and is copied
-# into the final stage. pynini is needed here and at runtime (FST loading).
-RUN python3 - <<'PYEOF'
+# Pre-compile NeMo WFST grammars for ko + en at build time (amd64 only —
+# pynini is not available on aarch64; see comment above). The cache dir is
+# always created so the final-stage COPY succeeds on both arches.
+RUN mkdir -p /opt/nemo-cache \
+    && [ "${TARGETARCH}" != "amd64" ] || python3 - <<'PYEOF'
 import os
 from nemo_text_processing.text_normalization.normalize import Normalizer
 cache = "/opt/nemo-cache"
@@ -105,7 +113,6 @@ RUN \
         python3 \
         libsndfile1 \
         ca-certificates \
-        libfst26 \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps + our bridge, built in the builder stage. /usr/local is where
