@@ -12,14 +12,14 @@ done
 
 # ── Create role + database (idempotent) ───────────────────────────────────
 echo "[backend] ensuring database and role exist …"
-su-exec postgres psql -p "${POSTGRES_PORT}" -tc \
+s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -tc \
   "SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'" | grep -q 1 \
-  || su-exec postgres psql -p "${POSTGRES_PORT}" -c \
+  || s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -c \
        "CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
 
-su-exec postgres psql -p "${POSTGRES_PORT}" -tc \
+s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -tc \
   "SELECT 1 FROM pg_database WHERE datname='${POSTGRES_DB}'" | grep -q 1 \
-  || su-exec postgres psql -p "${POSTGRES_PORT}" -c \
+  || s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -c \
        "CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};"
 
 # ── Wait for Redis ────────────────────────────────────────────────────────

@@ -46,7 +46,7 @@ while true; do
 
   # pg_dump as postgres (trust on Unix socket per pg_hba.conf).
   # gzip runs as the s6 user (root); resulting file is root-owned.
-  if su-exec postgres pg_dump -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" 2>/tmp/backup.err \
+  if s6-setuidgid postgres pg_dump -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" 2>/tmp/backup.err \
        | gzip > "$tmp"; then
     mv "$tmp" "$out"
     size="$(du -h "$out" | cut -f1)"

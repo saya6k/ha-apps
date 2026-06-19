@@ -100,8 +100,7 @@ RUN apk add --no-cache \
     postgresql \
     postgresql-client \
     python3 \
-    redis \
-    su-exec
+    redis
 
 # ---- Directory scaffold -------------------------------------------------
 RUN mkdir -p \
@@ -120,12 +119,6 @@ RUN mkdir -p \
 COPY --from=backend-builder /opt/venv /opt/venv
 COPY --from=source /src/backend /app/backend
 
-# Create worker launcher that auto-detects WorkerSettings location
-# v1.2.2+ has app.workers.worker, v1.2.1 has app.workers.tagging
-RUN printf '#!/opt/venv/bin/python3\nimport sys, os\nsys.path.insert(0, "/app/backend")\nos.chdir("/app/backend")\ntry:\n    from app.workers.worker import WorkerSettings\nexcept ImportError:\n    from app.workers.tagging import WorkerSettings\nfrom arq.worker import run_worker\nrun_worker(WorkerSettings)\n' \
-    > /app/backend/run_worker.py \
- && chmod +x /app/backend/run_worker.py
-
 # ---- Frontend (Next.js standalone) --------------------------------------
 COPY --from=frontend-builder /build/.next/standalone /app/frontend/
 COPY --from=frontend-builder /build/.next/static     /app/frontend/.next/static
@@ -134,7 +127,7 @@ COPY --from=frontend-builder /build/public            /app/frontend/public
 # ---- rootfs (s6, nginx, init) -------------------------------------------
 COPY rootfs /
 
-RUN chmod a+x /etc/cont-init.d/*.sh \
+RUN chmod a+x /etc/cont-init.d/*.sh /app/backend/run_worker.py \
  && find /etc/s6-overlay/s6-rc.d -type f \( -name run -o -name finish \) -exec chmod a+x {} \; \
  && find /etc/s6-overlay/s6-rc.d -type f -name type -exec chmod 644 {} \;
 
