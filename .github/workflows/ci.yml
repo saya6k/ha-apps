@@ -258,9 +258,13 @@ jobs:
   # (push: false — no registry publish). HA builds the add-on locally from
   # its Dockerfile, so this only validates the Dockerfile still builds;
   # nothing is published. Independent of release-please (versioning only).
+  #
+  # Each arch gets its own native runner (amd64 → ubuntu-latest,
+  # aarch64 → ubuntu-24.04-arm) so no QEMU emulation is needed.
+  # Jobs for unsupported addon/arch combos exit immediately in the check step.
   # ---------------------------------------------------------------------
   build-image:
-    name: build image (${{ matrix.addon }})
+    name: build image (${{ matrix.addon }}/${{ matrix.config.arch }})
     needs: changes
     # Uses build_addons (docs-excluded) so docs-only changes skip the build.
     # Skip for release-please PRs (version bump only, no code change).
@@ -270,60 +274,51 @@ jobs:
       needs.changes.outputs.build_addons != '[]' &&
       !startsWith(github.head_ref, 'release-please--') &&
       github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ${{ matrix.config.runner }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         addon: ${{ fromJSON(needs.changes.outputs.build_addons) }}
+        config:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
     steps:
       - uses: actions/checkout@v6
 
-      - name: Check Dockerfile exists
-        id: dockerfile
-        run: |
-          if [ -f "${{ matrix.addon }}/Dockerfile" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping build"
-          fi
-
-      - name: Resolve platforms from config.yaml arch
-        id: platforms
-        if: steps.dockerfile.outputs.found == 'true'
+      - name: Check Dockerfile exists and arch is supported
+        id: check
         run: |
           set -euo pipefail
-          declare -A MAP=(
-            [amd64]=linux/amd64 [aarch64]=linux/arm64
-            [armv7]=linux/arm/v7 [armhf]=linux/arm/v6 [i386]=linux/386
-          )
-          platforms=""
-          while read -r arch; do
-            [ -z "$arch" ] && continue
-            p="${MAP[$arch]:-}"
-            if [ -z "$p" ]; then echo "::error::Unsupported arch $arch"; exit 1; fi
-            platforms="${platforms:+$platforms,}$p"
-          done < <(yq '.arch[]' "${{ matrix.addon }}/config.yaml")
-          echo "value=$platforms" >> "$GITHUB_OUTPUT"
-          echo "::notice::Building ${{ matrix.addon }} for $platforms"
+          if [ ! -f "${{ matrix.addon }}/Dockerfile" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping"
+          elif ! yq '.arch[]' "${{ matrix.addon }}/config.yaml" 2>/dev/null \
+               | grep -qx "${{ matrix.config.arch }}"; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::${{ matrix.addon }} does not support ${{ matrix.config.arch }}, skipping"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - uses: docker/setup-qemu-action@v4
-        if: steps.dockerfile.outputs.found == 'true'
       - uses: docker/setup-buildx-action@v4
-        if: steps.dockerfile.outputs.found == 'true'
+        if: steps.check.outputs.skip != 'true'
 
       - uses: docker/build-push-action@v7
-        if: steps.dockerfile.outputs.found == 'true'
+        if: steps.check.outputs.skip != 'true'
         with:
           context: ${{ matrix.addon }}
           file: ${{ matrix.addon }}/Dockerfile
-          platforms: ${{ steps.platforms.outputs.value }}
+          platforms: ${{ matrix.config.platform }}
           push: false
           provenance: false
           sbom: false
-          cache-from: type=gha,scope=${{ matrix.addon }}
-          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}
+          cache-from: type=gha,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
+          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
 
   # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
