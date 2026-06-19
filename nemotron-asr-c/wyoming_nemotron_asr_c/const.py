@@ -15,6 +15,10 @@ CONVERT_SCRIPT = f"{TOOLS_DIR}/convert_nemo.py"
 # ---- Audio ----
 SAMPLE_RATE = 16000
 
+# ---- Speech enhancement (optional FastEnhancer denoise pre-filter) ----
+# libfastenhancer.so lives in LIB_DIR; weights are copied here by the Dockerfile.
+FE_WEIGHTS = "/usr/local/share/fastenhancer/fe_tiny.bin"
+
 # ---- Quantization formats ----
 # fmt -> (label, weight_bits, activation, implemented)
 # implemented=False means the converter dtype exists but C kernels are not yet

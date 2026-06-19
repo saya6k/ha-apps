@@ -31,6 +31,7 @@ wyoming_nemotron_asr_c/
   __main__.py   download .nemo → convert to .bin(s) → load → serve
   engine.py     ctypes wrapper over nemotron_asr.h (C API)
   handler.py    Wyoming ASR; streaming (feed each AudioChunk, TranscriptChunk deltas)
+  enhancer.py   ctypes wrapper over libfastenhancer.so (optional denoise pre-filter)
   models.py     hf_hub_download .nemo → convert_nemo.py → data/${model}/${quant}/
   const.py      port, dirs, model registry, quants, chunk choices
 rootfs/usr/src/app/tools/
@@ -61,6 +62,17 @@ rootfs/.../s6-rc.d/             nemotron-asr-c (longrun) + discovery (oneshot)
   add-on).
 - **Language.** The model's prompt index is set via `nemo_set_language()`. The
   Wyoming pipeline's per-request `Transcribe.language` is passed through.
+- **Speech enhancement (optional, off by default).** When `speech_enhancement`
+  is set, `enhancer.py` runs FastEnhancer (`kdrkdrkdr/fastenhancer.c.wasm`,
+  vendored + built to `libfastenhancer.so`) as a denoise pre-filter on AudioChunk
+  PCM before the mel cascade. It denoises 16 kHz audio in fixed **256-sample
+  frames** (exact rate match — no resampling), so a ring buffer accumulates whole
+  frames and the trailing partial frame is zero-padded and flushed at AudioStop.
+  Denoise-only: dereverb (`fe_init` dereverb arg) is NULL, AGC off, the 80 Hz HPF
+  stays on. C state is process-global and serialized by `handler._ASR_LOCK`;
+  there is no `fe_reset`, so per-utterance reset is `fe_free()`+`fe_init()` plus
+  `fe_set_hpf(1)` (which re-zeros the HPF history `fe_init` leaves untouched).
+  **Upstream has no LICENSE file — a license must be obtained before merge.**
 
 ## Quantization formats
 
@@ -79,6 +91,12 @@ Upstream ships: f32, bf16, q8p (W8A8 Q8P packed).
   **shared library** (`libnemotron_asr.so`) for ctypes — this requires Makefile
   modifications (add `-fPIC`, produce `.so`).
 - SIMD kernels auto-detected by the Makefile (`-march=native`).
+- **Also builds `libfastenhancer.so`** (pinned `FASTENHANCER_REF`) for the
+  optional denoise filter. Plain `gcc` over `src/main.c src/denoise/*.c
+  src/dereverb/*.c` **without `-msimd128`** — every upstream `wasm_simd128` hot
+  path is `#ifdef __wasm_simd128__`-guarded with scalar fallbacks, so the native
+  build is pure portable C. Weights (`fe_tiny.bin`) copied to
+  `/usr/local/share/fastenhancer/`.
 
 ## Converter (tools/convert_nemo.py)
 
