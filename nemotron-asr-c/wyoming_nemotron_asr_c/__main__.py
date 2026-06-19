@@ -17,6 +17,7 @@ from . import __version__
 from .const import (
     CHUNK_CHOICES,
     DEFAULT_CHUNK_SIZE,
+    FE_WEIGHTS,
     HOTWORD_BOOST_DEFAULT,
     LANGUAGES,
     LIB_DIR,
@@ -115,6 +116,10 @@ def _parse_args() -> argparse.Namespace:
         help=f"Logit bonus per hotword token during greedy decode (default: {HOTWORD_BOOST_DEFAULT})",
     )
     parser.add_argument(
+        "--speech-enhancement", action="store_true",
+        help="Enable the FastEnhancer denoise pre-filter on input audio",
+    )
+    parser.add_argument(
         "--debug", action="store_true",
         help="Enable debug logging",
     )
@@ -197,6 +202,13 @@ async def main() -> None:
         # 4. New model fully verified — safe to remove old ones.
         cleanup_old_models(args.model_dir, args.model)
 
+        # 4b. Optional speech-enhancement pre-filter.
+        enhancer = None
+        if args.speech_enhancement:
+            from .enhancer import FastEnhancer
+            _LOGGER.info("Speech enhancement enabled — loading FastEnhancer ...")
+            enhancer = FastEnhancer(args.lib_dir, FE_WEIGHTS)
+
         # 5. Build Wyoming Info.
         wyoming_info = _build_info(args.model)
 
@@ -218,7 +230,7 @@ async def main() -> None:
 
         # 8. Run server.
         server_task = asyncio.create_task(
-            server.run(partial(NemoCHandler, wyoming_info, args, engine))
+            server.run(partial(NemoCHandler, wyoming_info, args, engine, enhancer))
         )
 
         loop = asyncio.get_running_loop()

@@ -26,6 +26,12 @@ configuration:
     description: >-
       Optional access token for gated/private model repos and to lift anonymous
       download rate limits. Leave empty for public models.
+  speech_enhancement:
+    name: Speech enhancement (denoise)
+    description: >-
+      Run a lightweight FastEnhancer denoise filter on incoming audio before
+      transcription. Can improve accuracy in noisy rooms, but may slightly hurt
+      already-clean audio. Off by default.
   debug_logging:
     name: Debug logging
     description: Enable verbose logging for troubleshooting.

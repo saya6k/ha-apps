@@ -22,6 +22,7 @@ bashio::config.has_value 'hotword_boost' && flags+=('--hotword-boost' "$(bashio:
 hotwords=$(jq -r '(.hotwords // []) | join("\n")' /data/options.json 2>/dev/null || echo "")
 [ -n "${hotwords}" ] && flags+=('--hotwords' "${hotwords}")
 
+bashio::config.true 'speech_enhancement' && flags+=(--speech-enhancement)
 bashio::config.true 'debug_logging' && flags+=(--debug)
 
 exec python3 -m wyoming_nemotron_asr_c "${flags[@]}"
