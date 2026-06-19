@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       addons: ${{ steps.filter.outputs.changes }}
+      build_addons: ${{ steps.filter_build.outputs.changes }}
     steps:
       - uses: actions/checkout@v6
 
@@ -51,6 +52,38 @@ jobs:
               - 'wardrowbe/**'
             zensical:
               - 'zensical/**'
+
+      # Same per-add-on filters but excluding docs (*.md). With
+      # predicate-quantifier 'every', an add-on counts only when a changed file
+      # matches '<addon>/**' AND is not a markdown file — so docs-only changes
+      # yield an empty list and the heavy image build is skipped. Lint jobs keep
+      # using the docs-inclusive `addons` output above.
+      - id: filter_build
+        uses: dorny/paths-filter@v4
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            livekit-wakeword:
+              - 'livekit-wakeword/**'
+              - '!livekit-wakeword/**/*.md'
+            nemotron-asr-c:
+              - 'nemotron-asr-c/**'
+              - '!nemotron-asr-c/**/*.md'
+            nemo-asr-cpp:
+              - 'nemo-asr-cpp/**'
+              - '!nemo-asr-cpp/**/*.md'
+            supertonic:
+              - 'supertonic/**'
+              - '!supertonic/**/*.md'
+            voiceprint:
+              - 'voiceprint/**'
+              - '!voiceprint/**/*.md'
+            wardrowbe:
+              - 'wardrowbe/**'
+              - '!wardrowbe/**/*.md'
+            zensical:
+              - 'zensical/**'
+              - '!zensical/**/*.md'
 
   # ---------------------------------------------------------------------
   # Official Home Assistant add-on lint — validates config.yaml schema,
@@ -229,11 +262,12 @@ jobs:
   build-image:
     name: build image (${{ matrix.addon }})
     needs: changes
+    # Uses build_addons (docs-excluded) so docs-only changes skip the build.
     # Skip for release-please PRs (version bump only, no code change).
     # Skip on direct push to main: promotion PRs already validate builds on dev;
     # rebuilding after merge is redundant and wastes 30-40 min per promotion.
     if: >-
-      needs.changes.outputs.addons != '[]' &&
+      needs.changes.outputs.build_addons != '[]' &&
       !startsWith(github.head_ref, 'release-please--') &&
       github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -241,7 +275,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+        addon: ${{ fromJSON(needs.changes.outputs.build_addons) }}
     steps:
       - uses: actions/checkout@v6
 
