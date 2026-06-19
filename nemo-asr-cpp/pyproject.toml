@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wyoming-nemo-asr-cpp"
-version = "0.15.0"
+version = "0.16.0"
 description = "Wyoming STT bridge for NeMo/Parakeet ASR on ggml (parakeet.cpp C API)"
 readme = "README.md"
 requires-python = ">=3.10"
