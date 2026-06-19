@@ -29,6 +29,7 @@ RUN \
         python3-pip \
         git \
         patchelf \
+        binutils \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir --no-compile \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
@@ -44,7 +45,8 @@ RUN \
     # clearing the flag is safe. No-op on the aarch64 wheel (already RW).
     && patchelf --clear-execstack \
         /usr/local/lib/python3.*/dist-packages/_mnncengine*.so \
-        /usr/local/lib/python3.*/dist-packages/_tools*.so
+        /usr/local/lib/python3.*/dist-packages/_tools*.so \
+    && find /usr/local/lib -name '*.so' -exec strip --strip-unneeded {} \;
 
 # Our Wyoming bridge. pip's PEP 517 build isolation pulls setuptools/wheel into
 # a throwaway env, so we never install them into /usr/local — nothing extra
