@@ -68,9 +68,19 @@ RUN pip3 install --no-cache-dir --no-compile \
     "wyoming>=1.9,<2" \
     "huggingface_hub[hf-xet]>=0.32" \
     "numpy" \
-    "torch" \
     "pyyaml" \
     "sentencepiece"
+
+# torch is only used for boot-time .nemo -> .bin conversion (torch.load on CPU;
+# quantization math is numpy). The default PyPI wheel is the CUDA build, which
+# drags in nvidia/* (~2.9 GB) + triton (~650 MB) we never touch. Pull the CPU
+# wheel from PyTorch's index (deps still resolve from PyPI) — ~3.5 GB smaller.
+RUN pip3 install --no-cache-dir --no-compile \
+    --index-url https://download.pytorch.org/whl/cpu \
+    --extra-index-url https://pypi.org/simple \
+    "torch" \
+    && TORCH=$(python3 -c "import torch,os;print(os.path.dirname(torch.__file__))") \
+    && rm -rf "${TORCH}/test" "${TORCH}/include"
 
 COPY pyproject.toml /usr/src/app/
 COPY wyoming_nemotron_asr_c/ /usr/src/app/wyoming_nemotron_asr_c/
