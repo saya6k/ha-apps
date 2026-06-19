@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.7.0...nemotron-asr-c-v0.7.1) (2026-06-19)
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** move HF cache into /data/models to fix backup size ([66abb6e](https://github.com/saya6k/ha-apps/commit/66abb6ecd4c5a583defa00af178548ada6e76265))
+* **nemotron-asr-c:** move HF cache into /data/models to fix backup size ([2b188cd](https://github.com/saya6k/ha-apps/commit/2b188cdb5ffe701b6bdca4dc20d3b047a458c859))
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([6ccfe5d](https://github.com/saya6k/ha-apps/commit/6ccfe5d4b5daf805d66b7dbcdc1c71ab95e106e1))
+* **repo:** add apparmor: true to all add-ons, remove custom profiles ([a8b8a61](https://github.com/saya6k/ha-apps/commit/a8b8a6163024fa611e2b661b90f37093640419fa))
+* **repo:** remove redundant apparmor: true (linter default) ([423ac7f](https://github.com/saya6k/ha-apps/commit/423ac7ff0c4fbde79abdec4e86a08f5c91f6fe1f))
+
 ## [0.7.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.6.1...nemotron-asr-c-v0.7.0) (2026-06-18)
 
 
