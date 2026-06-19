@@ -72,7 +72,11 @@ rootfs/.../s6-rc.d/             nemotron-asr-c (longrun) + discovery (oneshot)
   stays on. C state is process-global and serialized by `handler._ASR_LOCK`;
   there is no `fe_reset`, so per-utterance reset is `fe_free()`+`fe_init()` plus
   `fe_set_hpf(1)` (which re-zeros the HPF history `fe_init` leaves untouched).
-  **Upstream has no LICENSE file — a license must be obtained before merge.**
+  **License:** upstream `kdrkdrkdr/fastenhancer.c.wasm` ships no LICENSE file
+  (all-rights-reserved), same as the core `nemotron-asr-streaming.c` runtime.
+  Merged to `dev` as accepted risk; an upstream license (MIT, matching the
+  `aask1357/fastenhancer` original) should be obtained before `main` promotion.
+  The `fe_tiny.bin` weights derive from the MIT-licensed original model.
 
 ## Quantization formats
 
