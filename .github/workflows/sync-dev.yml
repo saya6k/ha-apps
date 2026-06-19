@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   sync-dev:
-    name: Fast-forward dev to main
+    name: Back-merge main into dev
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,22 +19,41 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Fast-forward dev to main if behind
+      # main (releases) and dev (features) legitimately diverge in steady
+      # state, so a fast-forward-only sync gives up the moment dev has its
+      # own commits. Back-merge main into dev instead: release-please
+      # version bumps flow back to dev, and dev keeps its unreleased work.
+      # Pushing to dev does not re-trigger this workflow (push: main only),
+      # so there is no sync loop.
+      - name: Back-merge main into dev
         run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git switch dev
+
           MAIN=$(git rev-parse origin/main)
           DEV=$(git rev-parse HEAD)
           BASE=$(git merge-base origin/main HEAD)
+
           if [ "$MAIN" = "$DEV" ]; then
             echo "Already in sync."
           elif [ "$BASE" = "$DEV" ]; then
-            # dev is behind main (main is ahead) — FF
+            # dev strictly behind main — fast-forward (no merge commit)
             git merge --ff-only origin/main
             git push origin dev
-            echo "dev synced to $(git rev-parse --short HEAD)."
+            echo "dev fast-forwarded to $(git rev-parse --short HEAD)."
           elif [ "$BASE" = "$MAIN" ]; then
             echo "dev is ahead of main — nothing to do."
           else
-            echo "dev has diverged from main — skipping auto-sync."
-            echo "Run 'git merge origin/main' on dev before next promotion."
+            # diverged — back-merge. Abort on conflict; do not auto-resolve.
+            if git merge --no-ff --no-edit origin/main; then
+              git push origin dev
+              echo "main back-merged into dev at $(git rev-parse --short HEAD)."
+            else
+              git merge --abort
+              echo "::error::Back-merge of main into dev hit conflicts."
+              echo "::error::Resolve manually: git switch dev && git merge origin/main"
+              exit 1
+            fi
           fi
