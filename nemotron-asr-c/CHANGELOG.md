@@ -1,10 +1,11 @@
 # Changelog
 
-## [0.7.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.6.0...nemotron-asr-c-v0.7.0) (2026-06-18)
+## [0.7.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.6.1...nemotron-asr-c-v0.7.0) (2026-06-18)
 
 
 ### Features
 
+* **nemotron-asr-c:** add custom AppArmor profile ([93132e3](https://github.com/saya6k/ha-apps/commit/93132e385ce4cfb8f80ca6d878d645bd0e3fb342))
 * **nemotron-asr-c:** implement true streaming with TranscriptChunk events ([#147](https://github.com/saya6k/ha-apps/issues/147)) ([1cd6c8b](https://github.com/saya6k/ha-apps/commit/1cd6c8be90124fd1a2e0f7144df6383a39ed0f78))
 * **nemotron-asr-c:** promote to stable ([2c526a8](https://github.com/saya6k/ha-apps/commit/2c526a877fdc1709c7381d48e6a78443436ce8fb))
 
@@ -18,6 +19,11 @@
 * **nemotron-asr-c:** support plain-tar .nemo files alongside gzip ([4a74b19](https://github.com/saya6k/ha-apps/commit/4a74b1916c322b5ef50a6bc00bc5080be389e3de))
 
 
+### Documentation
+
+* **nemotron-asr-c:** fix streaming description, add badge and arch shields ([d3d8f29](https://github.com/saya6k/ha-apps/commit/d3d8f29c7fe98849998d92ddc14ed4814b0fc71f))
+
+
 ### Code Refactoring
 
 * **repo:** rename nemo-asr-c to nemotron-asr-c, delete nemotron-asr (ONNX) ([#128](https://github.com/saya6k/ha-apps/issues/128)) ([2b822a3](https://github.com/saya6k/ha-apps/commit/2b822a3653f1d9e3c70b0fa4f2fd54d94b56e6f2))
@@ -27,6 +33,31 @@
 
 * **nemotron-asr-c:** add GHCR image reference to config.yaml ([22a7488](https://github.com/saya6k/ha-apps/commit/22a7488c2d3a66934a0cb33a1aa02897bc4767db))
 * **nemotron-asr-c:** build add-on locally, drop GHCR image reference ([b44a52a](https://github.com/saya6k/ha-apps/commit/b44a52a7389288bf75456b863e2bf82f47ace923))
+* **nemotron-asr-c:** merge builder stages and fold tools/ into rootfs ([f9315f8](https://github.com/saya6k/ha-apps/commit/f9315f8f89e42bb3c507bb2255e82ff01ea52577))
+* **nemotron-asr-c:** shallow fetch + merge ldconfig+chmod into one RUN ([a6e1441](https://github.com/saya6k/ha-apps/commit/a6e1441ff0dcdfdad41dbb79dfcf72c2c527257d))
+* **nemotron-asr-c:** strip .so symbols, --no-compile pip, clean builder apt cache ([fec74b5](https://github.com/saya6k/ha-apps/commit/fec74b55227c67fcaae6560387af88e91479a819))
+
+## [0.6.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.6.0...nemotron-asr-c-v0.6.1) (2026-06-18)
+
+
+### Build System
+
+* **nemotron-asr-c:** merge builder stages and fold tools/ into rootfs ([f9315f8](https://github.com/saya6k/ha-apps/commit/f9315f8f89e42bb3c507bb2255e82ff01ea52577))
+* **nemotron-asr-c:** shallow fetch + merge ldconfig+chmod into one RUN ([a6e1441](https://github.com/saya6k/ha-apps/commit/a6e1441ff0dcdfdad41dbb79dfcf72c2c527257d))
+* **nemotron-asr-c:** strip .so symbols, --no-compile pip, clean builder apt cache ([fec74b5](https://github.com/saya6k/ha-apps/commit/fec74b55227c67fcaae6560387af88e91479a819))
+* **wardrowbe:** remove npm rebuild sharp from frontend build ([91fb4a5](https://github.com/saya6k/ha-apps/commit/91fb4a5f5d3dcfab2aab871c3c1a1376a229d23e))
+
+## [0.6.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.5.0...nemotron-asr-c-v0.6.0) (2026-06-18)
+
+
+### Features
+
+* **nemotron-asr-c:** add custom AppArmor profile ([93132e3](https://github.com/saya6k/ha-apps/commit/93132e385ce4cfb8f80ca6d878d645bd0e3fb342))
+
+
+### Documentation
+
+* **nemotron-asr-c:** fix streaming description, add badge and arch shields ([d3d8f29](https://github.com/saya6k/ha-apps/commit/d3d8f29c7fe98849998d92ddc14ed4814b0fc71f))
 
 ## [0.5.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.4.0...nemotron-asr-c-v0.5.0) (2026-06-18)
 
