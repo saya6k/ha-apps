@@ -35,7 +35,9 @@ RUN sed -i \
 # Disable Next.js built-in compression (nginx handles this)
 # Disable Next.js Image Optimization — images are served directly from backend
 # This avoids all remotePatterns/rewrites issues with the /_next/image proxy
-RUN sed -i "s|output: 'standalone'|output: 'standalone', compress: false, images: { unoptimized: true }|" next.config.js
+# Disable font optimization — next/font/google fetches from googleapis at build
+# time; QEMU-emulated arm64 CI runners have no external network access.
+RUN sed -i "s|output: 'standalone'|output: 'standalone', compress: false, images: { unoptimized: true }, optimizeFonts: false|" next.config.js
 
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set backend URL at build time — rewrites() bakes this into standalone output
@@ -59,7 +61,11 @@ RUN apk add --no-cache \
 WORKDIR /build
 COPY --from=source /src/backend/requirements.txt ./
 RUN pip install --no-cache-dir --break-system-packages wheel \
- && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+ && pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt \
+ && python3 -m venv /opt/venv \
+ && /opt/venv/bin/pip install --no-cache-dir /wheels/* \
+ && find /opt/venv -name '*.so' -exec strip --strip-unneeded {} \; \
+ && rm -rf /wheels
 
 # =========================================================================
 # Stage 3 — Final image (HA add-on base + all services)
@@ -96,9 +102,7 @@ RUN apk add --no-cache \
     postgresql \
     postgresql-client \
     python3 \
-    py3-pip \
-    redis \
-    su-exec
+    redis
 
 # ---- Directory scaffold -------------------------------------------------
 RUN mkdir -p \
@@ -114,19 +118,8 @@ RUN mkdir -p \
  && chmod 700 /var/lib/postgresql/data
 
 # ---- Backend (Python) ---------------------------------------------------
-COPY --from=backend-builder /wheels /wheels
+COPY --from=backend-builder /opt/venv /opt/venv
 COPY --from=source /src/backend /app/backend
-
-RUN python3 -m venv /opt/venv \
- && . /opt/venv/bin/activate \
- && pip install --no-cache-dir /wheels/* \
- && rm -rf /wheels
-
-# Create worker launcher that auto-detects WorkerSettings location
-# v1.2.2+ has app.workers.worker, v1.2.1 has app.workers.tagging
-RUN printf '#!/opt/venv/bin/python3\nimport sys, os\nsys.path.insert(0, "/app/backend")\nos.chdir("/app/backend")\ntry:\n    from app.workers.worker import WorkerSettings\nexcept ImportError:\n    from app.workers.tagging import WorkerSettings\nfrom arq.worker import run_worker\nrun_worker(WorkerSettings)\n' \
-    > /app/backend/run_worker.py \
- && chmod +x /app/backend/run_worker.py
 
 # ---- Frontend (Next.js standalone) --------------------------------------
 COPY --from=frontend-builder /build/.next/standalone /app/frontend/
@@ -136,7 +129,7 @@ COPY --from=frontend-builder /build/public            /app/frontend/public
 # ---- rootfs (s6, nginx, init) -------------------------------------------
 COPY rootfs /
 
-RUN chmod a+x /etc/cont-init.d/*.sh \
+RUN chmod a+x /etc/cont-init.d/*.sh /app/backend/run_worker.py \
  && find /etc/s6-overlay/s6-rc.d -type f \( -name run -o -name finish \) -exec chmod a+x {} \; \
  && find /etc/s6-overlay/s6-rc.d -type f -name type -exec chmod 644 {} \;
 

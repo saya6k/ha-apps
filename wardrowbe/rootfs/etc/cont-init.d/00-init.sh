@@ -217,7 +217,7 @@ done
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
 if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
   bashio::log.info "First run – creating PostgreSQL cluster …"
-  su-exec postgres initdb -D /var/lib/postgresql/data --encoding=UTF-8 --locale=C
+  s6-setuidgid postgres initdb -D /var/lib/postgresql/data --encoding=UTF-8 --locale=C
 fi
 
 # Configure listen address + port ------------------------------------------
