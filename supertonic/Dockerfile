@@ -30,6 +30,9 @@ RUN \
         git \
         patchelf \
         binutils \
+        libfst-dev \
+        python3-dev \
+        build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --no-cache-dir --no-compile \
         "git+https://github.com/vra/supertonic-mnn.git@${SUPERTONIC_MNN_REF}" \
@@ -38,6 +41,19 @@ RUN \
         "unicode-rbnf" \
         "langid" \
         "numpy" \
+        "regex" \
+        "joblib" \
+        "sacremoses>=0.0.43" \
+        "tqdm" \
+        "editdistance" \
+        "cdifflib" \
+    && pip3 install --no-cache-dir --no-compile --no-deps \
+        "nemo_text_processing==1.2.0" \
+    # pynini with --no-build-isolation links against the system libfst-dev
+    # directly, avoiding the 400MB bundled pynini.libs that pip's isolated
+    # build would otherwise include via auditwheel.
+    && pip3 install --no-cache-dir --no-compile --no-build-isolation \
+        "pynini==2.1.6.post1" \
     # MNN's x86_64 wheel ships _mnncengine.so / _tools.so with an executable
     # stack (GNU_STACK RWE) because its asm objects lack a .note.GNU-stack
     # marker. Newer loaders reject it at import ("cannot enable executable
@@ -46,7 +62,22 @@ RUN \
     && patchelf --clear-execstack \
         /usr/local/lib/python3.*/dist-packages/_mnncengine*.so \
         /usr/local/lib/python3.*/dist-packages/_tools*.so \
-    && find /usr/local/lib -name '*.so' -exec strip --strip-unneeded {} \;
+    && find /usr/local/lib -name '*.so*' -type f -exec strip --strip-unneeded {} \; 2>/dev/null || true
+
+# Pre-compile NeMo WFST grammars for ko + en at build time so the runtime
+# pays no compilation cost. Cache lands at /opt/nemo-cache and is copied
+# into the final stage. pynini is needed here and at runtime (FST loading).
+RUN python3 - <<'PYEOF'
+import os
+from nemo_text_processing.text_normalization.normalize import Normalizer
+cache = "/opt/nemo-cache"
+os.makedirs(cache, exist_ok=True)
+for lang in ["ko", "en"]:
+    print(f"[nemo-precompile] {lang} ...", flush=True)
+    Normalizer(input_case="cased", lang=lang, cache_dir=cache,
+               overwrite_cache=True, deterministic=True)
+    print(f"[nemo-precompile] {lang} done", flush=True)
+PYEOF
 
 # Our Wyoming bridge. pip's PEP 517 build isolation pulls setuptools/wheel into
 # a throwaway env, so we never install them into /usr/local — nothing extra
@@ -71,6 +102,7 @@ RUN \
         python3 \
         libsndfile1 \
         ca-certificates \
+        libfst26 \
     && rm -rf /var/lib/apt/lists/*
 
 # Python deps + our bridge, built in the builder stage. /usr/local is where
@@ -78,6 +110,7 @@ RUN \
 # Debian's site.py keeps /usr/local/lib/pythonX.Y/dist-packages on sys.path,
 # so `python3 -m wyoming_supertonic` resolves without a local pip install.
 COPY --from=builder /usr/local /usr/local
+COPY --from=builder /opt/nemo-cache /opt/nemo-cache
 
 COPY rootfs /
 
