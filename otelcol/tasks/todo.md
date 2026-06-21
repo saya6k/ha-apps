@@ -1,0 +1,35 @@
+# otelcol implementation — task list
+
+- [x] **Task 0** — Feature branch + scaffold commit
+- [ ] **Task A** — Security hardening
+  - [ ] `apparmor.txt` named profile
+  - [ ] `config.yaml`: remove `apparmor: false`; add `auth_api`, `homeassistant_api`, `ingress`, `ingress_port`, `panel_icon`
+  - [ ] `otelcol-selfmonitoring.yaml`: zpages on `0.0.0.0:55679`, pprof on `127.0.0.1`
+  - [ ] Verify: no audit denials, ingress panel shows zpages, OTLP/pprof not host-exposed
+- [ ] **Task B** — Config generator + OTLP receiver/exporter
+  - [ ] Rewrite `run` else-branch to generate `/tmp/otelcol-config.yaml`
+  - [ ] Emit processors (memory_limiter → batch → resource), exporters (otlp/otlphttp + debug), OTLP receiver on `127.0.0.1`
+  - [ ] Wire metrics/logs/traces pipelines
+  - [ ] Pre-exec `otelcol-contrib validate`
+  - [ ] Verify: validate passes, health 200, debug batches visible
+- [ ] **Task C** — filelog HA log collection
+  - [ ] `filelog/ha` receiver with multiline + severity mapping
+  - [ ] Add to logs pipeline in generator
+  - [ ] Verify: log lines + collapsed tracebacks in backend
+- [ ] **Task D** — Python HA-API bridge
+  - [ ] D1: s6 `ha-bridge` service, Python skeleton, WS connect + auth + backoff reconnect
+  - [ ] D2: `state_changed` → OTLP gauges (skip non-numeric/unavailable)
+  - [ ] D3: `system_log_event` → OTLP logs
+  - [ ] D4: event context graph → OTLP traces (TTL/LRU for open contexts)
+  - [ ] Dockerfile: Python + OTel SDK + aiohttp install
+  - [ ] Verify: metrics, logs, AND traces in backend; bridge survives HA restart
+- [ ] **Task E** — Container/Supervisor logs+stats via Supervisor API (opt-in)
+  - [ ] `config.yaml`: `hassio_api: true`, `hassio_role: manager`
+  - [ ] Bridge: enumerate addons, stream/poll logs + stats, tag `addon.slug`/`addon.name`
+  - [ ] Verify: all add-on logs + per-add-on CPU/mem metrics in backend; off = no calls
+- [ ] **Task F** — Icon/logo, polish, docs
+  - [ ] Replace `icon.png` / `logo.png` placeholders
+  - [ ] Startup OTLP endpoint reachability check (warn, don't fail)
+  - [ ] `DOCS.md`: LGTM setup, System Log `fire_event` note, container-logs security note
+  - [ ] `translations/en.yaml` + `ko.yaml`: all options including new ones
+  - [ ] `CHANGELOG.md`: 0.1.0 entry

@@ -30,6 +30,10 @@
   - changed-files:
       - any-glob-to-any-file: "zensical/**"
 
+"addon:otelcol":
+  - changed-files:
+      - any-glob-to-any-file: "otelcol/**"
+
 "scope:repo":
   - changed-files:
       - any-glob-to-any-file:

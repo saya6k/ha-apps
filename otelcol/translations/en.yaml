@@ -1,0 +1,57 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Verbosity threshold for the add-on's own log lines and the collector's
+      internal logging. `info` is the default; set to `debug` to see detailed
+      pipeline activity, `trace` for full collector internals.
+  otlp_endpoint:
+    name: OTLP endpoint
+    description: >-
+      Host:port of the OTLP gateway (e.g. `lgtm.local:4317` for gRPC,
+      `lgtm.local:4318` for HTTP). Leave empty to disable OTLP export
+      (self-monitoring only).
+  otlp_protocol:
+    name: OTLP protocol
+    description: >-
+      Transport protocol — `grpc` or `http`. Must match what the
+      target endpoint expects.
+  otlp_headers:
+    name: OTLP headers
+    description: >-
+      Additional HTTP/gRPC headers to send with every OTLP request.
+      Use for `Authorization` or `X-Scope-OrgID` (Grafana Cloud).
+  otlp_tls_insecure:
+    name: TLS insecure
+    description: >-
+      Skip TLS certificate verification. Enable only for local/testing
+      endpoints with self-signed certificates.
+  ha_logs_enabled:
+    name: Collect HA logs
+    description: >-
+      Tail `/config/home-assistant.log` and export log entries as OTLP
+      log records. Requires `homeassistant_config` mount (enabled by default).
+  ha_metrics_enabled:
+    name: Collect HA metrics
+    description: >-
+      Scrape Home Assistant's `/api/prometheus` endpoint and export as
+      OTLP metrics. Requires the Prometheus integration enabled in HA.
+  container_logs_enabled:
+    name: Collect container logs
+    description: >-
+      Collect stdout/stderr from the Supervisor and every add-on container
+      via the Docker socket. Requires disabling protection mode.
+      Not yet implemented — use `raw_config` to configure manually.
+  host_metrics_enabled:
+    name: Collect host metrics
+    description: >-
+      Collect CPU, memory, disk, and network metrics from the HAOS host.
+      Not yet implemented — use `raw_config` to configure manually.
+  raw_config:
+    name: Raw otelcol config
+    description: >-
+      Paste a complete OpenTelemetry Collector pipeline configuration
+      (YAML). When non-empty, all structured options above are ignored
+      and this config is used verbatim, layered on top of the bundled
+      self-monitoring baseline.
