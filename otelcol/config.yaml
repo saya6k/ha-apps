@@ -12,7 +12,12 @@ arch:
   - aarch64
 init: false
 startup: services
-apparmor: false
+apparmor: otelcol
+auth_api: true
+homeassistant_api: true
+ingress: true
+ingress_port: 55679
+panel_icon: mdi:chart-line
 map:
   - type: homeassistant_config
     read_only: true

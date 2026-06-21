@@ -36,15 +36,15 @@ configuration:
   ha_metrics_enabled:
     name: HA 메트릭 수집
     description: >-
-      Home Assistant의 `/api/prometheus` 엔드포인트를 스크래핑하여
-      OTLP 메트릭으로 내보냅니다. HA에 Prometheus 통합구성요소가
-      활성화되어 있어야 합니다.
+      WebSocket API를 통해 Home Assistant 상태 변경을 구독하고 수치형
+      엔티티 상태를 OTLP 메트릭으로 내보냅니다. 별도의 HA 통합구성요소가
+      필요하지 않습니다.
   container_logs_enabled:
     name: 컨테이너 로그 수집
     description: >-
-      Docker 소켓을 통해 Supervisor 및 모든 애드온 컨테이너의
-      stdout/stderr를 수집합니다. 보호 모드 비활성화가 필요합니다.
-      아직 구현되지 않음 — `raw_config`로 수동 설정하세요.
+      Supervisor API를 통해 Supervisor 및 모든 애드온의 로그와 리소스
+      통계를 수집합니다. 활성화 시 `hassio_role: manager` 권한이
+      자동으로 부여됩니다. 기본값은 비활성화입니다.
   host_metrics_enabled:
     name: 호스트 메트릭 수집
     description: >-

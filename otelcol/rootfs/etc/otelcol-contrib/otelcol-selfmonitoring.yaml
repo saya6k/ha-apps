@@ -19,8 +19,11 @@ exporters:
 
 extensions:
   health_check:
+    endpoint: "0.0.0.0:13133"
   pprof:
+    endpoint: "127.0.0.1:1777"
   zpages:
+    endpoint: "0.0.0.0:55679"
 
 service:
   extensions: [health_check, pprof, zpages]
