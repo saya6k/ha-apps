@@ -49,7 +49,7 @@ add a `BREAKING CHANGE:` footer. Either triggers a major bump.
 ### Allowed scopes
 
 `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `supertonic` ·
-`voiceprint` · `wardrowbe` · `zensical` · `repo` (for `.github/`,
+`voiceprint` · `wardrowbe` · `zensical` · `otelcol` · `repo` (for `.github/`,
 root docs, `repository.yaml`).
 
 Any other scope = release-please can't route the commit. If a change truly

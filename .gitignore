@@ -79,6 +79,7 @@ super-linter-output/
 !/voiceprint/
 !/wardrowbe/
 !/zensical/
+!/otelcol/
 # voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
 # hosted as a pinned release asset — never commit a local dev copy. (Listed
 # after the re-include above so this narrower exclusion wins.)

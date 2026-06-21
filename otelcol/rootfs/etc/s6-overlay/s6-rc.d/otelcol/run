@@ -1,0 +1,40 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start the OpenTelemetry Collector.
+#
+# Merges the user config (raw_config or generated from structured options)
+# with the bundled self-monitoring base config, then execs otelcol-contrib.
+# ==============================================================================
+
+declare raw_config
+declare -a options
+
+## Bundled self-monitoring baseline — always loaded first
+options+=(--config="/etc/otelcol-contrib/otelcol-selfmonitoring.yaml")
+
+## Read the user-facing options
+raw_config=$(bashio::config 'raw_config')
+
+if [[ -n "${raw_config}" ]]; then
+    ## User supplied a full raw config — use it verbatim
+    bashio::log.info 'Using raw_config as the collector configuration'
+    echo "${raw_config}" > /tmp/otelcol-config.yaml
+    options+=(--config="/tmp/otelcol-config.yaml")
+else
+    ## Generate config from structured options (Phase 2 — TODO)
+    ## For now, if no raw_config is given, the collector runs with
+    ## self-monitoring only (same as the upstream cedricziel add-on).
+    bashio::log.info 'No raw_config supplied — running with self-monitoring only'
+    if bashio::config.true 'ha_logs_enabled'; then
+        bashio::log.warning 'ha_logs_enabled is true but config generation is not yet implemented'
+        bashio::log.warning 'Set raw_config with a filelog receiver to collect HA logs'
+    fi
+    if bashio::config.true 'ha_metrics_enabled'; then
+        bashio::log.warning 'ha_metrics_enabled is true but config generation is not yet implemented'
+        bashio::log.warning 'Set raw_config with a prometheus receiver to collect HA metrics'
+    fi
+fi
+
+bashio::log.info 'Starting the OpenTelemetry Collector...'
+exec /usr/bin/otelcol-contrib "${options[@]}"
