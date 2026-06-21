@@ -11,6 +11,7 @@ declare raw_config log_level otlp_endpoint otlp_protocol otlp_tls_insecure
 declare exporter_name endpoint headers_yaml pipeline_exporters
 declare addon_version validation_output
 declare -a options
+declare ha_logs_enabled
 
 ## Bundled self-monitoring baseline — always loaded first
 options+=(--config="/etc/otelcol-contrib/otelcol-selfmonitoring.yaml")
@@ -71,6 +72,8 @@ else
         pipeline_exporters="[debug]"
     fi
 
+    ha_logs_enabled=$(bashio::config 'ha_logs_enabled')
+
     # ── Warn about not-yet-implemented toggles ──────────────────────────────
     if bashio::config.true 'host_metrics_enabled'; then
         bashio::log.warning 'host_metrics_enabled is not yet implemented; ignored'
@@ -86,6 +89,47 @@ receivers:
         endpoint: "0.0.0.0:4317"
       http:
         endpoint: "0.0.0.0:4318"
+YAML
+
+        # filelog receiver — tails home-assistant.log; combines multi-line tracebacks
+        if [[ "${ha_logs_enabled}" == "true" ]]; then
+            cat <<'YAML'
+  filelog/ha:
+    include:
+      - /config/home-assistant.log
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    operators:
+      - type: regex_parser
+        regex: '^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+) (?P<sev>[A-Z]+) \((?P<thread>[^)]+)\) \[(?P<logger>[^\]]+)\] (?P<message>[\s\S]*)$'
+        timestamp:
+          parse_from: attributes.ts
+          layout: '%Y-%m-%d %H:%M:%S.%f'
+        severity:
+          parse_from: attributes.sev
+          mapping:
+            debug: DEBUG
+            info: INFO
+            warning: WARN
+            error: ERROR
+            critical: FATAL
+      - type: move
+        from: attributes.message
+        to: body
+      - type: move
+        from: attributes.logger
+        to: attributes["log.logger"]
+      - type: move
+        from: attributes.thread
+        to: attributes["thread.name"]
+      - type: remove
+        field: attributes.ts
+      - type: remove
+        field: attributes.sev
+YAML
+        fi
+
+        cat <<YAML
 
 processors:
   memory_limiter:
@@ -138,6 +182,16 @@ service:
       processors: [memory_limiter, batch, resource]
       exporters: ${pipeline_exporters}
 YAML
+
+        # HA log file pipeline
+        if [[ "${ha_logs_enabled}" == "true" ]]; then
+            cat <<YAML
+    logs/ha:
+      receivers: [filelog/ha]
+      processors: [memory_limiter, batch, resource]
+      exporters: ${pipeline_exporters}
+YAML
+        fi
     } > /tmp/otelcol-config.yaml
 
     options+=(--config="/tmp/otelcol-config.yaml")
