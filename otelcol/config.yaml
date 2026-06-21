@@ -12,7 +12,6 @@ arch:
   - aarch64
 init: false
 startup: services
-apparmor: otelcol
 auth_api: true
 homeassistant_api: true
 ingress: true
