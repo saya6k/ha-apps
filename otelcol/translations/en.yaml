@@ -35,14 +35,15 @@ configuration:
   ha_metrics_enabled:
     name: Collect HA metrics
     description: >-
-      Scrape Home Assistant's `/api/prometheus` endpoint and export as
-      OTLP metrics. Requires the Prometheus integration enabled in HA.
+      Subscribe to Home Assistant state changes via the WebSocket API and
+      export numeric entity states as OTLP metrics. No extra HA integration
+      required.
   container_logs_enabled:
     name: Collect container logs
     description: >-
-      Collect stdout/stderr from the Supervisor and every add-on container
-      via the Docker socket. Requires disabling protection mode.
-      Not yet implemented — use `raw_config` to configure manually.
+      Collect logs and resource stats from the Supervisor and every add-on
+      via the Supervisor API. Requires `hassio_role: manager` (granted
+      automatically when enabled). Off by default.
   host_metrics_enabled:
     name: Collect host metrics
     description: >-
