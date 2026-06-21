@@ -26,14 +26,26 @@ LABEL \
 
 ENV LANG=C.UTF-8
 
+# ── Python bridge dependencies ─────────────────────────────────────────
+# Install in a venv to isolate from system Python and bound layer size.
+RUN apk add --no-cache python3 py3-pip \
+    && python3 -m venv /opt/bridge-venv \
+    && /opt/bridge-venv/bin/pip install --no-cache-dir \
+        aiohttp \
+        opentelemetry-sdk \
+        opentelemetry-exporter-otlp-proto-http
+
+ENV PATH="/opt/bridge-venv/bin:${PATH}"
+
 # Copy the otelcol-contrib binary for the target architecture
 COPY --from=container /${BUILD_ARCH}/otelcol-contrib /usr/bin/otelcol-contrib
 
 # Copy the root filesystem (s6 services, bundled config)
 COPY rootfs /
 
-# s6-overlay: ensure service scripts are executable
+# s6-overlay: ensure service scripts are executable; bridge script is executable
 RUN find /etc/s6-overlay/s6-rc.d -type f \( -name run -o -name finish -o -name up -o -name down \) -exec chmod +x {} \; \
+    && chmod +x /usr/bin/ha-otel-bridge \
     && mkdir -p /addon_config
 
 HEALTHCHECK --start-period=10s --interval=5m --timeout=3s --retries=3 \

@@ -40,6 +40,8 @@ options:
   otlp_tls_insecure: false
   ha_logs_enabled: true
   ha_metrics_enabled: true
+  ha_events_enabled: true
+  ha_traces_enabled: true
   container_logs_enabled: false
   host_metrics_enabled: false
   raw_config: ""
@@ -53,6 +55,8 @@ schema:
   otlp_tls_insecure: bool
   ha_logs_enabled: bool
   ha_metrics_enabled: bool
+  ha_events_enabled: bool
+  ha_traces_enabled: bool
   container_logs_enabled: bool
   host_metrics_enabled: bool
   raw_config: str?

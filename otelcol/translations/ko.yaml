@@ -39,6 +39,19 @@ configuration:
       WebSocket API를 통해 Home Assistant 상태 변경을 구독하고 수치형
       엔티티 상태를 OTLP 메트릭으로 내보냅니다. 별도의 HA 통합구성요소가
       필요하지 않습니다.
+  ha_events_enabled:
+    name: HA 이벤트 로그 수집
+    description: >-
+      WebSocket API를 통해 `system_log_event`를 구독하고 HA 오류/경고
+      이벤트를 구조화된 OTLP 로그 레코드로 내보냅니다 (스택 트레이스 및
+      소스 위치 포함). HA System Log 통합구성요소에서 `fire_event: true`를
+      활성화해야 합니다 (`configuration.yaml: logger: fire_event: true`).
+  ha_traces_enabled:
+    name: HA 트레이스 수집
+    description: >-
+      Home Assistant 이벤트 컨텍스트 체인(service_call → automation_triggered
+      → state_changed)을 `context.id`/`context.parent_id` 그래프를 사용해
+      OTLP 트레이스로 변환합니다. 추가 HA 설정이 필요하지 않습니다.
   container_logs_enabled:
     name: 컨테이너 로그 수집
     description: >-

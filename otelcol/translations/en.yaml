@@ -38,6 +38,19 @@ configuration:
       Subscribe to Home Assistant state changes via the WebSocket API and
       export numeric entity states as OTLP metrics. No extra HA integration
       required.
+  ha_events_enabled:
+    name: Collect HA events as logs
+    description: >-
+      Subscribe to `system_log_event` via the WebSocket API and export HA
+      error/warning events as structured OTLP log records (includes stack traces
+      and source location). Requires enabling `fire_event: true` in HA's System
+      Log integration (`configuration.yaml: logger: fire_event: true`).
+  ha_traces_enabled:
+    name: Collect HA traces
+    description: >-
+      Map Home Assistant event context chains (service_call → automation_triggered
+      → state_changed) to OTLP traces using the `context.id` / `context.parent_id`
+      graph. No extra HA configuration required.
   container_logs_enabled:
     name: Collect container logs
     description: >-

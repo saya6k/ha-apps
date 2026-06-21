@@ -1,0 +1,453 @@
+#!/usr/bin/env python3
+"""HA→OTLP bridge.
+
+Connects to Home Assistant via WebSocket API and exports:
+- D2: numeric state_changed events → OTLP metrics (gauges)
+- D3: system_log_event events     → OTLP logs
+- D4: event context graph         → OTLP traces (spans linked by context.id)
+
+Pushes everything to the local otelcol OTLP/HTTP receiver on localhost:4318.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import os
+import time
+from collections import OrderedDict
+from typing import Any
+
+import aiohttp
+from opentelemetry import metrics, trace
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.trace import SpanKind, StatusCode
+from opentelemetry.trace.span import format_span_id, format_trace_id
+
+# ── Configuration ─────────────────────────────────────────────────────────────
+
+OTLP_ENDPOINT = os.environ.get("OTLP_BRIDGE_ENDPOINT", "http://localhost:4318")
+SUPERVISOR_TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
+HA_WS_URL = "ws://supervisor/core/websocket"
+HA_REST_URL = "http://supervisor/core/api"
+
+HA_METRICS_ENABLED = os.environ.get("HA_METRICS_ENABLED", "true").lower() == "true"
+HA_EVENTS_ENABLED = os.environ.get("HA_EVENTS_ENABLED", "true").lower() == "true"
+HA_TRACES_ENABLED = os.environ.get("HA_TRACES_ENABLED", "true").lower() == "true"
+
+# Reconnect backoff: start at 2 s, cap at 60 s
+RECONNECT_BASE = 2
+RECONNECT_MAX = 60
+
+# Context graph: max open contexts kept in memory; TTL in seconds
+CONTEXT_LRU_SIZE = 2000
+CONTEXT_TTL = 120
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+log = logging.getLogger("ha-bridge")
+
+# ── OTLP providers ────────────────────────────────────────────────────────────
+
+_resource = Resource.create({"service.name": "ha-otel-bridge"})
+
+_metric_reader = PeriodicExportingMetricReader(
+    OTLPMetricExporter(endpoint=f"{OTLP_ENDPOINT}/v1/metrics"),
+    export_interval_millis=15_000,
+)
+_meter_provider = MeterProvider(resource=_resource, metric_readers=[_metric_reader])
+metrics.set_meter_provider(_meter_provider)
+_meter = metrics.get_meter("ha-bridge")
+
+_tracer_provider = TracerProvider(resource=_resource)
+_tracer_provider.add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter(endpoint=f"{OTLP_ENDPOINT}/v1/traces"))
+)
+trace.set_tracer_provider(_tracer_provider)
+_tracer = trace.get_tracer("ha-bridge")
+
+_logger_provider = LoggerProvider(resource=_resource)
+_logger_provider.add_log_record_processor(
+    BatchLogRecordProcessor(OTLPLogExporter(endpoint=f"{OTLP_ENDPOINT}/v1/logs"))
+)
+_otel_log_handler = LoggingHandler(logger_provider=_logger_provider)
+
+# OTLP logger for HA events (separate from the bridge's own stderr logger)
+_ha_log = logging.getLogger("ha-events")
+_ha_log.addHandler(_otel_log_handler)
+_ha_log.propagate = False
+
+# ── Gauge cache (D2) ──────────────────────────────────────────────────────────
+# entity_id → (ObservableGauge, last_value); we use callback-style gauges.
+_gauge_values: dict[str, float] = {}
+_registered_gauges: set[str] = set()
+
+
+def _make_gauge_callback(entity_id: str):
+    def callback(options):
+        if entity_id in _gauge_values:
+            yield metrics.observation.Observation(
+                _gauge_values[entity_id],
+                {"entity_id": entity_id},
+            )
+    return callback
+
+
+def _upsert_gauge(entity_id: str, value: float, attrs: dict[str, str]) -> None:
+    _gauge_values[entity_id] = value
+    if entity_id not in _registered_gauges:
+        _registered_gauges.add(entity_id)
+        # Observable gauge reports the latest value on each collection cycle.
+        _meter.create_observable_gauge(
+            name=f"ha.state.{entity_id.replace('.', '_')}",
+            callbacks=[_make_gauge_callback(entity_id)],
+            description=f"State of HA entity {entity_id}",
+            unit=attrs.get("unit_of_measurement", "1"),
+        )
+
+
+# ── Context graph (D4) ────────────────────────────────────────────────────────
+# Maps context_id → {"trace_id": int, "spans": [SpanData], "expires": float}
+# Uses an OrderedDict as a simple LRU.
+
+class _ContextGraph:
+    """Tracks open HA event contexts and maps them to OTLP traces."""
+
+    def __init__(self, max_size: int = CONTEXT_LRU_SIZE, ttl: float = CONTEXT_TTL):
+        self._store: OrderedDict[str, dict] = OrderedDict()
+        self._max = max_size
+        self._ttl = ttl
+
+    def _evict_expired(self) -> None:
+        now = time.monotonic()
+        expired = [k for k, v in self._store.items() if v["expires"] < now]
+        for k in expired:
+            del self._store[k]
+
+    def get_or_create(self, context_id: str) -> dict:
+        self._evict_expired()
+        if context_id in self._store:
+            entry = self._store[context_id]
+            self._store.move_to_end(context_id)
+            entry["expires"] = time.monotonic() + self._ttl
+            return entry
+        # Evict oldest if at capacity
+        if len(self._store) >= self._max:
+            self._store.popitem(last=False)
+        entry = {
+            "trace_id": _rand_trace_id(),
+            "expires": time.monotonic() + self._ttl,
+        }
+        self._store[context_id] = entry
+        return entry
+
+    def get(self, context_id: str) -> dict | None:
+        return self._store.get(context_id)
+
+
+_ctx_graph = _ContextGraph()
+
+
+def _rand_trace_id() -> int:
+    import secrets
+    return secrets.randbits(128)
+
+
+def _rand_span_id() -> int:
+    import secrets
+    return secrets.randbits(64)
+
+
+# ── Event handlers ────────────────────────────────────────────────────────────
+
+_NUMERIC_DOMAINS = {
+    "sensor", "number", "input_number", "counter",
+    "energy", "fan", "climate", "weather",
+}
+
+SEVERITY_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+    "FATAL": logging.CRITICAL,
+}
+
+
+def _try_float(value: str) -> float | None:
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def handle_state_changed(event_data: dict) -> None:
+    """D2: convert numeric state_changed to OTLP gauge."""
+    if not HA_METRICS_ENABLED:
+        return
+    new_state = event_data.get("new_state") or {}
+    entity_id: str = new_state.get("entity_id", "")
+    state_str: str = new_state.get("state", "")
+    if state_str in ("unavailable", "unknown", ""):
+        return
+    value = _try_float(state_str)
+    if value is None:
+        return
+    attrs = new_state.get("attributes") or {}
+    _upsert_gauge(entity_id, value, {k: str(v) for k, v in attrs.items()})
+
+
+def handle_system_log_event(event_data: dict) -> None:
+    """D3: forward system_log_event as OTLP log record."""
+    if not HA_EVENTS_ENABLED:
+        return
+    level_str = event_data.get("level", "WARNING").upper()
+    level = SEVERITY_MAP.get(level_str, logging.WARNING)
+    message = event_data.get("message", [])
+    if isinstance(message, list):
+        message = " ".join(str(m) for m in message)
+    source = event_data.get("source", ["", ""])[0] if event_data.get("source") else ""
+    logger_name = event_data.get("name", "homeassistant")
+    extra = {
+        "ha.logger": logger_name,
+        "ha.source": source,
+        "ha.count": event_data.get("count", 1),
+        "ha.first_occurred": event_data.get("first_occurred", ""),
+    }
+    _ha_log.log(level, message, extra=extra)
+
+
+def handle_trace_event(event_type: str, event_data: dict, context: dict) -> None:
+    """D4: map HA event context graph to OTLP spans."""
+    if not HA_TRACES_ENABLED:
+        return
+    context_id: str = context.get("id", "")
+    parent_id: str | None = context.get("parent_id")
+    if not context_id:
+        return
+
+    ctx_entry = _ctx_graph.get_or_create(context_id)
+    trace_id = ctx_entry["trace_id"]
+
+    # If this context has a parent, look up the parent's trace (or start new)
+    parent_span_id: int | None = None
+    if parent_id:
+        parent_entry = _ctx_graph.get(parent_id)
+        if parent_entry:
+            trace_id = parent_entry["trace_id"]
+            ctx_entry["trace_id"] = trace_id
+            parent_span_id = parent_entry.get("last_span_id")
+
+    span_id = _rand_span_id()
+    ctx_entry["last_span_id"] = span_id
+
+    # Build a minimal span using the SDK's internal API
+    _emit_span(
+        name=event_type,
+        trace_id=trace_id,
+        span_id=span_id,
+        parent_span_id=parent_span_id,
+        attributes={
+            "ha.context_id": context_id,
+            "ha.event_type": event_type,
+            **{f"ha.{k}": str(v) for k, v in event_data.items()
+               if k in ("entity_id", "domain", "service", "old_state", "new_state")
+               and v is not None},
+        },
+    )
+
+
+def _emit_span(
+    name: str,
+    trace_id: int,
+    span_id: int,
+    parent_span_id: int | None,
+    attributes: dict,
+) -> None:
+    """Emit a finished span directly via the SDK's BatchSpanProcessor."""
+    from opentelemetry.sdk.trace import ReadableSpan
+    from opentelemetry.trace import SpanContext, TraceFlags
+
+    now_ns = time.time_ns()
+    parent_ctx: SpanContext | None = None
+    if parent_span_id is not None:
+        parent_ctx = SpanContext(
+            trace_id=trace_id,
+            span_id=parent_span_id,
+            is_remote=False,
+            trace_flags=TraceFlags(TraceFlags.SAMPLED),
+        )
+
+    span_ctx = SpanContext(
+        trace_id=trace_id,
+        span_id=span_id,
+        is_remote=False,
+        trace_flags=TraceFlags(TraceFlags.SAMPLED),
+    )
+
+    span = ReadableSpan(
+        name=name,
+        context=span_ctx,
+        parent=parent_ctx,
+        attributes=attributes,
+        start_time=now_ns - 1_000_000,  # 1 ms ago (HA events have no precise start)
+        end_time=now_ns,
+        status=trace.status.Status(StatusCode.UNSET),
+        kind=SpanKind.INTERNAL,
+        resource=_resource,
+    )
+    _tracer_provider.get_tracer(__name__)  # ensure tracer is init
+    for processor in _tracer_provider._active_span_processor._span_processors:
+        processor.on_end(span)
+
+
+# Trace-eligible event types
+_TRACE_EVENTS = {
+    "call_service",
+    "automation_triggered",
+    "script_started",
+    "state_changed",
+    "timer_finished",
+}
+
+# ── WebSocket client ──────────────────────────────────────────────────────────
+
+async def _authenticate(ws: aiohttp.ClientWebSocketResponse) -> bool:
+    """Complete the HA auth flow (auth_required → auth → auth_ok)."""
+    msg = await ws.receive_json()
+    if msg.get("type") != "auth_required":
+        log.error("Unexpected first message: %s", msg.get("type"))
+        return False
+    await ws.send_json({"type": "auth", "access_token": SUPERVISOR_TOKEN})
+    msg = await ws.receive_json()
+    if msg.get("type") != "auth_ok":
+        log.error("Authentication failed: %s", msg.get("message", ""))
+        return False
+    log.info("Authenticated with HA WebSocket API (HA %s)", msg.get("ha_version", "?"))
+    return True
+
+
+async def _subscribe(ws: aiohttp.ClientWebSocketResponse, msg_id: int, event_type: str) -> None:
+    await ws.send_json({
+        "id": msg_id,
+        "type": "subscribe_events",
+        "event_type": event_type,
+    })
+    resp = await ws.receive_json()
+    if resp.get("success"):
+        log.info("Subscribed to %s (id=%d)", event_type, msg_id)
+    else:
+        log.warning("Failed to subscribe to %s: %s", event_type, resp.get("error"))
+
+
+async def _seed_states(session: aiohttp.ClientSession) -> None:
+    """D2: seed gauge values from /api/states on connect."""
+    if not HA_METRICS_ENABLED:
+        return
+    headers = {"Authorization": f"Bearer {SUPERVISOR_TOKEN}"}
+    try:
+        async with session.get(f"{HA_REST_URL}/states", headers=headers) as resp:
+            if resp.status != 200:
+                log.warning("Failed to seed states: HTTP %d", resp.status)
+                return
+            states = await resp.json()
+        for state in states:
+            entity_id = state.get("entity_id", "")
+            state_str = state.get("state", "")
+            value = _try_float(state_str)
+            if value is not None and state_str not in ("unavailable", "unknown"):
+                attrs = state.get("attributes") or {}
+                _upsert_gauge(entity_id, value, {k: str(v) for k, v in attrs.items()})
+        log.info("Seeded %d entity states", len(states))
+    except Exception as exc:
+        log.warning("State seed error: %s", exc)
+
+
+async def _event_loop(ws: aiohttp.ClientWebSocketResponse) -> None:
+    """Process incoming WebSocket messages."""
+    async for msg in ws:
+        if msg.type != aiohttp.WSMsgType.TEXT:
+            continue
+        payload: dict = json.loads(msg.data)
+        if payload.get("type") != "event":
+            continue
+        event: dict = payload.get("event", {})
+        event_type: str = event.get("event_type", "")
+        event_data: dict = event.get("data") or {}
+        context: dict = event.get("context") or {}
+
+        if event_type == "state_changed":
+            handle_state_changed(event_data)
+        elif event_type == "system_log_event":
+            handle_system_log_event(event_data)
+
+        if event_type in _TRACE_EVENTS:
+            handle_trace_event(event_type, event_data, context)
+
+
+async def run() -> None:
+    """Main loop: connect, subscribe, reconnect with backoff."""
+    if not SUPERVISOR_TOKEN:
+        log.error("SUPERVISOR_TOKEN is not set — cannot connect to HA")
+        raise SystemExit(1)
+
+    backoff = RECONNECT_BASE
+    connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+
+    async with aiohttp.ClientSession(connector=connector) as session:
+        while True:
+            try:
+                log.info("Connecting to HA WebSocket: %s", HA_WS_URL)
+                async with session.ws_connect(
+                    HA_WS_URL,
+                    headers={"Authorization": f"Bearer {SUPERVISOR_TOKEN}"},
+                    heartbeat=30,
+                ) as ws:
+                    if not await _authenticate(ws):
+                        raise RuntimeError("Authentication failed")
+
+                    await _seed_states(session)
+
+                    msg_id = 1
+                    if HA_METRICS_ENABLED or HA_TRACES_ENABLED:
+                        await _subscribe(ws, msg_id, "state_changed")
+                        msg_id += 1
+                    if HA_EVENTS_ENABLED:
+                        await _subscribe(ws, msg_id, "system_log_event")
+                        msg_id += 1
+                    if HA_TRACES_ENABLED:
+                        for etype in ("call_service", "automation_triggered",
+                                      "script_started", "timer_finished"):
+                            await _subscribe(ws, msg_id, etype)
+                            msg_id += 1
+
+                    log.info("Bridge running")
+                    backoff = RECONNECT_BASE  # reset on successful connect
+                    await _event_loop(ws)
+
+            except (aiohttp.ClientError, asyncio.TimeoutError, RuntimeError) as exc:
+                log.warning("Connection lost (%s); reconnecting in %ds", exc, backoff)
+            except Exception as exc:
+                log.error("Unexpected error: %s", exc, exc_info=True)
+
+            await asyncio.sleep(backoff)
+            backoff = min(backoff * 2, RECONNECT_MAX)
+
+
+if __name__ == "__main__":
+    asyncio.run(run())
