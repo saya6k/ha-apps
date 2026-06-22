@@ -242,9 +242,9 @@ jobs:
           echo "OK — no Unicode whitespace"
 
   # ---------------------------------------------------------------------
-  # markdownlint — checks *.md files in the changed add-on against the
-  # root .markdownlint.yaml. Config is already tuned for our conventions
-  # (long lines OK, inline HTML OK, multi-H1 CHANGELOG OK).
+  # markdownlint — checks user-facing *.md files (README, DOCS, etc.) in
+  # the changed add-on. AI agent docs (AGENTS.md, CLAUDE.md, .agents/,
+  # specs/) and CHANGELOG.md (release-please generated) are excluded.
   # ---------------------------------------------------------------------
   lint-markdown:
     name: markdownlint (${{ matrix.addon }})
@@ -277,6 +277,10 @@ jobs:
           globs: |
             ${{ matrix.addon }}/**/*.md
             !${{ matrix.addon }}/CHANGELOG.md
+            !${{ matrix.addon }}/AGENTS.md
+            !${{ matrix.addon }}/.agents/**
+            !${{ matrix.addon }}/specs/**
+            !${{ matrix.addon }}/tasks/**
           config: .markdownlint.yaml
 
   # ---------------------------------------------------------------------

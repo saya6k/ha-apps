@@ -19,3 +19,12 @@ MD007:
 
 # Bare URLs are fine in CHANGELOG bullets.
 MD034: false
+
+# Table column alignment style is a pure editorial preference.
+MD060: false
+
+# Unordered list marker (-, +, *) varies across files; not worth enforcing.
+MD004: false
+
+# Trailing spaces are sometimes intentional line-break markers.
+MD009: false
