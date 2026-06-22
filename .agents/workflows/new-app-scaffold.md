@@ -27,7 +27,7 @@ first.
        exit 0 → halt) from permanent failure (exit >0 → stay down).
    - `translations/{en,ko}.yaml` for the option UI strings.
    - `AGENTS.md` (deep invariants/build/don'ts), `DOCS.md` (user knobs),
-     `CHANGELOG.md`, `README.md`. Symlink `CLAUDE.md -> AGENTS.md`.
+     `CHANGELOG.md`, `README.md` (see **README template** below). Symlink `CLAUDE.md -> AGENTS.md`.
    - `icon.png` (256², square) + `logo.png` — see the `app-icon` skill.
 2. **Register the slug at the repo root** (`repo` scope):
    - `.github/release-please-config.json` + `.github/.release-please-manifest.json`
@@ -100,6 +100,32 @@ fi
 ```
 
 Replace `<slug>` with the app directory name.
+
+## README template
+
+Every app's `README.md` must use this badge order. **Arch badges first, then
+for-the-badge badges (Claude Code + Coffee + tech stack), then Show add-on at the
+very bottom of the shield block, then the one-paragraph description.**
+
+```markdown
+# Home Assistant App: <Name>
+
+![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield]
+
+[![Built with Claude Code](https://img.shields.io/badge/Built%20with%20Claude%20Code-D97757?style=for-the-badge&logo=claude&logoColor=white)](https://claude.ai/code)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/saya6k)
+[![<Tech>](https://img.shields.io/badge/<Tech>-<color>?style=for-the-badge&logo=<logo>&logoColor=white)](<tech-url>)
+
+[![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_<slug>&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps)
+
+One-paragraph description. Details go in `DOCS.md`.
+
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
+```
+
+Add or remove tech-stack badges as appropriate. Show add-on is always last among
+the shields, immediately before the description.
 
 ## Output format
 - A checklist of files created and each registration touched, with anything
