@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-apps/compare/otelcol-v0.1.0...otelcol-v0.2.0) (2026-06-22)
+
+
+### Features
+
+* **otelcol:** add Python HA-API bridge for metrics, logs, and traces ([a30672d](https://github.com/saya6k/ha-apps/commit/a30672daec122d3186214e9a6a203331c07fb3df))
+* **otelcol:** collect HA Core logs via filelog receiver ([b221b67](https://github.com/saya6k/ha-apps/commit/b221b6782c72a5946a5eb29ef8318ab60b6a941f))
+* **otelcol:** generate collector config with OTLP receiver/exporter ([2f293f2](https://github.com/saya6k/ha-apps/commit/2f293f281e6ec8e481f4ad056b78def8ea4ab078))
+* **otelcol:** harden with apparmor profile, auth_api, and ingress zpages ([2246701](https://github.com/saya6k/ha-apps/commit/224670179676d2005adf4d741308ededeb436ae3))
+* **otelcol:** opt-in container log + stats via Supervisor API ([b120a71](https://github.com/saya6k/ha-apps/commit/b120a7117fc5597fd82f6a3ab53a6dc0bf015b79))
+* **otelcol:** real icon/logo + setup docs and changelog ([95b6980](https://github.com/saya6k/ha-apps/commit/95b69807bb51218f4c4e411055be14fae5409a63))
+* **otelcol:** replace placeholder icon/logo with official OTel artwork ([8cbc73d](https://github.com/saya6k/ha-apps/commit/8cbc73d8d1e93830701723e3309a65bedc1eddf1))
+
+
+### Bug Fixes
+
+* **otelcol:** add aiodns dep and fallback resolver for bridge ([4b676dd](https://github.com/saya6k/ha-apps/commit/4b676ddf9b816e9b5bd13ccb601846306edad8ae))
+* **otelcol:** correct ingress_entry path and stop container-log feedback loop ([56baf9a](https://github.com/saya6k/ha-apps/commit/56baf9a4c6324b44c4e1aaf2c86ed08fe48b7efc))
+* **otelcol:** disable AppArmor to resolve /init permission denied on startup ([2036952](https://github.com/saya6k/ha-apps/commit/2036952108527fd970f24dee163b796f099ac312))
+* **otelcol:** fix Observation import in gauge callbacks ([9ce759c](https://github.com/saya6k/ha-apps/commit/9ce759c6e740d1326a7f14f8ad6ab52fb2b87ca2))
+* **otelcol:** remove incorrect apparmor: otelcol key from config.yaml ([4dcf46c](https://github.com/saya6k/ha-apps/commit/4dcf46c13cd624f6966281ca28dfe6abea8c7a22))
+* **otelcol:** replace custom AppArmor profile with HA default ([1a9bbb3](https://github.com/saya6k/ha-apps/commit/1a9bbb30374188c535602ec35ed0e2288c34de87))
+* **otelcol:** sanitize non-ASCII unit_of_measurement before creating OTel gauge ([528c89e](https://github.com/saya6k/ha-apps/commit/528c89e3e4fdef796d7f84a481319f9b327e9e2f))
+* **otelcol:** set ingress_entry to /debug/pipelinez ([db6520d](https://github.com/saya6k/ha-apps/commit/db6520db00697004df2fa61e2f06a30812701a8d))
+* **otelcol:** wire s6 bundle registration and fix multi-arch Dockerfile ([52f6472](https://github.com/saya6k/ha-apps/commit/52f6472cdaab7ff5422a7a1d45037e7cdcc0288a))
+
+
+### Documentation
+
+* **otelcol:** reorder README shields — Show add-on below for-the-badge badges ([8cf7ec9](https://github.com/saya6k/ha-apps/commit/8cf7ec92011a4e5aad7ad7ace6aa5c1a7c6226c1))
+* **otelcol:** rewrite README with shields, restructure DOCS to match repo style ([d84c4b8](https://github.com/saya6k/ha-apps/commit/d84c4b8758644e080f2beece08624d7265515e75))
+
+
+### CI
+
+* **otelcol:** register in CI path filters and update AGENTS docs ([c29ebdf](https://github.com/saya6k/ha-apps/commit/c29ebdff08e17395c867663c54d6e91260ebeffa))
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## 0.1.0
 
 ### Features
