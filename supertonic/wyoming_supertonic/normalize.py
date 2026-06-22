@@ -84,8 +84,8 @@ def _nemo_normalize(text: str, lang: str) -> Optional[str]:
 # unicode-rbnf fallback (cardinal integers and simple decimals)
 # ---------------------------------------------------------------------------
 
-import langid
-from unicode_rbnf import FormatPurpose, RbnfEngine
+import langid  # noqa: E402
+from unicode_rbnf import FormatPurpose, RbnfEngine  # noqa: E402
 
 try:
     langid.classify("")

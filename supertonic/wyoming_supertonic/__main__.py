@@ -122,7 +122,7 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _build_info(version: str) -> "Info":
+def _build_info(version: str) -> "Info":  # noqa: F821
     from wyoming.info import Attribution, Info, TtsProgram, TtsVoice
 
     voices = [
