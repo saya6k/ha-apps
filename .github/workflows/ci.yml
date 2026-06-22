@@ -52,6 +52,8 @@ jobs:
               - 'wardrowbe/**'
             zensical:
               - 'zensical/**'
+            otelcol:
+              - 'otelcol/**'
 
       # Same per-add-on filters but excluding docs (*.md). With
       # predicate-quantifier 'every', an add-on counts only when a changed file
@@ -84,6 +86,9 @@ jobs:
             zensical:
               - 'zensical/**'
               - '!zensical/**/*.md'
+            otelcol:
+              - 'otelcol/**'
+              - '!otelcol/**/*.md'
 
   # ---------------------------------------------------------------------
   # Official Home Assistant add-on lint — validates config.yaml schema,

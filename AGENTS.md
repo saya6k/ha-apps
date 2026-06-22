@@ -16,6 +16,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 | [`voiceprint/`](voiceprint/AGENTS.md) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. |
 | [`wardrowbe/`](wardrowbe/AGENTS.md) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. |
 | [`zensical/`](zensical/AGENTS.md) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. |
+| [`otelcol/`](otelcol/AGENTS.md) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. |
 
 ## AI tooling (`.agents/`)
 
