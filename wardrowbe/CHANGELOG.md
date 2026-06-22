@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [4.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.0.0...wardrowbe-v4.0.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **wardrowbe:** split compound import and suppress E402 on conditional import ([d313737](https://github.com/saya6k/ha-apps/commit/d3137373412ab75e04a066dacf887661ac310c2d))
+
+
+### Documentation
+
+* **wardrowbe:** reorder README shields — Show add-on below for-the-badge badges ([150aad3](https://github.com/saya6k/ha-apps/commit/150aad374c28e4a509052c95b67782dd39931ca2))
+
+
+### Build System
+
+* **wardrowbe:** move venv to builder, strip Python .so extensions ([#357](https://github.com/saya6k/ha-apps/issues/357)) ([c386655](https://github.com/saya6k/ha-apps/commit/c3866555a8fc5f102db6f6ee423aa12d51016331))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [4.0.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v3.0.0...wardrowbe-v4.0.0) (2026-06-18)
 
 
