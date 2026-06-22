@@ -242,6 +242,42 @@ jobs:
           echo "OK — no Unicode whitespace"
 
   # ---------------------------------------------------------------------
+  # markdownlint — checks *.md files in the changed add-on against the
+  # root .markdownlint.yaml. Config is already tuned for our conventions
+  # (long lines OK, inline HTML OK, multi-H1 CHANGELOG OK).
+  # ---------------------------------------------------------------------
+  lint-markdown:
+    name: markdownlint (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Find Markdown files
+        id: mdfiles
+        run: |
+          set -euo pipefail
+          COUNT=$(find "${{ matrix.addon }}" -name '*.md' 2>/dev/null | wc -l)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Markdown files in ${{ matrix.addon }}, skipping"
+          else
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "Found ${COUNT} Markdown file(s)"
+          fi
+
+      - uses: DavidAnson/markdownlint-cli2-action@v19
+        if: steps.mdfiles.outputs.found == 'true'
+        with:
+          globs: "${{ matrix.addon }}/**/*.md"
+          config: .markdownlint.yaml
+
+  # ---------------------------------------------------------------------
   # Ruff — Python lint for add-ons that contain Python source. Skips
   # add-ons without any .py files so pure-shell add-ons pay no cost.
   # ---------------------------------------------------------------------
@@ -415,6 +451,7 @@ jobs:
       - lint-dockerfile
       - lint-shell
       - lint-unicode
+      - lint-markdown
       - lint-python
       - version-check
       - build-image
@@ -433,6 +470,7 @@ jobs:
             "${{ needs.lint-dockerfile.result }}" \
             "${{ needs.lint-shell.result }}" \
             "${{ needs.lint-unicode.result }}" \
+            "${{ needs.lint-markdown.result }}" \
             "${{ needs.lint-python.result }}" \
             "${{ needs.version-check.result }}" \
             "${{ needs.build-image.result }}"; do
