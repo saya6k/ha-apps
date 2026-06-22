@@ -9,7 +9,6 @@ url: https://github.com/Anyesh/wardrowbe
 arch:
   - aarch64
   - amd64
-apparmor: true
 init: false
 startup: services
 map:
