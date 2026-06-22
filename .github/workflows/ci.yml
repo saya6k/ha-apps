@@ -274,7 +274,9 @@ jobs:
       - uses: DavidAnson/markdownlint-cli2-action@v19
         if: steps.mdfiles.outputs.found == 'true'
         with:
-          globs: "${{ matrix.addon }}/**/*.md"
+          globs: |
+            ${{ matrix.addon }}/**/*.md
+            !${{ matrix.addon }}/CHANGELOG.md
           config: .markdownlint.yaml
 
   # ---------------------------------------------------------------------
