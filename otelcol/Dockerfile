@@ -28,6 +28,7 @@ RUN apk add --no-cache python3 py3-pip \
     && python3 -m venv /opt/bridge-venv \
     && /opt/bridge-venv/bin/pip install --no-cache-dir \
         aiohttp \
+        aiodns \
         opentelemetry-sdk \
         opentelemetry-exporter-otlp-proto-http
 
