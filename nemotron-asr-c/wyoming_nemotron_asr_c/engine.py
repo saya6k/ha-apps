@@ -19,11 +19,9 @@ import logging
 import os
 import re
 from ctypes import CFUNCTYPE, POINTER, c_char_p, c_float, c_int, c_int32, c_size_t, c_void_p
-from typing import Optional
-
 import numpy as np
 
-from .const import SAMPLE_RATE, CHUNK_CHOICES, DEFAULT_CHUNK_SIZE, resolve_lang
+from .const import SAMPLE_RATE, resolve_lang
 
 _LOGGER = logging.getLogger(__name__)
 

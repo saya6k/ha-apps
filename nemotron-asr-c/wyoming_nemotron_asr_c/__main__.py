@@ -7,7 +7,6 @@ import asyncio
 import logging
 import os
 import signal
-import sys
 from functools import partial
 
 from wyoming.info import AsrModel, AsrProgram, Attribution, Info
