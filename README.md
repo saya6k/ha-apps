@@ -18,8 +18,10 @@ and release cycle.
 
 | Directory | Add-on |
 | --- | --- |
+| [`livekit-wakeword/`](livekit-wakeword/) | Wyoming wake-word service. Runs the openWakeWord zoo plus custom `/share` models via an incremental bridge (~80 ms cadence). |
 | [`nemotron-asr-c/`](nemotron-asr-c/) | Buffered Wyoming STT running NVIDIA Nemotron ASR on a pure C runtime ([`kdrkdrkdr/nemotron-asr-streaming.c`](https://github.com/kdrkdrkdr/nemotron-asr-streaming.c)), with hotword boosting. |
 | [`nemo-asr-cpp/`](nemo-asr-cpp/) | Streaming Wyoming STT running NVIDIA Nemotron ASR on the ggml runtime via [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp), with hotword boosting. |
+| [`otelcol/`](otelcol/) | OpenTelemetry Collector Contrib packaged as a HA add-on. Collects logs, metrics, and traces from HA Core, the Supervisor, and add-on containers; exports via OTLP. *(experimental)* |
 | [`supertonic/`](supertonic/) | Lightweight multilingual Wyoming TTS service running the [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) engine. |
 | [`voiceprint/`](voiceprint/) | Speaker-verifying Wyoming STT proxy — a pass-through gate that only forwards utterances from enrolled voices to a downstream ASR. |
 | [`wardrowbe/`](wardrowbe/) | Self-hosted AI-powered wardrobe management. Packages [`Anyesh/wardrowbe`](https://github.com/Anyesh/wardrowbe) (Postgres, Redis, FastAPI, arq, Next.js, nginx) in a single container. |

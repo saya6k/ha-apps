@@ -63,7 +63,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 <type>(<scope>): <subject>
 ```
 
-**Scopes:** `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
+**Scopes:** `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `otelcol` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
 
 **Types:** `feat` (minor) · `fix`/`perf`/`revert` (patch) · `docs`/`refactor`/`build`/`ci` (patch, in CHANGELOG) · `chore`/`test`/`style` (no release) · `type!` / `BREAKING CHANGE:` footer (major)
 
