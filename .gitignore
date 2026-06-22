@@ -80,6 +80,8 @@ super-linter-output/
 !/wardrowbe/
 !/zensical/
 !/otelcol/
+# SPEC.md is a local pre-implementation design doc — not shipped, not tracked.
+**/SPEC.md
 # voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
 # hosted as a pinned release asset — never commit a local dev copy. (Listed
 # after the re-include above so this narrower exclusion wins.)

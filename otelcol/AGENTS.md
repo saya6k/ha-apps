@@ -35,7 +35,6 @@ rootfs/etc/s6-overlay/s6-rc.d/otelcol/       s6 service (type/run/finish)
 rootfs/etc/otelcol-contrib/                   bundled self-monitoring config
 translations/{en,ko}.yaml                     option UI strings
 CHANGELOG.md / DOCS.md / README.md           user-facing docs
-SPEC.md                                       full design spec (pre-implementation)
 ```
 
 ## Architecture
@@ -56,7 +55,7 @@ from structured HA options; power users can paste raw otelcol YAML via
 
 ## Implementation phases
 
-See `SPEC.md` §6 for the full plan:
+(Design spec lives in `SPEC.md` locally — gitignored.)
 
 1. **Skeleton** (this scaffold) — builds, starts, health-checks
 2. **Config generation** — `run` script generates otelcol YAML from structured options
@@ -123,5 +122,4 @@ per month) — we do NOT track `@latest`.
 | `DOCS.md`          | User-facing options + setup guide. HA renders as "Documentation". | ≤ ~200 lines |
 | `AGENTS.md`        | This file — agent/dev guidance. | ~100 lines |
 | `CHANGELOG.md`     | Per-version headline. | 5–15 / ver |
-| `SPEC.md`          | Full design spec (pre-implementation reference). | — |
 | `.agents/`         | *Why* / decision logs. Gitignored. | free-form |
