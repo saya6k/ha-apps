@@ -14,6 +14,8 @@ init: false
 startup: services
 auth_api: true
 homeassistant_api: true
+hassio_api: true
+hassio_role: manager
 ingress: true
 ingress_port: 55679
 panel_icon: mdi:chart-line

@@ -44,6 +44,11 @@ HA_REST_URL = "http://supervisor/core/api"
 HA_METRICS_ENABLED = os.environ.get("HA_METRICS_ENABLED", "true").lower() == "true"
 HA_EVENTS_ENABLED = os.environ.get("HA_EVENTS_ENABLED", "true").lower() == "true"
 HA_TRACES_ENABLED = os.environ.get("HA_TRACES_ENABLED", "true").lower() == "true"
+CONTAINER_LOGS_ENABLED = os.environ.get("CONTAINER_LOGS_ENABLED", "false").lower() == "true"
+
+SUPERVISOR_BASE_URL = "http://supervisor"
+STATS_INTERVAL = 30       # seconds between stats polls
+LOG_RECONNECT_DELAY = 5   # seconds before reconnecting a dropped log stream
 
 # Reconnect backoff: start at 2 s, cap at 60 s
 RECONNECT_BASE = 2
@@ -91,6 +96,11 @@ _ha_log = logging.getLogger("ha-events")
 _ha_log.addHandler(_otel_log_handler)
 _ha_log.propagate = False
 
+# OTLP logger for container log streams (Task E)
+_container_log = logging.getLogger("ha-containers")
+_container_log.addHandler(_otel_log_handler)
+_container_log.propagate = False
+
 # ── Gauge cache (D2) ──────────────────────────────────────────────────────────
 # entity_id → (ObservableGauge, last_value); we use callback-style gauges.
 _gauge_values: dict[str, float] = {}
@@ -119,6 +129,35 @@ def _upsert_gauge(entity_id: str, value: float, attrs: dict[str, str]) -> None:
             unit=attrs.get("unit_of_measurement", "1"),
         )
 
+
+# ── Container stats gauges (E) ────────────────────────────────────────────────
+# Keyed by slug (add-on slug, "supervisor", or "core"); updated by ContainerMonitor.
+_container_cpu: dict[str, float] = {}
+_container_mem: dict[str, float] = {}
+
+
+def _container_cpu_callback(options: Any):
+    for slug, value in _container_cpu.items():
+        yield metrics.observation.Observation(value, {"addon.slug": slug})
+
+
+def _container_mem_callback(options: Any):
+    for slug, value in _container_mem.items():
+        yield metrics.observation.Observation(value, {"addon.slug": slug})
+
+
+_meter.create_observable_gauge(
+    name="supervisor.addon.cpu_percent",
+    callbacks=[_container_cpu_callback],
+    unit="%",
+    description="CPU usage percent per add-on/service",
+)
+_meter.create_observable_gauge(
+    name="supervisor.addon.memory_percent",
+    callbacks=[_container_mem_callback],
+    unit="%",
+    description="Memory usage percent per add-on/service",
+)
 
 # ── Context graph (D4) ────────────────────────────────────────────────────────
 # Maps context_id → {"trace_id": int, "spans": [SpanData], "expires": float}
@@ -316,6 +355,136 @@ def _emit_span(
         processor.on_end(span)
 
 
+# ── Container monitor (E) ─────────────────────────────────────────────────────
+
+class ContainerMonitor:
+    """Polls Supervisor API for add-on/supervisor logs and resource stats."""
+
+    def __init__(self) -> None:
+        self._log_tasks: dict[str, asyncio.Task] = {}
+        self._stat_tasks: dict[str, asyncio.Task] = {}
+
+    async def run(self, session: aiohttp.ClientSession) -> None:
+        """Enumerate services every 5 min; start log/stats tasks for each."""
+        headers = {"Authorization": f"Bearer {SUPERVISOR_TOKEN}"}
+        while True:
+            try:
+                services = await self._enumerate_services(session, headers)
+                for slug, name, log_url, stats_url in services:
+                    if slug not in self._log_tasks or self._log_tasks[slug].done():
+                        self._log_tasks[slug] = asyncio.create_task(
+                            self._follow_logs(session, headers, slug, name, log_url)
+                        )
+                    if slug not in self._stat_tasks or self._stat_tasks[slug].done():
+                        self._stat_tasks[slug] = asyncio.create_task(
+                            self._poll_stats(session, headers, slug, stats_url)
+                        )
+            except Exception as exc:
+                log.warning("ContainerMonitor error: %s", exc)
+            await asyncio.sleep(300)
+
+    async def _enumerate_services(
+        self,
+        session: aiohttp.ClientSession,
+        headers: dict,
+    ) -> list[tuple[str, str, str, str]]:
+        """Return (slug, name, log_url, stats_url) for supervisor, core, and all add-ons."""
+        services: list[tuple[str, str, str, str]] = [
+            ("supervisor", "Supervisor",
+             f"{SUPERVISOR_BASE_URL}/supervisor/logs",
+             f"{SUPERVISOR_BASE_URL}/supervisor/stats"),
+            ("core", "Home Assistant Core",
+             f"{SUPERVISOR_BASE_URL}/core/logs",
+             f"{SUPERVISOR_BASE_URL}/core/stats"),
+        ]
+        try:
+            async with session.get(
+                f"{SUPERVISOR_BASE_URL}/addons", headers=headers,
+                timeout=aiohttp.ClientTimeout(total=10),
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    for addon in data.get("data", {}).get("addons", []):
+                        slug = addon.get("slug", "")
+                        name = addon.get("name", slug)
+                        if slug:
+                            services.append((
+                                slug, name,
+                                f"{SUPERVISOR_BASE_URL}/addons/{slug}/logs",
+                                f"{SUPERVISOR_BASE_URL}/addons/{slug}/stats",
+                            ))
+                else:
+                    log.warning("GET /addons returned HTTP %d", resp.status)
+        except Exception as exc:
+            log.warning("Failed to enumerate add-ons: %s", exc)
+        return services
+
+    async def _follow_logs(
+        self,
+        session: aiohttp.ClientSession,
+        headers: dict,
+        slug: str,
+        name: str,
+        url: str,
+    ) -> None:
+        """Stream plain-text log lines from a Supervisor API log endpoint."""
+        extra = {"addon.slug": slug, "addon.name": name}
+        while True:
+            try:
+                async with session.get(
+                    url,
+                    headers={**headers, "Accept": "text/plain"},
+                    timeout=aiohttp.ClientTimeout(total=None, connect=10),
+                ) as resp:
+                    if resp.status == 404:
+                        log.debug("No log endpoint for %s (404) — skipping", slug)
+                        return
+                    if resp.status != 200:
+                        log.warning("Log stream %s: HTTP %d", slug, resp.status)
+                        await asyncio.sleep(LOG_RECONNECT_DELAY)
+                        continue
+                    async for raw_line in resp.content:
+                        line = raw_line.decode(errors="replace").rstrip()
+                        if line:
+                            _container_log.info(line, extra=extra)
+            except asyncio.CancelledError:
+                return
+            except Exception as exc:
+                log.debug("Log stream %s interrupted: %s", slug, exc)
+            await asyncio.sleep(LOG_RECONNECT_DELAY)
+
+    async def _poll_stats(
+        self,
+        session: aiohttp.ClientSession,
+        headers: dict,
+        slug: str,
+        url: str,
+    ) -> None:
+        """Poll stats endpoint and update the shared gauge dicts."""
+        while True:
+            try:
+                async with session.get(
+                    url, headers=headers,
+                    timeout=aiohttp.ClientTimeout(total=10),
+                ) as resp:
+                    if resp.status == 200:
+                        data = (await resp.json()).get("data", {})
+                        _container_cpu[slug] = float(data.get("cpu_percent", 0.0))
+                        _container_mem[slug] = float(data.get("memory_percent", 0.0))
+                    elif resp.status == 404:
+                        log.debug("No stats endpoint for %s (404) — skipping", slug)
+                        return
+                    else:
+                        log.debug("Stats %s: HTTP %d", slug, resp.status)
+            except asyncio.CancelledError:
+                return
+            except Exception as exc:
+                log.debug("Stats poll %s error: %s", slug, exc)
+            await asyncio.sleep(STATS_INTERVAL)
+
+
+_container_monitor = ContainerMonitor()
+
 # Trace-eligible event types
 _TRACE_EVENTS = {
     "call_service",
@@ -410,6 +579,10 @@ async def run() -> None:
     connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
 
     async with aiohttp.ClientSession(connector=connector) as session:
+        if CONTAINER_LOGS_ENABLED:
+            log.info("Container monitoring enabled — starting Supervisor API monitor")
+            asyncio.create_task(_container_monitor.run(session))
+
         while True:
             try:
                 log.info("Connecting to HA WebSocket: %s", HA_WS_URL)
