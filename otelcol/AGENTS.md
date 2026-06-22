@@ -21,15 +21,11 @@ the full design.
 
 ## Git / repo tracking
 
-Part of the `ha-apps` monorepo — one git repo at the root, no per-app
-`.git` checkouts. Tracking is **stage-gated** by the root `.gitignore`:
-only `stage: stable` add-ons are committed; experimental ones are
-gitignored and stay local-only. Promote one by setting `stage: stable`
-in `config.yaml`, deleting its line from the root `.gitignore`, then
-`git add` it.
+Part of the `ha-apps` monorepo. Registered in `.gitignore` (`!/otelcol/`),
+release-please config, CI, labeler, and issue templates — fully tracked.
 
-**This add-on:** not tracked (`stage: experimental` — `config.yaml`
-carries `stage: experimental`; listed in root `.gitignore`).
+**Stage:** `stage: experimental` in `config.yaml` (shows as experimental
+in the HA store). To promote: remove the `stage:` key from `config.yaml`.
 
 ## Layout
 
