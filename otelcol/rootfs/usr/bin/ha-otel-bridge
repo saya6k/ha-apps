@@ -112,6 +112,22 @@ _container_log.propagate = False
 _gauge_values: dict[str, float] = {}
 _registered_gauges: set[str] = set()
 
+# OTel requires unit to be ASCII, max 63 chars. Map common HA non-ASCII units
+# to their UCUM equivalents; fall back to stripping non-ASCII.
+_UNIT_MAP = {
+    "°C": "Cel",
+    "°F": "[degF]",
+    "µg/m³": "ug/m3",
+    "µW/cm²": "uW/cm2",
+}
+
+
+def _sanitize_unit(unit: str) -> str:
+    if unit in _UNIT_MAP:
+        return _UNIT_MAP[unit]
+    sanitized = unit.encode("ascii", errors="ignore").decode()[:63]
+    return sanitized or "1"
+
 
 def _make_gauge_callback(entity_id: str):
     def callback(options):
@@ -132,7 +148,7 @@ def _upsert_gauge(entity_id: str, value: float, attrs: dict[str, str]) -> None:
             name=f"ha.state.{entity_id.replace('.', '_')}",
             callbacks=[_make_gauge_callback(entity_id)],
             description=f"State of HA entity {entity_id}",
-            unit=attrs.get("unit_of_measurement", "1"),
+            unit=_sanitize_unit(attrs.get("unit_of_measurement", "1")),
         )
 
 
