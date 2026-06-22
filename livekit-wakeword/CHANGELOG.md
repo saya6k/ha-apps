@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.9.0...livekit-wakeword-v0.9.1) (2026-06-22)
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [0.9.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.8.0...livekit-wakeword-v0.9.0) (2026-06-18)
 
 
