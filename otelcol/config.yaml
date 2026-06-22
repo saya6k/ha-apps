@@ -18,7 +18,7 @@ hassio_api: true
 hassio_role: manager
 ingress: true
 ingress_port: 55679
-ingress_entry: /debug/pipelinez
+ingress_entry: debug/pipelinez
 panel_icon: mdi:chart-line
 map:
   - type: homeassistant_config
