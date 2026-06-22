@@ -1,4 +1,4 @@
-version: 0.1.0
+version: 0.2.0
 slug: otelcol
 name: OpenTelemetry Collector
 description: >-
@@ -38,7 +38,7 @@ ports_description:
   4318/tcp: OTLP/HTTP receiver (for add-ons sending traces)
 options:
   log_level: info
-  otlp_endpoint: ""
+  otlp_endpoint: ''
   otlp_protocol: grpc
   otlp_headers: []
   otlp_tls_insecure: false
@@ -48,7 +48,7 @@ options:
   ha_traces_enabled: true
   container_logs_enabled: false
   host_metrics_enabled: false
-  raw_config: ""
+  raw_config: ''
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)
   otlp_endpoint: str?
