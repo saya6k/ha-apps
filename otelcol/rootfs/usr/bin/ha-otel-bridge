@@ -21,6 +21,7 @@ from typing import Any
 
 import aiohttp
 from opentelemetry import metrics, trace
+from opentelemetry.metrics import Observation
 from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -110,7 +111,7 @@ _registered_gauges: set[str] = set()
 def _make_gauge_callback(entity_id: str):
     def callback(options):
         if entity_id in _gauge_values:
-            yield metrics.observation.Observation(
+            yield Observation(
                 _gauge_values[entity_id],
                 {"entity_id": entity_id},
             )
@@ -138,12 +139,12 @@ _container_mem: dict[str, float] = {}
 
 def _container_cpu_callback(options: Any):
     for slug, value in _container_cpu.items():
-        yield metrics.observation.Observation(value, {"addon.slug": slug})
+        yield Observation(value, {"addon.slug": slug})
 
 
 def _container_mem_callback(options: Any):
     for slug, value in _container_mem.items():
-        yield metrics.observation.Observation(value, {"addon.slug": slug})
+        yield Observation(value, {"addon.slug": slug})
 
 
 _meter.create_observable_gauge(
