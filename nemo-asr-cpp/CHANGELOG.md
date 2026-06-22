@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.10.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.10.0...nemo-asr-cpp-v0.10.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* **nemo-asr-cpp:** suppress F821 on lazy wyoming import pattern ([e1ac0ce](https://github.com/saya6k/ha-apps/commit/e1ac0cea0d2d8a5857fc1161643a14de1dc1fb15))
+
+
+### Documentation
+
+* **nemo-asr-cpp:** reorder README shields — Show add-on below for-the-badge badges ([2e7d7fb](https://github.com/saya6k/ha-apps/commit/2e7d7fb66538c94e42814a6435a20ea0c09de534))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [0.10.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.9.0...nemo-asr-cpp-v0.10.0) (2026-06-18)
 
 
