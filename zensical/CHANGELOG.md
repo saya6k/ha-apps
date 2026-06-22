@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.2.2...zensical-v0.2.3) (2026-06-22)
+
+
+### Documentation
+
+* **zensical:** reorder README shields — Show add-on below for-the-badge badges ([c8961d9](https://github.com/saya6k/ha-apps/commit/c8961d92aff8d56f2ecbc4d2ed8fc1cfde2b4c98))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [0.2.2](https://github.com/saya6k/ha-apps/compare/zensical-v0.2.1...zensical-v0.2.2) (2026-06-18)
 
 
