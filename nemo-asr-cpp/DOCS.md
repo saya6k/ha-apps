@@ -70,7 +70,7 @@ The model is resident (loaded once), so each command is pure compute. Expect
 real-time on a modern x86 host and on a Raspberry Pi 5 at full clock; on a
 low-power N100, ensure the CPU isn't clock-throttled. Each transcription logs:
 
-```
+```text
 Transcript (0.7s for 3.0s audio, RTF=0.23) [lang=ko]: '...'
 ```
 

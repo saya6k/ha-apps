@@ -80,8 +80,14 @@ super-linter-output/
 !/wardrowbe/
 !/zensical/
 !/otelcol/
-# SPEC.md is a local pre-implementation design doc — not shipped, not tracked.
+# Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
+**/specs/
+**/tasks/
+# AI-system-specific facades — AGENTS.md is the canonical AI doc; the
+# per-system symlinks (CLAUDE.md, GEMINI.md) are created locally as needed.
+CLAUDE.md
+GEMINI.md
 # voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
 # hosted as a pinned release asset — never commit a local dev copy. (Listed
 # after the re-include above so this narrower exclusion wins.)

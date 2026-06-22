@@ -28,7 +28,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) with the
 add-on slug as the scope. **release-please reads this** — a wrong scope means
 your change ends up in the wrong CHANGELOG or no CHANGELOG at all.
 
-```
+```text
 <type>(<scope>): <subject>
 ```
 
@@ -57,7 +57,7 @@ spans add-ons, split the PR.
 
 ### Examples
 
-```
+```text
 feat(supertonic): add Korean voice F5
 fix(nemotron-asr-c): handle empty transcript on short audio clips
 docs(zensical): document use_directory_urls=false constraint

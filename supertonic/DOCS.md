@@ -48,7 +48,7 @@ a specific reason to override.
 
 The boot log prints per-core CPU diagnostics:
 
-```
+```text
 CPU diagnostics (cur / scaling_max / cpuinfo_max, governor):
   cpu0: 800 MHz / 800 MHz / 3400 MHz, governor=powersave
 ```
