@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.2](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.9.1...voiceprint-v0.9.2) (2026-06-22)
+
+
+### Bug Fixes
+
+* **voiceprint:** fix ruff E741/F841 in __main__.py ([72ad539](https://github.com/saya6k/ha-apps/commit/72ad539e975ed18a0f6382dcbbb4a0f50fe4a872))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [0.9.1](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.9.0...voiceprint-v0.9.1) (2026-06-18)
 
 
