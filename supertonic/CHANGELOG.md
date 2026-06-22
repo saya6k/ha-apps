@@ -1,5 +1,36 @@
 # Changelog
 
+## [2.5.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.4.1...supertonic-v2.5.0) (2026-06-22)
+
+
+### Features
+
+* **supertonic:** NeMo WFST TN — ordinal/currency/date/time/unit support ([57a45cb](https://github.com/saya6k/ha-apps/commit/57a45cb3d999e6ee4cd028e59ec0b041b5634095))
+
+
+### Bug Fixes
+
+* **supertonic:** add Cython build dep for pynini source build on aarch64 ([a07fc48](https://github.com/saya6k/ha-apps/commit/a07fc48c1ae4f5f8b17378dc3fa67e39a6506dbb))
+* **supertonic:** install setuptools before pynini source build on aarch64 ([86cef16](https://github.com/saya6k/ha-apps/commit/86cef163d6bf97344346cf3326e1d0804a082acc))
+* **supertonic:** restrict pynini+NeMo-TN to amd64; aarch64 uses rbnf fallback ([2225a5b](https://github.com/saya6k/ha-apps/commit/2225a5b81dbbaddabfc38bd6082c8b365534d466))
+* **supertonic:** suppress ruff F821/E402 on intentional import patterns ([2ee10e1](https://github.com/saya6k/ha-apps/commit/2ee10e1fde6c26563cac1f87cc749e33f7bf7ce7))
+* **supertonic:** upgrade pynini to 2.1.7 for aarch64 source build compatibility ([fdfcfa6](https://github.com/saya6k/ha-apps/commit/fdfcfa666b623a7261ca49877c2dea0bd639f312))
+
+
+### Documentation
+
+* **supertonic:** reorder README shields — Show add-on below for-the-badge badges ([231a0a3](https://github.com/saya6k/ha-apps/commit/231a0a3cd025ef9671af6d76f8e07541ec4bf3b5))
+
+
+### Build System
+
+* **supertonic:** strip .so debug symbols in builder stage ([#358](https://github.com/saya6k/ha-apps/issues/358)) ([aa479c7](https://github.com/saya6k/ha-apps/commit/aa479c70ea9b76e0997244c0b25fdcca1bbc7b45))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [2.4.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.4.0...supertonic-v2.4.1) (2026-06-19)
 
 
