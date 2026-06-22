@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.8.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.7.1...nemotron-asr-c-v0.8.0) (2026-06-22)
+
+
+### Features
+
+* **nemotron-asr-c:** optional FastEnhancer speech-enhancement pre-filter ([#353](https://github.com/saya6k/ha-apps/issues/353)) ([a05caa3](https://github.com/saya6k/ha-apps/commit/a05caa3d2bb48e4e98572bd506298aa2537824d7))
+
+
+### Bug Fixes
+
+* **nemotron-asr-c:** remove unused imports flagged by ruff ([9a96d93](https://github.com/saya6k/ha-apps/commit/9a96d9380d5888f336f33e17ddd39923be566822))
+
+
+### Documentation
+
+* **nemotron-asr-c:** correct FastEnhancer license note post-merge ([#354](https://github.com/saya6k/ha-apps/issues/354)) ([eae8e59](https://github.com/saya6k/ha-apps/commit/eae8e598034171dcd93d34a6d9e0316db2fcaca4))
+
+
+### Build System
+
+* **nemotron-asr-c:** install CPU-only torch, drop CUDA bloat ([#356](https://github.com/saya6k/ha-apps/issues/356)) ([54c0953](https://github.com/saya6k/ha-apps/commit/54c09533d23bd9a2023d5b3a5895a7243072c7f3))
+
+
+### CI
+
+* **repo:** tighten markdownlint scope and disable style-only rules ([9fe6f97](https://github.com/saya6k/ha-apps/commit/9fe6f97b9fee3e1c010f2ee534b36ea8de2a74fe))
+
 ## [0.7.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.7.0...nemotron-asr-c-v0.7.1) (2026-06-19)
 
 
