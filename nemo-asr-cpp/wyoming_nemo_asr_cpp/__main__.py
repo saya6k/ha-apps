@@ -63,7 +63,7 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _build_info(model_label: str, spec: ModelSpec) -> "Info":
+def _build_info(model_label: str, spec: ModelSpec) -> "Info":  # noqa: F821
     from wyoming.info import AsrModel, AsrProgram, Attribution, Info
 
     attr = Attribution(
