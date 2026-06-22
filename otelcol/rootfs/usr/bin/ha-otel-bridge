@@ -576,7 +576,10 @@ async def run() -> None:
         raise SystemExit(1)
 
     backoff = RECONNECT_BASE
-    connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+    try:
+        connector = aiohttp.TCPConnector(resolver=aiohttp.AsyncResolver())
+    except RuntimeError:
+        connector = aiohttp.TCPConnector()
 
     async with aiohttp.ClientSession(connector=connector) as session:
         if CONTAINER_LOGS_ENABLED:
