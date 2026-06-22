@@ -3,15 +3,11 @@
 ARG BUILD_FROM=ghcr.io/home-assistant/base:3.21
 ARG BUILD_ARCH=amd64
 
-# ── Stage 1: extract otelcol-contrib binary per architecture ──────────
-# Upstream publishes single-arch tags: <ver>-amd64 / <ver>-arm64.
-# We pull both into a scratch stage, then COPY the right one at the end.
-FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.154.0-amd64 AS otelcol-amd64
-FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.154.0-arm64 AS otelcol-aarch64
-
-FROM scratch AS container
-COPY --from=otelcol-amd64 /otelcol-contrib /amd64/otelcol-contrib
-COPY --from=otelcol-aarch64 /otelcol-contrib /aarch64/otelcol-contrib
+# ── Stage 1: otelcol-contrib binary ───────────────────────────────────────────
+# The plain (un-suffixed) tag is a multi-arch manifest — BuildKit resolves
+# amd64 / arm64 automatically from the build platform, same pattern used by
+# other add-ons in this repo.
+FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.154.0 AS otelcol-binary
 
 # ── Final stage ───────────────────────────────────────────────────────
 FROM ${BUILD_FROM}
@@ -38,7 +34,7 @@ RUN apk add --no-cache python3 py3-pip \
 ENV PATH="/opt/bridge-venv/bin:${PATH}"
 
 # Copy the otelcol-contrib binary for the target architecture
-COPY --from=container /${BUILD_ARCH}/otelcol-contrib /usr/bin/otelcol-contrib
+COPY --from=otelcol-binary /otelcol-contrib /usr/bin/otelcol-contrib
 
 # Copy the root filesystem (s6 services, bundled config)
 COPY rootfs /
