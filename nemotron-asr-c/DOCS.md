@@ -34,6 +34,13 @@ Streaming encoder lookahead. Larger = more accurate, slightly more compute.
 
 Optional HuggingFace access token for gated/private model repos.
 
+### `speech_enhancement` (bool)
+
+Run a lightweight [FastEnhancer](https://github.com/kdrkdrkdr/fastenhancer.c.wasm)
+denoise filter on incoming 16 kHz audio before transcription. Can improve
+accuracy in noisy rooms, but may slightly degrade already-clean audio. Default:
+`false`.
+
 ### `debug_logging`
 
 Enable verbose logging for troubleshooting.

@@ -26,6 +26,44 @@ the common baseline and defers to it for per-app extras.
    (port + grep term are in the app's `AGENTS.md`).
 5. Repo-wide invariants to spot-check: LF line endings (no CRLF), no
    `version.txt`, `config.yaml` only at the subproject root.
+6. **Devcontainer runtime check** (only when HA devcontainer is up):
+   Detect the running devcontainer:
+   ```bash
+   CNAME=$(docker ps --filter "ancestor=ghcr.io/home-assistant/devcontainer:2-addons" --format '{{.Names}}' | head -n1)
+   ```
+   If `$CNAME` is empty, skip and report `SKIPPED (devcontainer not running)`.
+
+   **If HA is not yet booted** (HA not responding at `http://localhost:7123`), boot it:
+   ```bash
+   # 1. Bind-mount each app dir into apps/local before starting Supervisor
+   docker exec "$CNAME" bash -lc '
+     REPO=/mnt/supervisor/addons/local/ha-apps
+     APPS=/mnt/supervisor/apps/local
+     sudo mkdir -p "$APPS"
+     for d in "$REPO"/*/; do
+       app=$(basename "$d")
+       [ -f "${d}config.yaml" ] || continue
+       mountpoint -q "$APPS/$app" && continue
+       sudo mkdir -p "$APPS/$app"
+       sudo mount --bind "$d" "$APPS/$app"
+     done'
+   # 2. Start Supervisor (must use -dt — supervisor_run needs a TTY)
+   docker exec -dt "$CNAME" bash -lc \
+     'sudo mkdir -p /run/supervisor && sudo -E supervisor_run > /tmp/supervisor_run.log 2>&1'
+   # 3. Wait for HA
+   until curl -sf -o /dev/null http://localhost:7123; do echo -n "."; sleep 5; done
+   ```
+   Gotcha: **never pre-start dockerd** inside the container — supervisor_run
+   launches its own docker-in-docker; a second daemon fights over the socket.
+
+   **Once HA is up**, verify the add-on under test:
+   - HA health: `curl -sf http://localhost:7123` → HTTP 200 `OK`
+   - Add-on container running:
+     `docker exec "$CNAME" docker ps --format '{{.Names}}' | grep -q <slug>` → found `OK`
+   - App-specific health check from the app's `AGENTS.md` (e.g. otelcol:
+     `docker exec "$CNAME" docker exec <container> curl -sf http://localhost:13133/`)
+   - Supervisor log for errors:
+     `docker exec "$CNAME" tail -20 /tmp/supervisor_run.log`
 
 ## IMPORTANT
 - Report pass/fail per check with the actual output; do not claim a check passed

@@ -1,0 +1,21 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start the HA→OTLP bridge.
+# Waits for otelcol to be healthy so the OTLP receiver is ready.
+# ==============================================================================
+
+bashio::log.info 'Waiting for otelcol health check...'
+until wget -qO- http://localhost:13133/ >/dev/null 2>&1; do sleep 2; done
+
+export HA_METRICS_ENABLED
+export HA_EVENTS_ENABLED
+export HA_TRACES_ENABLED
+export CONTAINER_LOGS_ENABLED
+HA_METRICS_ENABLED=$(bashio::config 'ha_metrics_enabled')
+HA_EVENTS_ENABLED=$(bashio::config 'ha_events_enabled')
+HA_TRACES_ENABLED=$(bashio::config 'ha_traces_enabled')
+CONTAINER_LOGS_ENABLED=$(bashio::config 'container_logs_enabled')
+
+bashio::log.info 'Starting HA→OTLP bridge...'
+exec /usr/bin/ha-otel-bridge

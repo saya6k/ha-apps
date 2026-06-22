@@ -87,7 +87,7 @@ To use OIDC, expose the addon via a reverse proxy on its own domain:
 
 Then register this redirect URI with your OIDC provider:
 
-```
+```text
 https://wardrowbe.your-domain.tld/api/auth/callback/oidc
 ```
 
@@ -181,7 +181,7 @@ README for install and configuration.
 
 **Startup log shows healthy boot sequence:**
 
-```
+```text
 [backend]  ensuring database and role exist …
 [backend]  running database migrations …
 [backend]  starting uvicorn on port 8000 …

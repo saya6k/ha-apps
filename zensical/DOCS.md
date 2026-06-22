@@ -13,7 +13,7 @@ as a [Zensical][zensical] site, served through the Home Assistant
 
 ## Source layout
 
-```
+```text
 /config/docs/
 ├── index.md      ← landing page
 ├── any.md        ← becomes a page in the sidebar
@@ -54,7 +54,7 @@ those won't trigger a rebuild.
 The remaining customisation is done through files inside the add-on's
 own config directory, which the Supervisor exposes at:
 
-```
+```text
 /addon_configs/<repo-prefix>_zensical/
 ```
 

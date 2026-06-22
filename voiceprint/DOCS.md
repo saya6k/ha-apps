@@ -2,7 +2,7 @@
 
 ## How it works
 
-```
+```text
 HA Assist ──► Voiceprint (this add-on, :10350) ──► your STT (:10300)
 ```
 
@@ -26,7 +26,7 @@ transcript is replaced with an empty one — Home Assistant treats it as
 Create one folder per speaker under `/share/voiceprint/` and put WAV
 recordings of that person inside:
 
-```
+```text
 /share/voiceprint/
   john/
     clip-01.wav

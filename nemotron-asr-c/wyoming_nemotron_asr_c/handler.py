@@ -22,6 +22,7 @@ from wyoming.server import AsyncEventHandler
 
 if TYPE_CHECKING:
     from .engine import NemoCEngine, NemoCStream
+    from .enhancer import FastEnhancer
     from argparse import Namespace
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,6 +44,7 @@ class NemoCHandler(AsyncEventHandler):
         wyoming_info: Info,
         cli_args: Namespace,
         engine: NemoCEngine,
+        enhancer: FastEnhancer | None = None,
         *args,
         **kwargs,
     ) -> None:
@@ -50,6 +52,7 @@ class NemoCHandler(AsyncEventHandler):
         self.wyoming_info_event = wyoming_info.event()
         self._args = cli_args
         self._engine = engine
+        self._enhancer = enhancer
         self._language: str | None = cli_args.language
         self._stream: NemoCStream | None = None
         self._last_partial: str = ""
@@ -83,6 +86,8 @@ class NemoCHandler(AsyncEventHandler):
                 _LOGGER.info("Utterance start")
                 self._close_stream()
                 self._stream = self._engine.create_stream(self._language)
+                if self._enhancer is not None:
+                    self._enhancer.reset()
                 self._last_partial = ""
                 self._t0 = time.monotonic()
                 self._n_samples = 0
@@ -98,7 +103,14 @@ class NemoCHandler(AsyncEventHandler):
                 samples = _pcm16_to_float32(chunk.audio)
                 loop = asyncio.get_running_loop()
                 async with _ASR_LOCK:
-                    await loop.run_in_executor(None, self._stream.accept_audio, samples)
+                    if self._enhancer is not None:
+                        samples = await loop.run_in_executor(
+                            None, self._enhancer.process, samples
+                        )
+                    if samples.size:
+                        await loop.run_in_executor(
+                            None, self._stream.accept_audio, samples
+                        )
                     partial = self._stream.text()
                 if partial and partial != self._last_partial:
                     # TranscriptChunk.text is a delta — emit only the new tail.
@@ -143,6 +155,12 @@ class NemoCHandler(AsyncEventHandler):
         text = ""
         try:
             async with _ASR_LOCK:
+                if self._enhancer is not None:
+                    tail = await loop.run_in_executor(None, self._enhancer.flush)
+                    if tail.size:
+                        await loop.run_in_executor(
+                            None, self._stream.accept_audio, tail
+                        )
                 await loop.run_in_executor(None, self._stream.finalize)
                 text = self._stream.text()
         except Exception:

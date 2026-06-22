@@ -181,6 +181,21 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "otelcol": {
+      "component": "otelcol",
+      "package-name": "otelcol",
+      "changelog-path": "CHANGELOG.md",
+      "exclude-paths": [
+        "otelcol/.agents"
+      ],
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "config.yaml",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }

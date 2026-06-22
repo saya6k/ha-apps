@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       addons: ${{ steps.filter.outputs.changes }}
+      build_addons: ${{ steps.filter_build.outputs.changes }}
     steps:
       - uses: actions/checkout@v6
 
@@ -51,6 +52,43 @@ jobs:
               - 'wardrowbe/**'
             zensical:
               - 'zensical/**'
+            otelcol:
+              - 'otelcol/**'
+
+      # Same per-add-on filters but excluding docs (*.md). With
+      # predicate-quantifier 'every', an add-on counts only when a changed file
+      # matches '<addon>/**' AND is not a markdown file — so docs-only changes
+      # yield an empty list and the heavy image build is skipped. Lint jobs keep
+      # using the docs-inclusive `addons` output above.
+      - id: filter_build
+        uses: dorny/paths-filter@v4
+        with:
+          predicate-quantifier: 'every'
+          filters: |
+            livekit-wakeword:
+              - 'livekit-wakeword/**'
+              - '!livekit-wakeword/**/*.md'
+            nemotron-asr-c:
+              - 'nemotron-asr-c/**'
+              - '!nemotron-asr-c/**/*.md'
+            nemo-asr-cpp:
+              - 'nemo-asr-cpp/**'
+              - '!nemo-asr-cpp/**/*.md'
+            supertonic:
+              - 'supertonic/**'
+              - '!supertonic/**/*.md'
+            voiceprint:
+              - 'voiceprint/**'
+              - '!voiceprint/**/*.md'
+            wardrowbe:
+              - 'wardrowbe/**'
+              - '!wardrowbe/**/*.md'
+            zensical:
+              - 'zensical/**'
+              - '!zensical/**/*.md'
+            otelcol:
+              - 'otelcol/**'
+              - '!otelcol/**/*.md'
 
   # ---------------------------------------------------------------------
   # Official Home Assistant add-on lint — validates config.yaml schema,
@@ -166,6 +204,123 @@ jobs:
             --severity=warning --shell=bash "${FILES[@]}"
 
   # ---------------------------------------------------------------------
+  # Unicode whitespace lint — NBSP, thin space, etc. silently break bashio
+  # config parsing (returns "" instead of the configured value). This is
+  # invisible in editors and produces no parse error, making it very hard
+  # to debug without an explicit CI check.
+  # ---------------------------------------------------------------------
+  lint-unicode:
+    name: Unicode whitespace (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check for Unicode whitespace
+        run: |
+          set -euo pipefail
+          ADDON="${{ matrix.addon }}"
+          FOUND=$(find "$ADDON" -type f \( \
+            -name '*.yaml' -o -name '*.yml' -o \
+            -name '*.py'   -o -name '*.sh'  -o \
+            -name 'run'    -o -name 'finish' \
+          \) -print0 \
+            | xargs -0 --no-run-if-empty grep -Pln \
+              '[\x{a0}\x{2002}-\x{200b}\x{202f}\x{205f}\x{3000}]' \
+              2>/dev/null || true)
+          if [ -n "$FOUND" ]; then
+            echo "::error::Unicode whitespace (e.g. NBSP U+00A0) found in:"
+            echo "$FOUND"
+            echo "Replace with regular ASCII spaces (U+0020)."
+            exit 1
+          fi
+          echo "OK — no Unicode whitespace"
+
+  # ---------------------------------------------------------------------
+  # markdownlint — checks user-facing *.md files (README, DOCS, etc.) in
+  # the changed add-on. AI agent docs (AGENTS.md, CLAUDE.md, .agents/,
+  # specs/) and CHANGELOG.md (release-please generated) are excluded.
+  # ---------------------------------------------------------------------
+  lint-markdown:
+    name: markdownlint (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Find Markdown files
+        id: mdfiles
+        run: |
+          set -euo pipefail
+          COUNT=$(find "${{ matrix.addon }}" -name '*.md' 2>/dev/null | wc -l)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Markdown files in ${{ matrix.addon }}, skipping"
+          else
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "Found ${COUNT} Markdown file(s)"
+          fi
+
+      - uses: DavidAnson/markdownlint-cli2-action@v19
+        if: steps.mdfiles.outputs.found == 'true'
+        with:
+          globs: |
+            ${{ matrix.addon }}/**/*.md
+            !${{ matrix.addon }}/CHANGELOG.md
+            !${{ matrix.addon }}/AGENTS.md
+            !${{ matrix.addon }}/.agents/**
+            !${{ matrix.addon }}/specs/**
+            !${{ matrix.addon }}/tasks/**
+          config: .markdownlint.yaml
+
+  # ---------------------------------------------------------------------
+  # Ruff — Python lint for add-ons that contain Python source. Skips
+  # add-ons without any .py files so pure-shell add-ons pay no cost.
+  # ---------------------------------------------------------------------
+  lint-python:
+    name: ruff (${{ matrix.addon }})
+    needs: changes
+    if: ${{ needs.changes.outputs.addons != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Find Python files
+        id: pyfiles
+        run: |
+          set -euo pipefail
+          COUNT=$(find "${{ matrix.addon }}" -name '*.py' 2>/dev/null | wc -l)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Python files in ${{ matrix.addon }}, skipping ruff"
+          else
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "Found ${COUNT} Python file(s)"
+          fi
+
+      - name: Install ruff
+        if: steps.pyfiles.outputs.found == 'true'
+        run: pip install --quiet ruff
+
+      - name: ruff check
+        if: steps.pyfiles.outputs.found == 'true'
+        run: ruff check "${{ matrix.addon }}"
+
+  # ---------------------------------------------------------------------
   # Version consistency: pyproject.toml and config.yaml must agree on the
   # version string.  Release-please bumps both; __init__.py derives its
   # version from pyproject.toml at runtime.
@@ -225,71 +380,67 @@ jobs:
   # (push: false — no registry publish). HA builds the add-on locally from
   # its Dockerfile, so this only validates the Dockerfile still builds;
   # nothing is published. Independent of release-please (versioning only).
+  #
+  # Each arch gets its own native runner (amd64 → ubuntu-latest,
+  # aarch64 → ubuntu-24.04-arm) so no QEMU emulation is needed.
+  # Jobs for unsupported addon/arch combos exit immediately in the check step.
   # ---------------------------------------------------------------------
   build-image:
-    name: build image (${{ matrix.addon }})
+    name: build image (${{ matrix.addon }}/${{ matrix.config.arch }})
     needs: changes
+    # Uses build_addons (docs-excluded) so docs-only changes skip the build.
     # Skip for release-please PRs (version bump only, no code change).
     # Skip on direct push to main: promotion PRs already validate builds on dev;
     # rebuilding after merge is redundant and wastes 30-40 min per promotion.
     if: >-
-      needs.changes.outputs.addons != '[]' &&
+      needs.changes.outputs.build_addons != '[]' &&
       !startsWith(github.head_ref, 'release-please--') &&
       github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ${{ matrix.config.runner }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
+        addon: ${{ fromJSON(needs.changes.outputs.build_addons) }}
+        config:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
     steps:
       - uses: actions/checkout@v6
 
-      - name: Check Dockerfile exists
-        id: dockerfile
-        run: |
-          if [ -f "${{ matrix.addon }}/Dockerfile" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping build"
-          fi
-
-      - name: Resolve platforms from config.yaml arch
-        id: platforms
-        if: steps.dockerfile.outputs.found == 'true'
+      - name: Check Dockerfile exists and arch is supported
+        id: check
         run: |
           set -euo pipefail
-          declare -A MAP=(
-            [amd64]=linux/amd64 [aarch64]=linux/arm64
-            [armv7]=linux/arm/v7 [armhf]=linux/arm/v6 [i386]=linux/386
-          )
-          platforms=""
-          while read -r arch; do
-            [ -z "$arch" ] && continue
-            p="${MAP[$arch]:-}"
-            if [ -z "$p" ]; then echo "::error::Unsupported arch $arch"; exit 1; fi
-            platforms="${platforms:+$platforms,}$p"
-          done < <(yq '.arch[]' "${{ matrix.addon }}/config.yaml")
-          echo "value=$platforms" >> "$GITHUB_OUTPUT"
-          echo "::notice::Building ${{ matrix.addon }} for $platforms"
+          if [ ! -f "${{ matrix.addon }}/Dockerfile" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping"
+          elif ! yq '.arch[]' "${{ matrix.addon }}/config.yaml" 2>/dev/null \
+               | grep -qx "${{ matrix.config.arch }}"; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::${{ matrix.addon }} does not support ${{ matrix.config.arch }}, skipping"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - uses: docker/setup-qemu-action@v4
-        if: steps.dockerfile.outputs.found == 'true'
       - uses: docker/setup-buildx-action@v4
-        if: steps.dockerfile.outputs.found == 'true'
+        if: steps.check.outputs.skip != 'true'
 
       - uses: docker/build-push-action@v7
-        if: steps.dockerfile.outputs.found == 'true'
+        if: steps.check.outputs.skip != 'true'
         with:
           context: ${{ matrix.addon }}
           file: ${{ matrix.addon }}/Dockerfile
-          platforms: ${{ steps.platforms.outputs.value }}
+          platforms: ${{ matrix.config.platform }}
           push: false
           provenance: false
           sbom: false
-          cache-from: type=gha,scope=${{ matrix.addon }}
-          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}
+          cache-from: type=gha,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
+          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
 
   # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
@@ -299,7 +450,17 @@ jobs:
   ci-ok:
     name: CI passed
     if: always()
-    needs: [changes, lint-addon, lint-yaml, lint-dockerfile, lint-shell, version-check, build-image]
+    needs:
+      - changes
+      - lint-addon
+      - lint-yaml
+      - lint-dockerfile
+      - lint-shell
+      - lint-unicode
+      - lint-markdown
+      - lint-python
+      - version-check
+      - build-image
     runs-on: ubuntu-latest
     steps:
       - name: Verify all lint jobs succeeded (or cleanly skipped)
@@ -314,6 +475,9 @@ jobs:
             "${{ needs.lint-yaml.result }}" \
             "${{ needs.lint-dockerfile.result }}" \
             "${{ needs.lint-shell.result }}" \
+            "${{ needs.lint-unicode.result }}" \
+            "${{ needs.lint-markdown.result }}" \
+            "${{ needs.lint-python.result }}" \
             "${{ needs.version-check.result }}" \
             "${{ needs.build-image.result }}"; do
             case "$result" in

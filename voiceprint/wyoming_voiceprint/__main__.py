@@ -68,7 +68,7 @@ class InfoProvider:
             return None
         info = Info.from_event(event)
         languages = sorted(
-            {l for p in info.asr for m in p.models for l in m.languages}
+            {lang for p in info.asr for m in p.models for lang in m.languages}
         )
         if languages:
             self._cached = languages
@@ -170,7 +170,7 @@ async def run(args: argparse.Namespace) -> None:
 
     info_provider = InfoProvider(args.upstream_uri, sorted(voiceprints))
     # held in this scope (alive for the server's lifetime) so it isn't GC'd
-    check_task = asyncio.create_task(_startup_check(info_provider, args.upstream_uri))
+    check_task = asyncio.create_task(_startup_check(info_provider, args.upstream_uri))  # noqa: F841
 
     server = AsyncServer.from_uri(args.uri)
     _LOGGER.info(

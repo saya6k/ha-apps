@@ -24,6 +24,7 @@ body:
         - voiceprint
         - wardrowbe
         - zensical
+        - otelcol
         - repository tooling (CI / docs / labels)
     validations:
       required: true

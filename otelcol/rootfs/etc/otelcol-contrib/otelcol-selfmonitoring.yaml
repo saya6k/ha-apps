@@ -1,0 +1,34 @@
+# Bundled baseline config — always loaded.
+# User config (raw_config or generated) is layered on top.
+# When both define the same pipeline, otelcol merges them.
+
+receivers:
+  prometheus/internal:
+    config:
+      scrape_configs:
+        - job_name: "otel-collector"
+          scrape_interval: 5s
+          static_configs:
+            - targets: ["localhost:8888"]
+
+processors:
+  batch/internal:
+
+exporters:
+  debug/internal:
+
+extensions:
+  health_check:
+    endpoint: "0.0.0.0:13133"
+  pprof:
+    endpoint: "127.0.0.1:1777"
+  zpages:
+    endpoint: "0.0.0.0:55679"
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    metrics/internal:
+      receivers: [prometheus/internal]
+      processors: [batch/internal]
+      exporters: [debug/internal]

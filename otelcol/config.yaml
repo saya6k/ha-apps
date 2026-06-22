@@ -1,0 +1,66 @@
+version: 0.1.0
+slug: otelcol
+name: OpenTelemetry Collector
+description: >-
+  Collect logs, metrics, and traces from Home Assistant Core, the Supervisor,
+  and every add-on container. Export via OTLP to Grafana LGTM (Loki, Tempo,
+  Mimir) or any OTLP-compatible backend.
+url: https://github.com/saya6k/ha-apps
+stage: experimental
+arch:
+  - amd64
+  - aarch64
+apparmor: false
+init: false
+startup: services
+auth_api: true
+homeassistant_api: true
+hassio_api: true
+hassio_role: manager
+ingress: true
+ingress_port: 55679
+ingress_entry: debug/pipelinez
+panel_icon: mdi:chart-line
+map:
+  - type: homeassistant_config
+    read_only: true
+  - type: addon_config
+    read_only: false
+  - type: share
+    read_only: false
+  - type: ssl
+    read_only: true
+ports:
+  4317/tcp: null
+  4318/tcp: null
+ports_description:
+  4317/tcp: OTLP/gRPC receiver (for add-ons sending traces)
+  4318/tcp: OTLP/HTTP receiver (for add-ons sending traces)
+options:
+  log_level: info
+  otlp_endpoint: ""
+  otlp_protocol: grpc
+  otlp_headers: []
+  otlp_tls_insecure: false
+  ha_logs_enabled: true
+  ha_metrics_enabled: true
+  ha_events_enabled: true
+  ha_traces_enabled: true
+  container_logs_enabled: false
+  host_metrics_enabled: false
+  raw_config: ""
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)
+  otlp_endpoint: str?
+  otlp_protocol: list(grpc|http)
+  otlp_headers:
+    - name: str
+      value: str
+  otlp_tls_insecure: bool
+  ha_logs_enabled: bool
+  ha_metrics_enabled: bool
+  ha_events_enabled: bool
+  ha_traces_enabled: bool
+  container_logs_enabled: bool
+  host_metrics_enabled: bool
+  raw_config: str?

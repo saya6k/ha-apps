@@ -1,0 +1,209 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start the OpenTelemetry Collector.
+#
+# If raw_config is set, use it verbatim.  Otherwise generate otelcol YAML from
+# structured options, validate it, then exec otelcol-contrib.
+# ==============================================================================
+
+declare raw_config log_level otlp_endpoint otlp_protocol otlp_tls_insecure
+declare exporter_name endpoint headers_yaml pipeline_exporters
+declare addon_version validation_output
+declare -a options
+declare ha_logs_enabled
+
+## Bundled self-monitoring baseline — always loaded first
+options+=(--config="/etc/otelcol-contrib/otelcol-selfmonitoring.yaml")
+
+raw_config=$(bashio::config 'raw_config')
+
+## ── raw_config path ──────────────────────────────────────────────────────────
+if [[ -n "${raw_config}" ]]; then
+    bashio::log.info 'Using raw_config as the collector configuration'
+    printf '%s\n' "${raw_config}" > /tmp/otelcol-config.yaml
+    options+=(--config="/tmp/otelcol-config.yaml")
+
+## ── generated config path ────────────────────────────────────────────────────
+else
+    log_level=$(bashio::config 'log_level')
+    otlp_endpoint=$(bashio::config 'otlp_endpoint')
+    otlp_protocol=$(bashio::config 'otlp_protocol')
+    otlp_tls_insecure=$(bashio::config 'otlp_tls_insecure')
+    addon_version=$(bashio::addon.version)
+
+    bashio::log.info 'Generating collector configuration from options...'
+
+    # ── Exporter name and endpoint ─────────────────────────────────────────
+    if [[ "${otlp_protocol}" == "http" ]]; then
+        exporter_name="otlphttp/lgtm"
+        # Prepend URL scheme if the user gave host:port only
+        if [[ -n "${otlp_endpoint}" ]] \
+                && [[ "${otlp_endpoint}" != http://* ]] \
+                && [[ "${otlp_endpoint}" != https://* ]]; then
+            if [[ "${otlp_tls_insecure}" == "true" ]]; then
+                endpoint="http://${otlp_endpoint}"
+            else
+                endpoint="https://${otlp_endpoint}"
+            fi
+        else
+            endpoint="${otlp_endpoint}"
+        fi
+    else
+        exporter_name="otlp/lgtm"
+        endpoint="${otlp_endpoint}"
+    fi
+
+    # ── Headers (JSON array → YAML map lines) ──────────────────────────────
+    headers_yaml=$(bashio::config 'otlp_headers' \
+        | jq -r 'if length > 0
+                 then "    headers:\n" + (map("      " + .name + ": \"" + .value + "\"") | join("\n"))
+                 else "" end')
+
+    # ── Pipeline exporter list ─────────────────────────────────────────────
+    if [[ -n "${otlp_endpoint}" ]]; then
+        if [[ "${log_level}" == "trace" || "${log_level}" == "debug" ]]; then
+            pipeline_exporters="[${exporter_name}, debug]"
+        else
+            pipeline_exporters="[${exporter_name}]"
+        fi
+    else
+        bashio::log.warning 'otlp_endpoint is empty — OTLP export disabled (debug exporter only)'
+        pipeline_exporters="[debug]"
+    fi
+
+    ha_logs_enabled=$(bashio::config 'ha_logs_enabled')
+
+    # ── Warn about not-yet-implemented toggles ──────────────────────────────
+    if bashio::config.true 'host_metrics_enabled'; then
+        bashio::log.warning 'host_metrics_enabled is not yet implemented; ignored'
+    fi
+
+    # ── Write /tmp/otelcol-config.yaml ─────────────────────────────────────
+    {
+        cat <<YAML
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+YAML
+
+        # filelog receiver — tails home-assistant.log; combines multi-line tracebacks
+        if [[ "${ha_logs_enabled}" == "true" ]]; then
+            cat <<'YAML'
+  filelog/ha:
+    include:
+      - /config/home-assistant.log
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    operators:
+      - type: regex_parser
+        regex: '^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+) (?P<sev>[A-Z]+) \((?P<thread>[^)]+)\) \[(?P<logger>[^\]]+)\] (?P<message>[\s\S]*)$'
+        timestamp:
+          parse_from: attributes.ts
+          layout: '%Y-%m-%d %H:%M:%S.%f'
+        severity:
+          parse_from: attributes.sev
+          mapping:
+            debug: DEBUG
+            info: INFO
+            warning: WARN
+            error: ERROR
+            critical: FATAL
+      - type: move
+        from: attributes.message
+        to: body
+      - type: move
+        from: attributes.logger
+        to: attributes["log.logger"]
+      - type: move
+        from: attributes.thread
+        to: attributes["thread.name"]
+      - type: remove
+        field: attributes.ts
+      - type: remove
+        field: attributes.sev
+YAML
+        fi
+
+        cat <<YAML
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_percentage: 75
+    spike_limit_percentage: 25
+  batch:
+  resource:
+    attributes:
+      - action: insert
+        key: ha.addon.version
+        value: "${addon_version}"
+
+exporters:
+YAML
+
+        # OTLP exporter (only when endpoint is configured)
+        if [[ -n "${otlp_endpoint}" ]]; then
+            printf '  %s:\n' "${exporter_name}"
+            printf '    endpoint: "%s"\n' "${endpoint}"
+            if [[ -n "${headers_yaml}" ]]; then
+                printf '%s\n' "${headers_yaml}"
+            fi
+            if [[ "${otlp_tls_insecure}" == "true" ]]; then
+                printf '    tls:\n      insecure: true\n'
+            fi
+        fi
+
+        # Debug exporter (always present; verbosity tracks log_level)
+        if [[ "${log_level}" == "trace" || "${log_level}" == "debug" ]]; then
+            printf '  debug:\n    verbosity: detailed\n'
+        else
+            printf '  debug:\n    verbosity: normal\n'
+        fi
+
+        cat <<YAML
+
+service:
+  pipelines:
+    metrics/bridge:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resource]
+      exporters: ${pipeline_exporters}
+    logs/bridge:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resource]
+      exporters: ${pipeline_exporters}
+    traces/bridge:
+      receivers: [otlp]
+      processors: [memory_limiter, batch, resource]
+      exporters: ${pipeline_exporters}
+YAML
+
+        # HA log file pipeline
+        if [[ "${ha_logs_enabled}" == "true" ]]; then
+            cat <<YAML
+    logs/ha:
+      receivers: [filelog/ha]
+      processors: [memory_limiter, batch, resource]
+      exporters: ${pipeline_exporters}
+YAML
+        fi
+    } > /tmp/otelcol-config.yaml
+
+    options+=(--config="/tmp/otelcol-config.yaml")
+fi
+
+## ── Validate before launching ──────────────────────────────────────────────
+bashio::log.info 'Validating collector configuration...'
+if ! validation_output=$(/usr/bin/otelcol-contrib validate "${options[@]}" 2>&1); then
+    bashio::log.error "${validation_output}"
+    bashio::log.fatal 'Configuration validation failed — fix the options and restart the add-on'
+    exit 1
+fi
+
+bashio::log.info 'Starting the OpenTelemetry Collector...'
+exec /usr/bin/otelcol-contrib "${options[@]}"

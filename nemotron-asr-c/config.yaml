@@ -20,6 +20,7 @@ options:
   hf_token: ''
   hotwords: []
   hotword_boost: 2
+  speech_enhancement: false
 schema:
   model: str
   quantization: list(f32|bf16|q8p)
@@ -28,6 +29,7 @@ schema:
   hotwords:
     - str?
   hotword_boost: float?
+  speech_enhancement: bool?
   debug_logging: bool?
 ports:
   10370/tcp: null
