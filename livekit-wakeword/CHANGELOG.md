@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.9.1...livekit-wakeword-v0.10.0) (2026-06-23)
+
+
+### Features
+
+* **livekit-wakeword:** add AppArmor profile ([d227413](https://github.com/saya6k/ha-apps/commit/d2274132016811f5eecca809d6a967f95448109c))
+
 ## [0.9.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.9.0...livekit-wakeword-v0.9.1) (2026-06-22)
 
 
