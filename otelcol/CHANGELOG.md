@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.2...otelcol-v0.2.3) (2026-06-23)
+
+
+### Build System
+
+* **otelcol:** promote to stable — remove stage: experimental ([72f5da2](https://github.com/saya6k/ha-apps/commit/72f5da25bb75eb1b8d708977728847eeeb5876e1))
+* **otelcol:** promote to stable — remove stage: experimental ([#426](https://github.com/saya6k/ha-apps/issues/426)) ([7339a7c](https://github.com/saya6k/ha-apps/commit/7339a7cd18c2ed459b051bb89370fca67b29824c))
+
 ## [0.2.2](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.1...otelcol-v0.2.2) (2026-06-23)
 
 
