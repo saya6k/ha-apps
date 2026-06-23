@@ -2,6 +2,14 @@
 
 
 
+## [0.3.5](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.4...zensical-v0.3.5) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical:** remove temp_path overrides; fix pre-config error log path ([6b3b492](https://github.com/saya6k/ha-apps/commit/6b3b492e721d0a32f2b87ceb8be7281dcefdf59f))
+* **zensical:** remove temp_path overrides; fix pre-config error log path ([fceca93](https://github.com/saya6k/ha-apps/commit/fceca932a1f7453f5567757b6b18c773aabf891c))
+
 ## [0.3.4](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.3...zensical-v0.3.4) (2026-06-23)
 
 
