@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.10](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.9...wardrowbe-v4.1.10) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** stat /data/postgres parent instead of /data/postgres/data ([6996266](https://github.com/saya6k/ha-apps/commit/6996266262929bc62f13bd676af8aedb1e3e9a7a))
+* **wardrowbe:** stat /data/postgres parent instead of /data/postgres/data ([#442](https://github.com/saya6k/ha-apps/issues/442)) ([981b15d](https://github.com/saya6k/ha-apps/commit/981b15d699c3c9bfbbdb29c932507df2b55ceb5a))
+
 ## [4.1.9](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.8...wardrowbe-v4.1.9) (2026-06-23)
 
 
