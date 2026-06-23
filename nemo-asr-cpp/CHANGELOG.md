@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.11.0...nemo-asr-cpp-v0.11.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [0.11.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.10.1...nemo-asr-cpp-v0.11.0) (2026-06-23)
 
 
