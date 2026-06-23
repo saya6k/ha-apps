@@ -2,6 +2,13 @@
 
 
 
+## [0.9.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.9.0...nemotron-asr-c-v0.9.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [0.8.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.7.1...nemotron-asr-c-v0.8.0) (2026-06-22)
 
 
