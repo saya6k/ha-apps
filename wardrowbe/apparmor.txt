@@ -1,0 +1,45 @@
+#include <tunables/global>
+
+profile hassio_wardrowbe flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Capabilities
+  file,
+  signal (send) set=(kill,term,int,hup,cont),
+
+  # S6-Overlay (official HA example pattern)
+  /init ix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
+
+  # Python venv at /opt/venv/ (uvicorn, alembic, arq worker)
+  /opt/venv/bin/* ix,
+
+  # Next.js app
+  /app/frontend/** ix,
+
+  # HA add-on data and mounts
+  /data/{,**} rw,
+  /addon_config/{,**} rw,
+  /share/{,**} rw,
+
+  # Network (web UI, Postgres, Redis, internal services)
+  network inet  stream,
+  network inet  dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network unix  stream,
+  network unix  dgram,
+}
