@@ -17,16 +17,20 @@ profile hassio_nemotron_asr_c flags=(attach_disconnected,mediate_deleted) {
   /etc/services.d/** rwix,
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
-  /run/{,**} rwk,
+  /run/ rwk,
+  /run/** rwk,
   /dev/tty rw,
 
   # Bashio
   /usr/lib/bashio/** ix,
+  /tmp/ rwk,
   /tmp/** rwk,
 
   # HA add-on data and mounts
-  /data/{,**} rw,
-  /share/{,**} rw,
+  /data/ rw,
+  /data/** rw,
+  /share/ rw,
+  /share/** rw,
 
   # Network (Wyoming protocol, DNS)
   network inet  stream,

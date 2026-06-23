@@ -17,25 +17,30 @@ profile hassio_zensical flags=(attach_disconnected,mediate_deleted) {
   /etc/services.d/** rwix,
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
-  /run/{,**} rwk,
+  /run/ rwk,
+  /run/** rwk,
   /dev/tty rw,
 
   # Bashio
   /usr/lib/bashio/** ix,
+  /tmp/ rwk,
   /tmp/** rwk,
 
   # Zensical CLI and pip-installed binaries (Alpine pip → /usr/local/bin/)
   /usr/local/bin/** ix,
 
   # Nginx runtime dirs (tmp, logs)
-  /var/lib/nginx/{,**} rwk,
+  /var/lib/nginx/ rwk,
+  /var/lib/nginx/** rwk,
 
   # Zensical helper scripts
   /opt/zensical/bin/* ix,
 
   # HA add-on data and mounts
-  /config/{,**} rw,
-  /addon_config/{,**} rw,
+  /config/ rwk,
+  /config/** rwk,
+  /addon_config/ rwk,
+  /addon_config/** rwk,
 
   # Network (nginx ingress, DNS)
   network inet  stream,

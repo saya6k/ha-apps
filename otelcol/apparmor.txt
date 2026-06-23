@@ -17,11 +17,13 @@ profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
   /etc/services.d/** rwix,
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
-  /run/{,**} rwk,
+  /run/ rwk,
+  /run/** rwk,
   /dev/tty rw,
 
   # Bashio
   /usr/lib/bashio/** ix,
+  /tmp/ rwk,
   /tmp/** rwk,
 
   # otelcol-contrib binary
@@ -31,11 +33,16 @@ profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
   /opt/bridge-venv/bin/python3* ix,
 
   # HA add-on data and mounts
-  /data/{,**} rw,
-  /config/{,**} rw,
-  /ssl/{,**} rw,
-  /share/{,**} rw,
-  /addon_config/{,**} rw,
+  /data/ rw,
+  /data/** rw,
+  /config/ rw,
+  /config/** rw,
+  /ssl/ rw,
+  /ssl/** rw,
+  /share/ rw,
+  /share/** rw,
+  /addon_config/ rw,
+  /addon_config/** rw,
 
   # Deny Docker socket — Supervisor API is used instead
   deny /var/run/docker.sock rwklx,

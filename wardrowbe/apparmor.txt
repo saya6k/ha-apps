@@ -17,15 +17,18 @@ profile hassio_wardrowbe flags=(attach_disconnected,mediate_deleted) {
   /etc/services.d/** rwix,
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
-  /run/{,**} rwk,
+  /run/ rwk,
+  /run/** rwk,
   /dev/tty rw,
 
   # Bashio
   /usr/lib/bashio/** ix,
+  /tmp/ rwk,
   /tmp/** rwk,
 
   # PostgreSQL — data dir and shared files (no other app needs these)
-  /var/lib/postgresql/{,**} rwk,
+  /var/lib/postgresql/ rwk,
+  /var/lib/postgresql/** rwk,
   /usr/share/postgresql/** r,
 
   # Python venv at /opt/venv/ (uvicorn, alembic, arq worker)
@@ -35,9 +38,12 @@ profile hassio_wardrowbe flags=(attach_disconnected,mediate_deleted) {
   /app/frontend/** ix,
 
   # HA add-on data and mounts
-  /data/{,**} rw,
-  /addon_config/{,**} rw,
-  /share/{,**} rw,
+  /data/ rwk,
+  /data/** rwk,
+  /addon_config/ rwk,
+  /addon_config/** rwk,
+  /share/ rwk,
+  /share/** rwk,
 
   # Network (web UI, Postgres, Redis, internal services)
   network inet  stream,
