@@ -27,15 +27,8 @@ RUN apk add --no-cache \
         rsync \
     && python3 -m venv /opt/venv \
     && mkdir -p \
-         /run/nginx \
          /var/lib/zensical/docs \
-         /var/lib/zensical/site \
-         /var/lib/nginx/tmp/client_body \
-         /var/lib/nginx/tmp/proxy \
-         /var/lib/nginx/tmp/fastcgi \
-         /var/lib/nginx/tmp/uwsgi \
-         /var/lib/nginx/tmp/scgi \
-     && chown -R nginx:nginx /var/lib/nginx
+         /var/lib/zensical/site
 
 COPY requirements.txt /tmp/requirements.txt
 RUN . /opt/venv/bin/activate \
