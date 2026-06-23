@@ -229,18 +229,25 @@ mkdir -p /data/postgres
 # PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
 _data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "")
 _data_gid=$(stat -c '%g' /data/postgres/data 2>/dev/null || echo "")
+bashio::log.info "[pg-debug] data_uid='${_data_uid}' data_gid='${_data_gid}'"
+bashio::log.info "[pg-debug] stat exit: $(stat -c '%u %g %A' /data/postgres/data 2>&1 || echo FAILED)"
 if [ -n "$_data_uid" ] && [ "$_data_uid" != "0" ]; then
+  bashio::log.info "[pg-debug] mode: switch-user ${_data_uid} ${_data_gid}"
   PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user "$_data_uid" "$_data_gid")
 else
+  bashio::log.info "[pg-debug] mode: LD_PRELOAD-only (root-owned or absent)"
   PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
 fi
 
-if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION 2>/dev/null; then
+bashio::log.info "[pg-debug] PG_VERSION check: ${PG_CMD[*]} test -f /data/postgres/data/PG_VERSION"
+if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION; then
+  bashio::log.info "[pg-debug] PG_VERSION not found (exit $?), starting first-run"
   # Remove empty/stale directory left by a previous failed boot.
-  # rmdir is a no-op on non-empty dirs (silently fails), safe to always try.
   rmdir /data/postgres/data 2>/dev/null || true
   bashio::log.info "First run – creating PostgreSQL cluster …"
   "${PG_CMD[@]}" initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
+else
+  bashio::log.info "[pg-debug] PG_VERSION found, skipping initdb"
 fi
 
 # Configure listen address + port ------------------------------------------
