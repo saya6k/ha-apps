@@ -218,27 +218,27 @@ mkdir -p /data/postgres
 #
 # Two modes in the wild:
 #   root-owned  (UID 0)  — new installs since v4.1.x (LD_PRELOAD fake-UID path)
-#   postgres-owned       — upgrades from pre-v4.1.x (data owned by real postgres)
+#   non-root-owned       — upgrades from pre-v4.1.x (data owned by real postgres)
 #
-# For postgres-owned dirs root lacks CAP_DAC_OVERRIDE, so all file access must
-# run as the real postgres OS user.  We use our own switch-user binary which
-# calls setgid+setuid WITHOUT setgroups — s6-setuidgid is statically linked and
-# calls setgroups, which fails with EPERM (no CAP_SETGID in HA containers).
+# For non-root-owned dirs root lacks CAP_DAC_OVERRIDE, so all file access must
+# run as the actual owner.  switch-user takes numeric UID+GID from stat and calls
+# setgid+setuid WITHOUT setgroups (no CAP_SETGID needed).  We pass numeric IDs
+# directly so this works regardless of what UID the postgres OS user has in the
+# current image, which can differ from the UID that created the cluster.
 #
 # PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
-_pg_uid=$(id -u postgres 2>/dev/null || echo "0")
 _data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "")
-if [ -n "$_data_uid" ] && [ "$_data_uid" != "0" ] && [ "$_data_uid" = "$_pg_uid" ]; then
-  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user postgres)
+_data_gid=$(stat -c '%g' /data/postgres/data 2>/dev/null || echo "")
+if [ -n "$_data_uid" ] && [ "$_data_uid" != "0" ]; then
+  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user "$_data_uid" "$_data_gid")
 else
   PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
 fi
 
 if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION 2>/dev/null; then
-  # Remove empty/stale directory if present (needs only parent write-perm).
-  if [ "$_data_uid" != "100" ]; then
-    rmdir /data/postgres/data 2>/dev/null || true
-  fi
+  # Remove empty/stale directory left by a previous failed boot.
+  # rmdir is a no-op on non-empty dirs (silently fails), safe to always try.
+  rmdir /data/postgres/data 2>/dev/null || true
   bashio::log.info "First run – creating PostgreSQL cluster …"
   "${PG_CMD[@]}" initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
 fi
