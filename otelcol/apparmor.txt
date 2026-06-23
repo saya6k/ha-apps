@@ -2,102 +2,44 @@
 
 profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
-  #include <abstractions/nameservice>
 
-  # s6-overlay bootstrap
-  /init                                   mrix,
-  /bin/                                   r,
-  /bin/**                                 mrix,
-  /sbin/                                  r,
-  /sbin/**                                mrix,
+  # Capabilities
+  file,
+  signal (send) set=(kill,term,int,hup,cont),
 
-  # s6-overlay command shims and package tree
-  /command/                               r,
-  /command/**                             mrix,
-  /package/                               r,
-  /package/**                             mrix,
+  # S6-Overlay (official HA example pattern)
+  /init ix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
 
-  # s6 runtime state
-  /run/s6/                                r,
-  /run/s6/**                              rwlkix,
-  /run/s6-linux-init-container-results/   r,
-  /run/s6-linux-init-container-results/** rw,
-
-  # bashio helpers
-  /usr/lib/bashio/**                      mr,
-  /usr/bin/jq                             mrix,
-  /usr/bin/curl                           mrix,
-  /usr/bin/wget                           mrix,
-  /usr/bin/bash                           mrix,
-  /usr/bin/**                             mrix,
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/** rwk,
 
   # otelcol-contrib binary
-  /usr/bin/otelcol-contrib                mrix,
+  /usr/bin/otelcol-contrib ix,
 
-  # Python bridge venv — installed at /opt/bridge-venv/ (non-standard path;
-  # not covered by the HA default profile — root cause of previous failures)
-  /opt/                                   r,
-  /opt/bridge-venv/                       r,
-  /opt/bridge-venv/**                     mr,
-  /opt/bridge-venv/bin/python3*           mrix,
+  # Python bridge venv (/opt/bridge-venv — non-standard path, not covered by abstractions)
+  /opt/bridge-venv/bin/python3* ix,
 
-  # Python stdlib (Alpine path)
-  /usr/lib/python3*/                      r,
-  /usr/lib/python3*/**                    mr,
+  # HA add-on data and mounts
+  /data/{,**} rw,
+  /config/{,**} rw,
+  /ssl/{,**} rw,
+  /share/{,**} rw,
+  /addon_config/{,**} rw,
 
-  # System libraries (musl / Alpine)
-  /lib/                                   r,
-  /lib/**                                 mr,
-  /usr/lib/                               r,
-  /usr/lib/**                             mr,
-  /usr/local/lib/                         r,
-  /usr/local/lib/**                       mr,
-
-  # System config, certs, bashio
-  /etc/                                   r,
-  /etc/**                                 r,
-
-  # otelcol config files
-  /etc/otelcol-contrib/                   r,
-  /etc/otelcol-contrib/**                 r,
-
-  # Temporary files (generated otelcol YAML)
-  /tmp/                                   r,
-  /tmp/**                                 rw,
-
-  # HA mounts
-  /config/                                r,
-  /config/**                              r,
-  /ssl/                                   r,
-  /ssl/**                                 r,
-  /addon_config/                          r,
-  /addon_config/**                        rw,
-  /share/                                 r,
-  /share/**                               rw,
-
-  # proc / sys (Go runtime + Python runtime)
-  /proc/                                  r,
-  /proc/**                                r,
-  owner /proc/**                          rw,
-  /sys/                                   r,
-  /sys/**                                 r,
-
-  # Standard device nodes
-  /dev/null                               rw,
-  /dev/urandom                            r,
-  /dev/random                             r,
-  /dev/tty                                rw,
-  /dev/pts/**                             rw,
-
-  # Runtime sockets and PID files
-  /run/                                   r,
-  /run/**                                 rw,
-  /var/run/                               r,
-  /var/run/**                             rw,
-
-  # Explicitly deny Docker socket — Supervisor API is used instead
-  deny /var/run/docker.sock               rwklx,
-  deny /run/docker.sock                   rwklx,
+  # Deny Docker socket — Supervisor API is used instead
+  deny /var/run/docker.sock rwklx,
+  deny /run/docker.sock rwklx,
 
   # Network (OTLP export, DNS, HA API)
   network inet  stream,
@@ -106,22 +48,4 @@ profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
   network inet6 dgram,
   network unix  stream,
   network unix  dgram,
-
-  # Capabilities required by s6-overlay init
-  capability chown,
-  capability dac_override,
-  capability fowner,
-  capability fsetid,
-  capability kill,
-  capability net_bind_service,
-  capability setgid,
-  capability setuid,
-  capability sys_chroot,
-
-  # Deny broad system capabilities
-  deny capability sys_admin,
-  deny capability sys_ptrace,
-  deny capability net_admin,
-  deny capability sys_rawio,
-  deny capability mknod,
 }
