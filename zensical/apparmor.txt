@@ -27,6 +27,9 @@ profile hassio_zensical flags=(attach_disconnected,mediate_deleted) {
   # Zensical CLI and pip-installed binaries (Alpine pip → /usr/local/bin/)
   /usr/local/bin/** ix,
 
+  # Nginx runtime dirs (tmp, logs)
+  /var/lib/nginx/{,**} rwk,
+
   # Zensical helper scripts
   /opt/zensical/bin/* ix,
 
