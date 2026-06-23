@@ -42,8 +42,11 @@ struct passwd *getpwuid(uid_t uid) {
 }
 
 struct passwd *getpwnam(const char *name) {
-    (void)name;
-    return getpwuid(FAKE_UID);
+    /* Pass through to real /etc/passwd so s6-setuidgid can find the
+     * real postgres UID (100) and switch to it properly. */
+    static struct passwd *(*real)(const char *);
+    if (!real) real = dlsym(RTLD_NEXT, "getpwnam");
+    return real(name);
 }
 
 /* Allow s6-setuidgid to switch to the postgres OS user.
