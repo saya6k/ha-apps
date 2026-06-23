@@ -194,11 +194,8 @@ fi
 mkdir -p /data/photos                  # wardrobe photos (data mount, private)
 mkdir -p /share/wardrowbe/backups      # DB backups (share mount)
 mkdir -p /data/redis                   # Redis persistence (data mount)
-mkdir -p /var/lib/postgresql/data      # PostgreSQL (data mount)
-mkdir -p /run/postgresql /run/nginx    # runtime sockets
-
-chown -R postgres:postgres /var/lib/postgresql /run/postgresql
-chmod 700 /var/lib/postgresql/data
+mkdir -p /run/postgresql /run/nginx    # runtime sockets (tmpfs)
+chmod 777 /run/postgresql              # postgres needs write (no CAP_CHOWN)
 
 # ── 5. One-shot photo migration to /data/photos ──────────────────────────
 # Temporary: photos used to live at /config/photos (1.2.0–1.4.x),
@@ -234,8 +231,6 @@ local   all   all                 trust
 host    all   all   127.0.0.1/32  md5
 host    all   all   ::1/128       md5
 EOF
-chown postgres:postgres "$PG_HBA"
-
 # Low-IOPS storage optimizations (SD card, eMMC, USB) ----------------------
 # Rewritten every boot so changes take effect without manual cluster edits.
 # synchronous_commit=off is the largest win: commits no longer stall waiting
@@ -271,7 +266,6 @@ autovacuum_vacuum_cost_delay = 20ms
 # Logging: no collector process, logs go straight to s6
 logging_collector = off
 PGCONF
-chown postgres:postgres /var/lib/postgresql/data/wardrowbe.conf
 
 # Register the include (idempotent: added once, persists across restarts)
 grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
