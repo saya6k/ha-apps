@@ -121,14 +121,16 @@ RUN mkdir -p \
       /var/lib/nginx/logs \
  && chmod 755 /var/lib/postgresql /run/postgresql
 
-# ---- postgres root-bypass shim ------------------------------------------
-# Compile libfakeeuid.so; loaded by postgres/initdb via LD_PRELOAD so they
-# see geteuid()=999 (non-root) and proceed. See libfakeeuid.c for details.
-COPY libfakeeuid.c /tmp/libfakeeuid.c
+# ---- postgres root-bypass shim + user-switcher ---------------------------
+# libfakeeuid.so: LD_PRELOAD shim — postgres/initdb see geteuid()=999 (non-root)
+# switch-user: drops root to a named user via setgid+setuid, NO setgroups()
+#   (HA containers lack CAP_SETGID; s6-setuidgid calls setgroups and fails)
+COPY libfakeeuid.c switch-user.c /tmp/
 RUN apk add --no-cache --virtual .build-tmp gcc musl-dev \
  && gcc -shared -fPIC -o /usr/local/lib/libfakeeuid.so /tmp/libfakeeuid.c -ldl \
+ && gcc -o /usr/local/bin/switch-user /tmp/switch-user.c \
  && apk del .build-tmp \
- && rm /tmp/libfakeeuid.c
+ && rm /tmp/libfakeeuid.c /tmp/switch-user.c
 
 # ---- Backend (Python) ---------------------------------------------------
 COPY --from=backend-builder /opt/venv /opt/venv

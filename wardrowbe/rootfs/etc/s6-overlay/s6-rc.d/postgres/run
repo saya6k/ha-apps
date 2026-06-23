@@ -3,13 +3,12 @@
 set -euo pipefail
 mkdir -p /run/postgresql
 
-# Match the ownership mode detected in 00-init.sh:
-#   UID 100 (postgres-owned cluster): switch to real postgres user via s6-setuidgid
-#   UID 0   (root-owned cluster):     run as root with fake-UID shim only
+# Mirror the ownership detection from 00-init.sh (see there for rationale).
+_pg_uid=$(id -u postgres 2>/dev/null || echo "0")
 _data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "0")
-if [ "$_data_uid" = "100" ]; then
+if [ "$_data_uid" != "0" ] && [ "$_data_uid" = "$_pg_uid" ]; then
   exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
-    s6-setuidgid postgres \
+    /usr/local/bin/switch-user postgres \
     postgres -D /data/postgres/data
 else
   exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
