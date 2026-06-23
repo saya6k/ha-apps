@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.1.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.0.1...wardrowbe-v4.1.0) (2026-06-23)
+
+
+### Features
+
+* **wardrowbe:** add AppArmor profile ([03cf2c5](https://github.com/saya6k/ha-apps/commit/03cf2c546a6353297bd00b0a5d7ea6e34dc83a09))
+
+
+### Performance
+
+* **wardrowbe:** tune PostgreSQL for low-IOPS storage (SD card, eMMC) ([07945fc](https://github.com/saya6k/ha-apps/commit/07945fc4b5d438a930a8e2f51e11f1f93410ecbc))
+
+
+
 
 ## [4.0.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.0.0...wardrowbe-v4.0.1) (2026-06-22)
 
