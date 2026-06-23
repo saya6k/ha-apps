@@ -4,5 +4,4 @@
 # Serve the built site at /var/lib/zensical/site/ on the ingress port.
 # init-zensical guarantees the directory exists before this longrun starts.
 # ==============================================================================
-mkdir -p /run/nginx
-exec nginx -e /dev/stderr -g "daemon off;"
+exec s6-setuidgid nginx nginx -e /dev/stderr -g "daemon off;"
