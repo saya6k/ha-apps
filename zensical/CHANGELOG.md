@@ -2,6 +2,18 @@
 
 
 
+## [0.3.7](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.6...zensical-v0.3.7) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical:** add master_process off to silence initgroups emerg ([#413](https://github.com/saya6k/ha-apps/issues/413)) ([5d1abc8](https://github.com/saya6k/ha-apps/commit/5d1abc88428ec36f20a6e9dd18cc46e0cd03409f))
+* **zensical:** fix nginx crash loop in HA containers (no CAP_CHOWN/SETGID) ([21e8180](https://github.com/saya6k/ha-apps/commit/21e8180a7fa7b8ce8c5ffd66c96ec0ee5d919d9b))
+* **zensical:** redirect nginx temp dirs to /tmp; add user nginx ([#409](https://github.com/saya6k/ha-apps/issues/409)) ([3aa8347](https://github.com/saya6k/ha-apps/commit/3aa8347854732ad15d7eec22a267813972721259))
+* **zensical:** redirect nginx temp dirs to /tmp; run as root without user directive ([#411](https://github.com/saya6k/ha-apps/issues/411)) ([04905b3](https://github.com/saya6k/ha-apps/commit/04905b30ef77fe59d6a93b1bd1b96068b0d9a2eb))
+* **zensical:** run nginx as nginx user via s6-setuidgid; move pid to /tmp ([#410](https://github.com/saya6k/ha-apps/issues/410)) ([85bc05f](https://github.com/saya6k/ha-apps/commit/85bc05f52bb94ae1159e15562a1cd1a5e7ce1d88))
+* **zensical:** set user root in nginx.conf to make temp-dir chown a no-op ([#412](https://github.com/saya6k/ha-apps/issues/412)) ([d3ac5b6](https://github.com/saya6k/ha-apps/commit/d3ac5b6516fb043e96124a03a375d15d8e8b1cad))
+
 ## [0.3.6](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.5...zensical-v0.3.6) (2026-06-23)
 
 
