@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.9](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.8...wardrowbe-v4.1.9) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** use numeric uid/gid in switch-user; execvp for PATH search ([2b9ee44](https://github.com/saya6k/ha-apps/commit/2b9ee44a5021e0637652bf362857266f053361d8))
+* **wardrowbe:** use numeric uid/gid in switch-user; execvp for PATH search ([#438](https://github.com/saya6k/ha-apps/issues/438)) ([715159e](https://github.com/saya6k/ha-apps/commit/715159e48c929b1bf6e85cbaf333303f036c5b99))
+
 ## [4.1.8](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.7...wardrowbe-v4.1.8) (2026-06-23)
 
 
