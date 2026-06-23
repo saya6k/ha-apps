@@ -24,6 +24,10 @@ profile hassio_wardrowbe flags=(attach_disconnected,mediate_deleted) {
   /usr/lib/bashio/** ix,
   /tmp/** rwk,
 
+  # PostgreSQL — data dir and shared files (no other app needs these)
+  /var/lib/postgresql/{,**} rwk,
+  /usr/share/postgresql/** r,
+
   # Python venv at /opt/venv/ (uvicorn, alembic, arq worker)
   /opt/venv/bin/* ix,
 
