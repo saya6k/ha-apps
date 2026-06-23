@@ -105,6 +105,8 @@ RUN apk add --no-cache \
     redis
 
 # ---- Directory scaffold -------------------------------------------------
+# Keep all dirs root-owned; postgres runs as root via LD_PRELOAD shim
+# (HA containers lack CAP_SETUID/SETGID — runtime user-switch is impossible).
 RUN mkdir -p \
       /app/backend \
       /app/frontend \
@@ -113,9 +115,16 @@ RUN mkdir -p \
       /data/redis \
       /var/lib/postgresql/data \
       /run/postgresql \
-      /run/nginx \
- && chown -R postgres:postgres /var/lib/postgresql /run/postgresql \
- && chmod 700 /var/lib/postgresql/data
+      /run/nginx
+
+# ---- postgres root-bypass shim ------------------------------------------
+# Compile libfakeeuid.so; loaded by postgres/initdb via LD_PRELOAD so they
+# see geteuid()=999 (non-root) and proceed. See libfakeeuid.c for details.
+COPY libfakeeuid.c /tmp/libfakeeuid.c
+RUN apk add --no-cache --virtual .build-tmp gcc musl-dev \
+ && gcc -shared -fPIC -o /usr/local/lib/libfakeeuid.so /tmp/libfakeeuid.c -ldl \
+ && apk del .build-tmp \
+ && rm /tmp/libfakeeuid.c
 
 # ---- Backend (Python) ---------------------------------------------------
 COPY --from=backend-builder /opt/venv /opt/venv
