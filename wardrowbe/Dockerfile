@@ -123,8 +123,8 @@ RUN mkdir -p \
 
 # ---- postgres root-bypass shim -------------------------------------------
 # libfakeeuid.so: LD_PRELOAD shim — postgres/initdb see geteuid()=999 (non-root).
-# fix-attrs.d/01-postgres-data runs before cont-init.d and chowns any existing
-# postgres-owned cluster to root (CAP_CHOWN), so this shim handles all cases.
+# 00-init.sh top-down-chowns any pre-v4.1.x postgres-owned cluster to root
+# (CAP_CHOWN) before initdb runs, so this shim handles all cases uniformly.
 COPY libfakeeuid.c /tmp/libfakeeuid.c
 RUN apk add --no-cache --virtual .build-tmp gcc musl-dev \
  && gcc -shared -fPIC -o /usr/local/lib/libfakeeuid.so /tmp/libfakeeuid.c -ldl \
