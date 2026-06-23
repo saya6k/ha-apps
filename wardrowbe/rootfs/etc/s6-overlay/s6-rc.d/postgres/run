@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
 set -euo pipefail
+mkdir -p /run/postgresql
 exec s6-setuidgid postgres \
   postgres -D /var/lib/postgresql/data
