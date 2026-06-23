@@ -3,4 +3,4 @@
 set -euo pipefail
 mkdir -p /run/postgresql
 exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
-  postgres -D /var/lib/postgresql/data
+  postgres -D /data/postgres/data
