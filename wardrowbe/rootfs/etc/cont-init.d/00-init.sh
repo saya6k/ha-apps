@@ -220,34 +220,31 @@ mkdir -p /data/postgres
 #   root-owned  (UID 0)  — new installs since v4.1.x (LD_PRELOAD fake-UID path)
 #   non-root-owned       — upgrades from pre-v4.1.x (data owned by real postgres)
 #
-# For non-root-owned dirs root lacks CAP_DAC_OVERRIDE, so all file access must
-# run as the actual owner.  switch-user takes numeric UID+GID from stat and calls
-# setgid+setuid WITHOUT setgroups (no CAP_SETGID needed).  We pass numeric IDs
-# directly so this works regardless of what UID the postgres OS user has in the
-# current image, which can differ from the UID that created the cluster.
+# CRITICAL: stat /data/postgres, NOT /data/postgres/data.
+# If /data/postgres/ is postgres:postgres:700, root has no CAP_DAC_OVERRIDE and
+# cannot traverse it — stat /data/postgres/data fails with EACCES (returns "").
+# stat /data/postgres only needs execute on /data/ (always accessible) and works
+# regardless of the mode of /data/postgres/ itself.
+#
+# switch-user takes numeric UID+GID and calls setgid+setuid WITHOUT setgroups.
+# s6-setuidgid is statically linked (LD_PRELOAD ignored) and calls setgroups()
+# which fails with EPERM (no CAP_SETGID in HA containers).
 #
 # PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
-_data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "")
-_data_gid=$(stat -c '%g' /data/postgres/data 2>/dev/null || echo "")
-bashio::log.info "[pg-debug] data_uid='${_data_uid}' data_gid='${_data_gid}'"
-bashio::log.info "[pg-debug] stat exit: $(stat -c '%u %g %A' /data/postgres/data 2>&1 || echo FAILED)"
-if [ -n "$_data_uid" ] && [ "$_data_uid" != "0" ]; then
-  bashio::log.info "[pg-debug] mode: switch-user ${_data_uid} ${_data_gid}"
-  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user "$_data_uid" "$_data_gid")
+_parent_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo "0")
+_parent_gid=$(stat -c '%g' /data/postgres 2>/dev/null || echo "0")
+if [ "$_parent_uid" != "0" ]; then
+  bashio::log.info "PostgreSQL cluster owned by UID ${_parent_uid} — switching user"
+  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user "$_parent_uid" "$_parent_gid")
 else
-  bashio::log.info "[pg-debug] mode: LD_PRELOAD-only (root-owned or absent)"
   PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
 fi
 
-bashio::log.info "[pg-debug] PG_VERSION check: ${PG_CMD[*]} test -f /data/postgres/data/PG_VERSION"
 if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION; then
-  bashio::log.info "[pg-debug] PG_VERSION not found (exit $?), starting first-run"
   # Remove empty/stale directory left by a previous failed boot.
   rmdir /data/postgres/data 2>/dev/null || true
   bashio::log.info "First run – creating PostgreSQL cluster …"
   "${PG_CMD[@]}" initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
-else
-  bashio::log.info "[pg-debug] PG_VERSION found, skipping initdb"
 fi
 
 # Configure listen address + port ------------------------------------------
