@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 set -euo pipefail
 
 bashio::log.info "Initializing Wardrowbe add-on …"
@@ -194,8 +195,7 @@ fi
 mkdir -p /data/photos                  # wardrobe photos (data mount, private)
 mkdir -p /share/wardrowbe/backups      # DB backups (share mount)
 mkdir -p /data/redis                   # Redis persistence (data mount)
-mkdir -p /run/postgresql /run/nginx    # runtime sockets (tmpfs)
-chmod 777 /run/postgresql              # postgres needs write (no CAP_CHOWN)
+mkdir -p /run/postgresql /run/nginx    # runtime sockets
 
 # ── 5. One-shot photo migration to /data/photos ──────────────────────────
 # Temporary: photos used to live at /config/photos (1.2.0–1.4.x),
@@ -212,14 +212,15 @@ for SRC in /config/photos /media/wardrowbe /data/wardrobe /config/wardrobe; do
 done
 
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
-if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+mkdir -p /data/postgres
+if [ ! -f /data/postgres/data/PG_VERSION ]; then
   bashio::log.info "First run – creating PostgreSQL cluster …"
-  s6-setuidgid postgres initdb -D /var/lib/postgresql/data --encoding=UTF-8 --locale=C
+  LD_PRELOAD=/usr/local/lib/libfakeeuid.so initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
 fi
 
 # Configure listen address + port ------------------------------------------
-POSTGRES_CONF=/var/lib/postgresql/data/postgresql.conf
-PG_HBA=/var/lib/postgresql/data/pg_hba.conf
+POSTGRES_CONF=/data/postgres/data/postgresql.conf
+PG_HBA=/data/postgres/data/pg_hba.conf
 
 sed -i "s/^#\?listen_addresses.*/listen_addresses = '127.0.0.1'/" "$POSTGRES_CONF" \
   || echo "listen_addresses = '127.0.0.1'" >> "$POSTGRES_CONF"
@@ -236,7 +237,7 @@ EOF
 # synchronous_commit=off is the largest win: commits no longer stall waiting
 # for WAL to reach disk. Risk: last ~1-3 s of committed txns may be lost on
 # hard crash — acceptable for a wardrobe app; no corruption risk.
-cat > /var/lib/postgresql/data/wardrowbe.conf <<'PGCONF'
+cat > /data/postgres/data/wardrowbe.conf <<'PGCONF'
 # wardrowbe managed — regenerated each start; edit 00-init.sh to change.
 
 # WAL / durability: biggest write-amplification reduction on slow storage

@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+# shellcheck shell=bash
 # Daily pg_dump → /share/wardrowbe/backups/, prune to BACKUP_RETENTION_DAYS.
 # Upstream wardrowbe has no built-in backup; this is the packaging layer's
 # answer for users who want their wardrobe DB to survive an addon reset.
@@ -44,9 +45,9 @@ while true; do
   tmp="${out}.tmp"
   echo "[backup] dumping → ${out}"
 
-  # pg_dump as postgres (trust on Unix socket per pg_hba.conf).
-  # gzip runs as the s6 user (root); resulting file is root-owned.
-  if s6-setuidgid postgres pg_dump -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" 2>/tmp/backup.err \
+  # pg_dump via Unix socket with explicit -U (trust auth, no password needed).
+  # Runs as root OS user; -U selects the postgres database role explicitly.
+  if pg_dump -U "${POSTGRES_USER}" -p "${POSTGRES_PORT}" -d "${POSTGRES_DB}" 2>/tmp/backup.err \
        | gzip > "$tmp"; then
     mv "$tmp" "$out"
     size="$(du -h "$out" | cut -f1)"
