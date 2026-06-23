@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.7](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.6...wardrowbe-v4.1.7) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** pass through getpwnam to real /etc/passwd in fakeeuid shim ([a5ae543](https://github.com/saya6k/ha-apps/commit/a5ae5435ad5f7a138f7050888c1571a38e29525b))
+* **wardrowbe:** pass through getpwnam to real /etc/passwd in fakeeuid shim ([#432](https://github.com/saya6k/ha-apps/issues/432)) ([0be1003](https://github.com/saya6k/ha-apps/commit/0be1003b2ab5cfd1e8349c6ab40dfdc76dd3c506))
+
 ## [4.1.6](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.5...wardrowbe-v4.1.6) (2026-06-23)
 
 
