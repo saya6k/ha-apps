@@ -106,7 +106,10 @@ RUN apk add --no-cache \
 
 # ---- Directory scaffold -------------------------------------------------
 # Keep all dirs root-owned; postgres runs as root via LD_PRELOAD shim
-# (HA containers lack CAP_SETUID/SETGID — runtime user-switch is impossible).
+# (HA containers lack CAP_SETUID/SETGID/DAC_OVERRIDE — no runtime user-switch).
+# apk add postgresql creates /var/lib/postgresql as postgres:postgres:700;
+# chmod 755 at build time (CAP_FOWNER is available during Docker build) so
+# root can traverse it at runtime without CAP_DAC_OVERRIDE.
 RUN mkdir -p \
       /app/backend \
       /app/frontend \
@@ -115,7 +118,8 @@ RUN mkdir -p \
       /data/redis \
       /var/lib/postgresql/data \
       /run/postgresql \
-      /run/nginx
+      /run/nginx \
+ && chmod 755 /var/lib/postgresql /var/lib/postgresql/data /run/postgresql
 
 # ---- postgres root-bypass shim ------------------------------------------
 # Compile libfakeeuid.so; loaded by postgres/initdb via LD_PRELOAD so they
