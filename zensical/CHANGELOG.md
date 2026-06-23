@@ -2,6 +2,13 @@
 
 
 
+## [0.3.2](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.1...zensical-v0.3.2) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [0.3.1](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.0...zensical-v0.3.1) (2026-06-23)
 
 
