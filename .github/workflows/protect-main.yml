@@ -1,0 +1,25 @@
+---
+name: Protect main
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-source:
+    name: Only dev and release-please may target main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check head branch
+        env:
+          HEAD: ${{ github.head_ref }}
+        run: |
+          if [[ "$HEAD" == "dev" ]] || [[ "$HEAD" == release-please--branches--main--* ]]; then
+            echo "Allowed: ${HEAD} → main"
+          else
+            echo "::error::PRs to 'main' must come from 'dev' or a release-please branch."
+            echo "::error::Got: '${HEAD}' → main"
+            echo "::error::Retarget this PR to 'dev' instead."
+            exit 1
+          fi
