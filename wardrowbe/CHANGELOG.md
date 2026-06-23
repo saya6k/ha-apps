@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.1...wardrowbe-v4.1.2) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [4.1.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.0...wardrowbe-v4.1.1) (2026-06-23)
 
 
