@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.8](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.7...wardrowbe-v4.1.8) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** replace s6-setuidgid with custom switch-user binary ([e73f9b9](https://github.com/saya6k/ha-apps/commit/e73f9b9a551a161ff9cf3504277fbd54b9f68b0d))
+* **wardrowbe:** replace s6-setuidgid with custom switch-user binary ([#435](https://github.com/saya6k/ha-apps/issues/435)) ([3dbbc76](https://github.com/saya6k/ha-apps/commit/3dbbc7610ad99f2dccca7f497c4926ea6f8e217f))
+
 ## [4.1.7](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.6...wardrowbe-v4.1.7) (2026-06-23)
 
 
