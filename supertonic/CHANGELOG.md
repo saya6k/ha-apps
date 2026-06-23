@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.6.0...supertonic-v2.6.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [2.6.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.5.0...supertonic-v2.6.0) (2026-06-23)
 
 
