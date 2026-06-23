@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.1.4](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.3...wardrowbe-v4.1.4) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** add getpwuid shim; chmod /var/lib/postgresql 755 at build ([#417](https://github.com/saya6k/ha-apps/issues/417)) ([dfba4dc](https://github.com/saya6k/ha-apps/commit/dfba4dc32d9fa4870ea21c5ea332351d26bed468))
+* **wardrowbe:** drop s6-setuidgid from psql calls; create nginx log dir ([#419](https://github.com/saya6k/ha-apps/issues/419)) ([f7b7a3a](https://github.com/saya6k/ha-apps/commit/f7b7a3a9db6dd16860f3cc72b5e39cf617e7efd6))
+* **wardrowbe:** HA container capability fixes — full stack boot ([b691847](https://github.com/saya6k/ha-apps/commit/b6918474aedfcea59ea4a7a5e197ee4f649c4e6a))
+* **wardrowbe:** run initdb directly into /data/postgres/data ([#418](https://github.com/saya6k/ha-apps/issues/418)) ([5afb55e](https://github.com/saya6k/ha-apps/commit/5afb55e121f8f263b431125c4a8d544c0f4b6b3a))
+* **wardrowbe:** run postgres as root via LD_PRELOAD shim; fix nginx caps ([#414](https://github.com/saya6k/ha-apps/issues/414)) ([2416e22](https://github.com/saya6k/ha-apps/commit/2416e222ca72fc9fa9d93ff06476c79a56fbcc89))
+* **wardrowbe:** wait for backend before starting nginx ([#420](https://github.com/saya6k/ha-apps/issues/420)) ([601a19d](https://github.com/saya6k/ha-apps/commit/601a19d09c95f038b31f47b0fb0779b88ebcdc82))
+
 ## [4.1.3](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.2...wardrowbe-v4.1.3) (2026-06-23)
 
 
