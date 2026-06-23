@@ -2,17 +2,6 @@
 # shellcheck shell=bash
 set -euo pipefail
 mkdir -p /run/postgresql
-
-# Mirror the ownership detection from 00-init.sh (see there for rationale).
-# Stat /data/postgres (parent), not /data/postgres/data — the data dir may be
-# inside a postgres:postgres:700 directory that root cannot traverse.
-_parent_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo "0")
-_parent_gid=$(stat -c '%g' /data/postgres 2>/dev/null || echo "0")
-if [ "$_parent_uid" != "0" ]; then
-  exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
-    /usr/local/bin/switch-user "$_parent_uid" "$_parent_gid" \
-    postgres -D /data/postgres/data
-else
-  exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
-    postgres -D /data/postgres/data
-fi
+# fix-attrs.d/01-postgres-data has already chowned /data/postgres/data to root.
+exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
+  postgres -D /data/postgres/data

@@ -212,61 +212,37 @@ for SRC in /config/photos /media/wardrowbe /data/wardrobe /config/wardrobe; do
 done
 
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
+# fix-attrs.d/01-postgres-data runs before cont-init.d and chowns
+# /data/postgres/data to root:root using CAP_CHOWN (always in the default
+# Docker capability set). This covers upgrade clusters that were owned by
+# the real postgres OS user in pre-v4.1.x images. After chown, root can
+# enter the directory and the LD_PRELOAD shim handles the rest uniformly.
 mkdir -p /data/postgres
 
-# Detect cluster ownership to choose the right runner.
-#
-# Two modes in the wild:
-#   root-owned  (UID 0)  — new installs since v4.1.x (LD_PRELOAD fake-UID path)
-#   non-root-owned       — upgrades from pre-v4.1.x (data owned by real postgres)
-#
-# CRITICAL: stat /data/postgres, NOT /data/postgres/data.
-# If /data/postgres/ is postgres:postgres:700, root has no CAP_DAC_OVERRIDE and
-# cannot traverse it — stat /data/postgres/data fails with EACCES (returns "").
-# stat /data/postgres only needs execute on /data/ (always accessible) and works
-# regardless of the mode of /data/postgres/ itself.
-#
-# switch-user takes numeric UID+GID and calls setgid+setuid WITHOUT setgroups.
-# s6-setuidgid is statically linked (LD_PRELOAD ignored) and calls setgroups()
-# which fails with EPERM (no CAP_SETGID in HA containers).
-#
-# PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
-_parent_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo "0")
-_parent_gid=$(stat -c '%g' /data/postgres 2>/dev/null || echo "0")
-if [ "$_parent_uid" != "0" ]; then
-  bashio::log.info "PostgreSQL cluster owned by UID ${_parent_uid} — switching user"
-  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user "$_parent_uid" "$_parent_gid")
-else
-  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
-fi
-
-if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION; then
-  # Remove empty/stale directory left by a previous failed boot.
+if ! env LD_PRELOAD=/usr/local/lib/libfakeeuid.so test -f /data/postgres/data/PG_VERSION; then
   rmdir /data/postgres/data 2>/dev/null || true
   bashio::log.info "First run – creating PostgreSQL cluster …"
-  "${PG_CMD[@]}" initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
+  env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
+    initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
 fi
 
 # Configure listen address + port ------------------------------------------
 POSTGRES_CONF=/data/postgres/data/postgresql.conf
 PG_HBA=/data/postgres/data/pg_hba.conf
 
-"${PG_CMD[@]}" sed -i "s/^#\?listen_addresses.*/listen_addresses = '127.0.0.1'/" "$POSTGRES_CONF" \
-  || "${PG_CMD[@]}" bash -c "echo \"listen_addresses = '127.0.0.1'\" >> '$POSTGRES_CONF'"
-"${PG_CMD[@]}" sed -i "s/^#\?port =.*/port = ${PG_PORT}/" "$POSTGRES_CONF" \
-  || "${PG_CMD[@]}" bash -c "echo \"port = ${PG_PORT}\" >> '$POSTGRES_CONF'"
+sed -i "s/^#\?listen_addresses.*/listen_addresses = '127.0.0.1'/" "$POSTGRES_CONF" \
+  || echo "listen_addresses = '127.0.0.1'" >> "$POSTGRES_CONF"
+sed -i "s/^#\?port =.*/port = ${PG_PORT}/" "$POSTGRES_CONF" \
+  || echo "port = ${PG_PORT}" >> "$POSTGRES_CONF"
 
-"${PG_CMD[@]}" bash -c "cat > '$PG_HBA'" <<EOF
+cat > "$PG_HBA" <<EOF
 local   all   all                 trust
 host    all   all   127.0.0.1/32  md5
 host    all   all   ::1/128       md5
 EOF
 # Low-IOPS storage optimizations (SD card, eMMC, USB) ----------------------
 # Rewritten every boot so changes take effect without manual cluster edits.
-# synchronous_commit=off is the largest win: commits no longer stall waiting
-# for WAL to reach disk. Risk: last ~1-3 s of committed txns may be lost on
-# hard crash — acceptable for a wardrobe app; no corruption risk.
-"${PG_CMD[@]}" bash -c 'cat > /data/postgres/data/wardrowbe.conf' <<'PGCONF'
+cat > /data/postgres/data/wardrowbe.conf <<'PGCONF'
 # wardrowbe managed — regenerated each start; edit 00-init.sh to change.
 
 # WAL / durability: biggest write-amplification reduction on slow storage
@@ -297,9 +273,8 @@ autovacuum_vacuum_cost_delay = 20ms
 logging_collector = off
 PGCONF
 
-# Register the include (idempotent: added once, persists across restarts)
-"${PG_CMD[@]}" grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
-  || "${PG_CMD[@]}" bash -c "echo \"include_if_exists = 'wardrowbe.conf'\" >> '$POSTGRES_CONF'"
+grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
+  || echo "include_if_exists = 'wardrowbe.conf'" >> "$POSTGRES_CONF"
 
 bashio::log.info "Initialization complete."
 bashio::log.info "  Photos:  /data/photos"
