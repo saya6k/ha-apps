@@ -46,6 +46,17 @@ struct passwd *getpwnam(const char *name) {
     return getpwuid(FAKE_UID);
 }
 
+/* Allow s6-setuidgid to switch to the postgres OS user.
+ * setgroups() requires CAP_SETGID which HA containers lack; make it a no-op
+ * so s6-setuidgid can proceed to setgid()+setuid() (root can drop privs).
+ * Linux-only: Alpine/musl is the only runtime target. */
+#ifdef __linux__
+int setgroups(size_t size, const gid_t *list) {
+    (void)size; (void)list;
+    return 0;
+}
+#endif
+
 static void patch_uid(struct stat *b) { if (b) b->st_uid = FAKE_UID; }
 
 int stat(const char *p, struct stat *b) {
