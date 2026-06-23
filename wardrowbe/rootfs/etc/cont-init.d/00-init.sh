@@ -212,12 +212,28 @@ for SRC in /config/photos /media/wardrowbe /data/wardrobe /config/wardrobe; do
 done
 
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
-# fix-attrs.d/01-postgres-data runs before cont-init.d and chowns
-# /data/postgres/data to root:root using CAP_CHOWN (always in the default
-# Docker capability set). This covers upgrade clusters that were owned by
-# the real postgres OS user in pre-v4.1.x images. After chown, root can
-# enter the directory and the LD_PRELOAD shim handles the rest uniformly.
 mkdir -p /data/postgres
+
+# One-time migration: pre-v4.1.x clusters are owned by the postgres OS user
+# (UID 70 or 100). HA containers have CAP_CHOWN but NOT CAP_DAC_OVERRIDE, so
+# standard chown -R and s6 fix-attrs.d both fail (they call opendir before
+# chown and can't traverse a 700 dir they don't own). Top-down chown works:
+# chown the directory first → root becomes owner → can enter via owner rwx.
+_pg_chown_r() {
+  chown 0:0 "$1"
+  [ -d "$1" ] || return 0
+  for _child in "$1"/*; do
+    [ -e "$_child" ] || continue
+    _pg_chown_r "$_child"
+  done
+}
+_pg_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo 0)
+if [ "$_pg_uid" != "0" ]; then
+  bashio::log.info "Migrating PostgreSQL cluster from UID ${_pg_uid} to root …"
+  _pg_chown_r /data/postgres
+  bashio::log.info "Ownership migration complete."
+fi
+unset _pg_uid _pg_chown_r
 
 if ! env LD_PRELOAD=/usr/local/lib/libfakeeuid.so test -f /data/postgres/data/PG_VERSION; then
   rmdir /data/postgres/data 2>/dev/null || true
