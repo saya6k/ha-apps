@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.12](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.11...wardrowbe-v4.1.12) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** top-down chown migration for pre-v4.1.x postgres clusters ([a6728f2](https://github.com/saya6k/ha-apps/commit/a6728f2c961fd6cd11971323eea12e382d9ed9b2))
+* **wardrowbe:** top-down chown migration for pre-v4.1.x postgres clusters ([#448](https://github.com/saya6k/ha-apps/issues/448)) ([10d0c19](https://github.com/saya6k/ha-apps/commit/10d0c194becd001a0b1e97fb941dc062a4068c66))
+
 ## [4.1.11](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.10...wardrowbe-v4.1.11) (2026-06-23)
 
 
