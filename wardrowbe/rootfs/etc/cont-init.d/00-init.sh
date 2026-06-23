@@ -214,20 +214,22 @@ done
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
 mkdir -p /data/postgres
 
-# Detect who owns the data directory so we can choose the right runner.
+# Detect cluster ownership to choose the right runner.
 #
-# Two cluster ownership modes exist in the wild:
-#   root-owned  (UID 0)   — created by this add-on v4.1.x (LD_PRELOAD fake-UID)
-#   postgres-owned (UID 100) — created by older wardrowbe that ran as real postgres
+# Two modes in the wild:
+#   root-owned  (UID 0)  — new installs since v4.1.x (LD_PRELOAD fake-UID path)
+#   postgres-owned       — upgrades from pre-v4.1.x (data owned by real postgres)
 #
-# For postgres-owned dirs root has no CAP_DAC_OVERRIDE, so ALL file access
-# must be done as the real postgres user.  libfakeeuid.so makes setgroups()
-# a no-op so s6-setuidgid can drop to postgres without CAP_SETGID.
+# For postgres-owned dirs root lacks CAP_DAC_OVERRIDE, so all file access must
+# run as the real postgres OS user.  We use our own switch-user binary which
+# calls setgid+setuid WITHOUT setgroups — s6-setuidgid is statically linked and
+# calls setgroups, which fails with EPERM (no CAP_SETGID in HA containers).
 #
 # PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
+_pg_uid=$(id -u postgres 2>/dev/null || echo "0")
 _data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "")
-if [ "$_data_uid" = "100" ]; then
-  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so s6-setuidgid postgres)
+if [ -n "$_data_uid" ] && [ "$_data_uid" != "0" ] && [ "$_data_uid" = "$_pg_uid" ]; then
+  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so /usr/local/bin/switch-user postgres)
 else
   PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
 fi
