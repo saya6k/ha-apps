@@ -2,5 +2,16 @@
 # shellcheck shell=bash
 set -euo pipefail
 mkdir -p /run/postgresql
-exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
-  postgres -D /data/postgres/data
+
+# Match the ownership mode detected in 00-init.sh:
+#   UID 100 (postgres-owned cluster): switch to real postgres user via s6-setuidgid
+#   UID 0   (root-owned cluster):     run as root with fake-UID shim only
+_data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "0")
+if [ "$_data_uid" = "100" ]; then
+  exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
+    s6-setuidgid postgres \
+    postgres -D /data/postgres/data
+else
+  exec env LD_PRELOAD=/usr/local/lib/libfakeeuid.so \
+    postgres -D /data/postgres/data
+fi

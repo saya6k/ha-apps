@@ -213,25 +213,44 @@ done
 
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
 mkdir -p /data/postgres
-if [ ! -f /data/postgres/data/PG_VERSION ]; then
-  # Older versions may have left an empty /data/postgres/data with wrong
-  # ownership. rmdir removes it if empty (needs only parent write-perm);
-  # silently no-ops if non-empty, in which case initdb will error below.
-  rmdir /data/postgres/data 2>/dev/null || true
+
+# Detect who owns the data directory so we can choose the right runner.
+#
+# Two cluster ownership modes exist in the wild:
+#   root-owned  (UID 0)   — created by this add-on v4.1.x (LD_PRELOAD fake-UID)
+#   postgres-owned (UID 100) — created by older wardrowbe that ran as real postgres
+#
+# For postgres-owned dirs root has no CAP_DAC_OVERRIDE, so ALL file access
+# must be done as the real postgres user.  libfakeeuid.so makes setgroups()
+# a no-op so s6-setuidgid can drop to postgres without CAP_SETGID.
+#
+# PG_CMD is a bash array; expand it as "${PG_CMD[@]}" before every postgres tool.
+_data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo "")
+if [ "$_data_uid" = "100" ]; then
+  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so s6-setuidgid postgres)
+else
+  PG_CMD=(env LD_PRELOAD=/usr/local/lib/libfakeeuid.so)
+fi
+
+if ! "${PG_CMD[@]}" test -f /data/postgres/data/PG_VERSION 2>/dev/null; then
+  # Remove empty/stale directory if present (needs only parent write-perm).
+  if [ "$_data_uid" != "100" ]; then
+    rmdir /data/postgres/data 2>/dev/null || true
+  fi
   bashio::log.info "First run – creating PostgreSQL cluster …"
-  LD_PRELOAD=/usr/local/lib/libfakeeuid.so initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
+  "${PG_CMD[@]}" initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
 fi
 
 # Configure listen address + port ------------------------------------------
 POSTGRES_CONF=/data/postgres/data/postgresql.conf
 PG_HBA=/data/postgres/data/pg_hba.conf
 
-sed -i "s/^#\?listen_addresses.*/listen_addresses = '127.0.0.1'/" "$POSTGRES_CONF" \
-  || echo "listen_addresses = '127.0.0.1'" >> "$POSTGRES_CONF"
-sed -i "s/^#\?port =.*/port = ${PG_PORT}/" "$POSTGRES_CONF" \
-  || echo "port = ${PG_PORT}" >> "$POSTGRES_CONF"
+"${PG_CMD[@]}" sed -i "s/^#\?listen_addresses.*/listen_addresses = '127.0.0.1'/" "$POSTGRES_CONF" \
+  || "${PG_CMD[@]}" bash -c "echo \"listen_addresses = '127.0.0.1'\" >> '$POSTGRES_CONF'"
+"${PG_CMD[@]}" sed -i "s/^#\?port =.*/port = ${PG_PORT}/" "$POSTGRES_CONF" \
+  || "${PG_CMD[@]}" bash -c "echo \"port = ${PG_PORT}\" >> '$POSTGRES_CONF'"
 
-cat > "$PG_HBA" <<EOF
+"${PG_CMD[@]}" bash -c "cat > '$PG_HBA'" <<EOF
 local   all   all                 trust
 host    all   all   127.0.0.1/32  md5
 host    all   all   ::1/128       md5
@@ -241,7 +260,7 @@ EOF
 # synchronous_commit=off is the largest win: commits no longer stall waiting
 # for WAL to reach disk. Risk: last ~1-3 s of committed txns may be lost on
 # hard crash — acceptable for a wardrobe app; no corruption risk.
-cat > /data/postgres/data/wardrowbe.conf <<'PGCONF'
+"${PG_CMD[@]}" bash -c 'cat > /data/postgres/data/wardrowbe.conf' <<'PGCONF'
 # wardrowbe managed — regenerated each start; edit 00-init.sh to change.
 
 # WAL / durability: biggest write-amplification reduction on slow storage
@@ -273,8 +292,8 @@ logging_collector = off
 PGCONF
 
 # Register the include (idempotent: added once, persists across restarts)
-grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
-  || echo "include_if_exists = 'wardrowbe.conf'" >> "$POSTGRES_CONF"
+"${PG_CMD[@]}" grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
+  || "${PG_CMD[@]}" bash -c "echo \"include_if_exists = 'wardrowbe.conf'\" >> '$POSTGRES_CONF'"
 
 bashio::log.info "Initialization complete."
 bashio::log.info "  Photos:  /data/photos"
