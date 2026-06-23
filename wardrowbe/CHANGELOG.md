@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.0...wardrowbe-v4.1.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** allow AppArmor write access to /var/lib/postgresql ([733efb5](https://github.com/saya6k/ha-apps/commit/733efb53e44e0762f3db271ee1344a0541e1a48b))
+
 ## [4.1.0](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.0.1...wardrowbe-v4.1.0) (2026-06-23)
 
 
