@@ -1,5 +1,7 @@
 # Changelog
 
+
+
 ## [0.2.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.2.2...zensical-v0.2.3) (2026-06-22)
 
 
