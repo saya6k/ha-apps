@@ -2,6 +2,14 @@
 
 
 
+## [0.3.6](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.5...zensical-v0.3.6) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical,wardrowbe:** remove runtime chown; fix ownership at Dockerfile build time ([68cd371](https://github.com/saya6k/ha-apps/commit/68cd3714ba342e6cbf15b1af10431af470c13d84))
+* **zensical:** pre-create nginx temp dirs with ownership at build time ([a32a55d](https://github.com/saya6k/ha-apps/commit/a32a55d3554d492252c00974d4d0df5814aeb78a))
+
 ## [0.3.5](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.4...zensical-v0.3.5) (2026-06-23)
 
 
