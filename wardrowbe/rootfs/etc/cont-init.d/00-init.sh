@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
 set -euo pipefail
 
 bashio::log.info "Initializing Wardrowbe add-on …"
@@ -194,8 +195,7 @@ fi
 mkdir -p /data/photos                  # wardrobe photos (data mount, private)
 mkdir -p /share/wardrowbe/backups      # DB backups (share mount)
 mkdir -p /data/redis                   # Redis persistence (data mount)
-mkdir -p /run/postgresql /run/nginx    # runtime sockets (tmpfs)
-chmod 777 /run/postgresql              # postgres needs write (no CAP_CHOWN)
+mkdir -p /run/postgresql /run/nginx    # runtime sockets
 
 # ── 5. One-shot photo migration to /data/photos ──────────────────────────
 # Temporary: photos used to live at /config/photos (1.2.0–1.4.x),
@@ -214,7 +214,7 @@ done
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
 if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
   bashio::log.info "First run – creating PostgreSQL cluster …"
-  s6-setuidgid postgres initdb -D /var/lib/postgresql/data --encoding=UTF-8 --locale=C
+  LD_PRELOAD=/usr/local/lib/libfakeeuid.so initdb -D /var/lib/postgresql/data --encoding=UTF-8 --locale=C
 fi
 
 # Configure listen address + port ------------------------------------------
