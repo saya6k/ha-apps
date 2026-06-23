@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.6](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.5...wardrowbe-v4.1.6) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** handle postgres-owned cluster on production instances ([27f406a](https://github.com/saya6k/ha-apps/commit/27f406ab1ca4e54e62f745c54b9e936a0eab77db))
+* **wardrowbe:** handle postgres-owned cluster on production instances ([#429](https://github.com/saya6k/ha-apps/issues/429)) ([e2307db](https://github.com/saya6k/ha-apps/commit/e2307db07886c565ad8511aeaa993ee5326a9d5f))
+
 ## [4.1.5](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.4...wardrowbe-v4.1.5) (2026-06-23)
 
 
