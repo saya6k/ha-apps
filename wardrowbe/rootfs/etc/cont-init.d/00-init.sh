@@ -236,6 +236,47 @@ host    all   all   ::1/128       md5
 EOF
 chown postgres:postgres "$PG_HBA"
 
+# Low-IOPS storage optimizations (SD card, eMMC, USB) ----------------------
+# Rewritten every boot so changes take effect without manual cluster edits.
+# synchronous_commit=off is the largest win: commits no longer stall waiting
+# for WAL to reach disk. Risk: last ~1-3 s of committed txns may be lost on
+# hard crash — acceptable for a wardrobe app; no corruption risk.
+cat > /var/lib/postgresql/data/wardrowbe.conf <<'PGCONF'
+# wardrowbe managed — regenerated each start; edit 00-init.sh to change.
+
+# WAL / durability: biggest write-amplification reduction on slow storage
+synchronous_commit = off
+wal_compression    = on
+wal_buffers        = 4MB
+
+# Checkpoint: flush dirty pages less often (default 5 min / 1 GB WAL)
+checkpoint_timeout         = 15min
+checkpoint_completion_target = 0.9
+max_wal_size               = 256MB
+
+# Memory: adequate for wardrowbe's small schema
+shared_buffers = 32MB
+work_mem       = 4MB
+
+# I/O profile: SD/eMMC random reads are slow relative to sequential
+random_page_cost        = 4.0
+effective_io_concurrency = 0
+
+# Connections: wardrowbe backend + worker only
+max_connections = 10
+
+# Autovacuum: gentler write bursts on flash storage
+autovacuum_vacuum_cost_delay = 20ms
+
+# Logging: no collector process, logs go straight to s6
+logging_collector = off
+PGCONF
+chown postgres:postgres /var/lib/postgresql/data/wardrowbe.conf
+
+# Register the include (idempotent: added once, persists across restarts)
+grep -qF "include_if_exists = 'wardrowbe.conf'" "$POSTGRES_CONF" \
+  || echo "include_if_exists = 'wardrowbe.conf'" >> "$POSTGRES_CONF"
+
 bashio::log.info "Initialization complete."
 bashio::log.info "  Photos:  /data/photos"
 bashio::log.info "  Config:  /config/"
