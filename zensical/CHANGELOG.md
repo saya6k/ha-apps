@@ -2,6 +2,14 @@
 
 
 
+## [0.3.4](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.3...zensical-v0.3.4) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical:** remove duplicate daemon directive and fix pre-config error log ([d7ce93f](https://github.com/saya6k/ha-apps/commit/d7ce93f81d382f374e0f08bfded2fb1a837815fd))
+* **zensical:** remove duplicate daemon directive and fix pre-config error log ([b2f6519](https://github.com/saya6k/ha-apps/commit/b2f6519479803542cdf384d3078a12c94ce3ce70))
+
 ## [0.3.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.2...zensical-v0.3.3) (2026-06-23)
 
 
