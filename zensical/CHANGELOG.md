@@ -2,6 +2,13 @@
 
 
 
+## [0.3.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.2...zensical-v0.3.3) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical:** redirect nginx logs to stderr, temp to /tmp ([335f6ac](https://github.com/saya6k/ha-apps/commit/335f6acd041c47ddbdfa322f0b94849b1c208622))
+
 ## [0.3.2](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.1...zensical-v0.3.2) (2026-06-23)
 
 
