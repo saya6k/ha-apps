@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.3](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.2...wardrowbe-v4.1.3) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** remove runtime chown calls; use s6-setuidgid for postgres dirs ([28b50ee](https://github.com/saya6k/ha-apps/commit/28b50ee63a53dccfd4aff191e9c7dc1b1631a788))
+
 ## [4.1.2](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.1...wardrowbe-v4.1.2) (2026-06-23)
 
 
