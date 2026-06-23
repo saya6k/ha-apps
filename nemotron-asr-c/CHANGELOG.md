@@ -1,5 +1,7 @@
 # Changelog
 
+
+
 ## [0.8.0](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.7.1...nemotron-asr-c-v0.8.0) (2026-06-22)
 
 
