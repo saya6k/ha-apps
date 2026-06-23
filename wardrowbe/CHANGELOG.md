@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.11](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.10...wardrowbe-v4.1.11) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** use s6 fix-attrs.d to chown postgres data dir before init ([#445](https://github.com/saya6k/ha-apps/issues/445)) ([00a4f55](https://github.com/saya6k/ha-apps/commit/00a4f555de6089f073f005a576b62815de16fa8b))
+
 ## [4.1.10](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.9...wardrowbe-v4.1.10) (2026-06-23)
 
 
