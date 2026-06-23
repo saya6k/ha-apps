@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.0...otelcol-v0.2.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **otelcol:** add custom AppArmor profile covering /init, /bin, /opt/bridge-venv ([#376](https://github.com/saya6k/ha-apps/issues/376)) ([28272ce](https://github.com/saya6k/ha-apps/commit/28272ce033250a20fbcb9eeed65b06723ba4424e))
+* **otelcol:** allow exec on /package/** for s6-overlay-suexec ([#377](https://github.com/saya6k/ha-apps/issues/377)) ([d19f1bf](https://github.com/saya6k/ha-apps/commit/d19f1bfc917e61861b18a1bf478695abec231782))
+* **otelcol:** allow exec on /run/s6/** for s6-overlay stage0 ([#378](https://github.com/saya6k/ha-apps/issues/378)) ([f5e2d22](https://github.com/saya6k/ha-apps/commit/f5e2d22563068f00636dcbe40f6e591af5d6af98))
+* **otelcol:** rewrite AppArmor profile using official HA example pattern ([#379](https://github.com/saya6k/ha-apps/issues/379)) ([1251318](https://github.com/saya6k/ha-apps/commit/1251318eebcf76bb81194bdc688766a5643d56bd))
+
 ## [0.2.0](https://github.com/saya6k/ha-apps/compare/otelcol-v0.1.0...otelcol-v0.2.0) (2026-06-22)
 
 
