@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.9.2...voiceprint-v0.10.0) (2026-06-23)
+
+
+### Features
+
+* **voiceprint:** add AppArmor profile ([84396c8](https://github.com/saya6k/ha-apps/commit/84396c8e0c0f75d7d4f488772ceba254d9dd27bb))
+
+
+### Documentation
+
+* **voiceprint:** add tech stack shields to README ([e9b5a8a](https://github.com/saya6k/ha-apps/commit/e9b5a8af862ea640627a3b8ceb7380ff0173ff70))
+
 ## [0.9.2](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.9.1...voiceprint-v0.9.2) (2026-06-22)
 
 
