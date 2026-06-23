@@ -118,6 +118,7 @@ RUN mkdir -p \
       /data/redis \
       /run/postgresql \
       /run/nginx \
+      /var/lib/nginx/logs \
  && chmod 755 /var/lib/postgresql /run/postgresql
 
 # ---- postgres root-bypass shim ------------------------------------------
