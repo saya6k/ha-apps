@@ -5,4 +5,4 @@
 # init-zensical guarantees the directory exists before this longrun starts.
 # ==============================================================================
 mkdir -p /run/nginx
-exec nginx -g "daemon off;"
+exec nginx -e /dev/stderr -g "daemon off;"
