@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.10.0...livekit-wakeword-v0.10.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **repo:** replace {,**} with explicit dir+glob rules in all AppArmor profiles ([6903c13](https://github.com/saya6k/ha-apps/commit/6903c1329a95f5833114dd3aabdc9849fbf8e7b8))
+
 ## [0.10.0](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.9.1...livekit-wakeword-v0.10.0) (2026-06-23)
 
 
