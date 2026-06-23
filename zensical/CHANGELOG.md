@@ -2,6 +2,13 @@
 
 
 
+## [0.3.1](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.0...zensical-v0.3.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **zensical:** allow AppArmor write access to /var/lib/nginx ([f27aa3e](https://github.com/saya6k/ha-apps/commit/f27aa3e83ef37cafdf0209f95564b41d7726ed2d))
+
 ## [0.2.3](https://github.com/saya6k/ha-apps/compare/zensical-v0.2.2...zensical-v0.2.3) (2026-06-22)
 
 
