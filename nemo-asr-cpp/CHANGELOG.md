@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.10.1...nemo-asr-cpp-v0.11.0) (2026-06-23)
+
+
+### Features
+
+* **nemo-asr-cpp:** add AppArmor profile ([5eb0219](https://github.com/saya6k/ha-apps/commit/5eb0219c693a6a70ac0cafd060c9c63f6f5b739f))
+
 ## [0.10.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.10.0...nemo-asr-cpp-v0.10.1) (2026-06-22)
 
 
