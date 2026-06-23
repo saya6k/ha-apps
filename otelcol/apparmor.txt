@@ -19,7 +19,7 @@ profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
 
   # s6 runtime state
   /run/s6/                                r,
-  /run/s6/**                              rwlk,
+  /run/s6/**                              rwlkix,
   /run/s6-linux-init-container-results/   r,
   /run/s6-linux-init-container-results/** rw,
 
