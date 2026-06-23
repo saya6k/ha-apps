@@ -11,15 +11,16 @@ for _ in $(seq 1 60); do
 done
 
 # ── Create role + database (idempotent) ───────────────────────────────────
+# Connect via Unix socket as the postgres superuser (trust auth, no user-switch needed).
 echo "[backend] ensuring database and role exist …"
-s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -tc \
+psql -U postgres -p "${POSTGRES_PORT}" -tc \
   "SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'" | grep -q 1 \
-  || s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -c \
+  || psql -U postgres -p "${POSTGRES_PORT}" -c \
        "CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
 
-s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -tc \
+psql -U postgres -p "${POSTGRES_PORT}" -tc \
   "SELECT 1 FROM pg_database WHERE datname='${POSTGRES_DB}'" | grep -q 1 \
-  || s6-setuidgid postgres psql -p "${POSTGRES_PORT}" -c \
+  || psql -U postgres -p "${POSTGRES_PORT}" -c \
        "CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};"
 
 # ── Wait for Redis ────────────────────────────────────────────────────────
