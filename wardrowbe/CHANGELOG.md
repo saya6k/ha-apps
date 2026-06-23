@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.5](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.4...wardrowbe-v4.1.5) (2026-06-23)
+
+
+### Bug Fixes
+
+* **wardrowbe:** rmdir stale /data/postgres/data before initdb ([91824f0](https://github.com/saya6k/ha-apps/commit/91824f0bb4ebed7dcb3165f8fb736717448e6831))
+* **wardrowbe:** rmdir stale /data/postgres/data before initdb ([#423](https://github.com/saya6k/ha-apps/issues/423)) ([6b150a0](https://github.com/saya6k/ha-apps/commit/6b150a02522aaeaec898e902860a1e44343e21cb))
+
 ## [4.1.4](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.3...wardrowbe-v4.1.4) (2026-06-23)
 
 
