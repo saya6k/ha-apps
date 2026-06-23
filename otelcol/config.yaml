@@ -10,7 +10,7 @@ stage: experimental
 arch:
   - amd64
   - aarch64
-apparmor: false
+apparmor: true
 init: false
 startup: services
 auth_api: true
