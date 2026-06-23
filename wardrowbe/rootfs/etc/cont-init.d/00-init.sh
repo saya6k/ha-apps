@@ -214,6 +214,10 @@ done
 # ── 6. Initialise PostgreSQL cluster (first-run only) ─────────────────────
 mkdir -p /data/postgres
 if [ ! -f /data/postgres/data/PG_VERSION ]; then
+  # Older versions may have left an empty /data/postgres/data with wrong
+  # ownership. rmdir removes it if empty (needs only parent write-perm);
+  # silently no-ops if non-empty, in which case initdb will error below.
+  rmdir /data/postgres/data 2>/dev/null || true
   bashio::log.info "First run – creating PostgreSQL cluster …"
   LD_PRELOAD=/usr/local/lib/libfakeeuid.so initdb -D /data/postgres/data --encoding=UTF-8 --locale=C
 fi
