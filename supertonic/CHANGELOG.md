@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.6.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.5.0...supertonic-v2.6.0) (2026-06-23)
+
+
+### Features
+
+* **supertonic:** add AppArmor profile ([84fe2b3](https://github.com/saya6k/ha-apps/commit/84fe2b36ae0de1b1b8140da3bd988c3aad305b7b))
+
+
+
 ## [2.5.0](https://github.com/saya6k/ha-apps/compare/supertonic-v2.4.1...supertonic-v2.5.0) (2026-06-22)
 
 
