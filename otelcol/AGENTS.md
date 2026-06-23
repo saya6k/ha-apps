@@ -24,8 +24,7 @@ the full design.
 Part of the `ha-apps` monorepo. Registered in `.gitignore` (`!/otelcol/`),
 release-please config, CI, labeler, and issue templates — fully tracked.
 
-**Stage:** `stage: experimental` in `config.yaml` (shows as experimental
-in the HA store). To promote: remove the `stage:` key from `config.yaml`.
+**Stage:** stable (no `stage:` key in `config.yaml`).
 
 ## Layout
 
