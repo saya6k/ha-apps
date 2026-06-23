@@ -6,7 +6,6 @@ description: >-
   and every add-on container. Export via OTLP to Grafana LGTM (Loki, Tempo,
   Mimir) or any OTLP-compatible backend.
 url: https://github.com/saya6k/ha-apps
-stage: experimental
 arch:
   - amd64
   - aarch64
