@@ -15,7 +15,7 @@ profile hassio_otelcol flags=(attach_disconnected,mediate_deleted) {
   /command/                               r,
   /command/**                             mrix,
   /package/                               r,
-  /package/**                             mr,
+  /package/**                             mrix,
 
   # s6 runtime state
   /run/s6/                                r,
