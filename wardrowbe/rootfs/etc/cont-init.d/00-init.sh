@@ -229,9 +229,17 @@ _pg_chown_r() {
 }
 _pg_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo 0)
 if [ "$_pg_uid" != "0" ]; then
-  bashio::log.info "Migrating PostgreSQL cluster from UID ${_pg_uid} to root …"
-  _pg_chown_r /data/postgres
-  bashio::log.info "Ownership migration complete."
+  if bashio::config.true 'migrate_postgres_ownership'; then
+    bashio::log.info "Migrating PostgreSQL cluster from UID ${_pg_uid} to root …"
+    _pg_chown_r /data/postgres
+    bashio::log.info "Ownership migration complete."
+    bashio::log.warning "Migration done — you can now remove 'migrate_postgres_ownership' from config."
+  else
+    bashio::log.error "PostgreSQL data directory is owned by UID ${_pg_uid}, not root."
+    bashio::log.error "This happens after upgrading from wardrowbe < v4.1.x."
+    bashio::log.error "→ Set 'migrate_postgres_ownership: true' in add-on config and restart."
+    bashio::exit.nok
+  fi
 fi
 unset _pg_uid _pg_chown_r
 
