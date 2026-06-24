@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.15](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.14...wardrowbe-v4.1.15) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** chown nginx lib dir to root ([91593a5](https://github.com/saya6k/ha-apps/commit/91593a50c54e6dae13971903d544e3c366da6e6b))
+* **wardrowbe:** chown nginx lib dir to root for runtime mkdir ([063a929](https://github.com/saya6k/ha-apps/commit/063a9293c902d630bc787c771fd9e335d417b3b9))
+* **wardrowbe:** chown nginx lib dir to root so runtime mkdir works ([ae550fe](https://github.com/saya6k/ha-apps/commit/ae550fe73b64be59f728f9313e125cf23753c95c))
+
 ## [4.1.14](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.13...wardrowbe-v4.1.14) (2026-06-24)
 
 
