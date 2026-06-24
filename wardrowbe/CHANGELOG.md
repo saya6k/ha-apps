@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.16](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.15...wardrowbe-v4.1.16) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** disable Redis AOF to prevent fsync stalls on slow disks ([e411261](https://github.com/saya6k/ha-apps/commit/e411261af588f3762d7c3da8152c042c1acd0943))
+* **wardrowbe:** disable Redis AOF to prevent fsync stalls on slow disks ([#460](https://github.com/saya6k/ha-apps/issues/460)) ([dde67fd](https://github.com/saya6k/ha-apps/commit/dde67fddfab1ab2ad2bcc999d2f60d98eb223ebc))
+
 ## [4.1.15](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.14...wardrowbe-v4.1.15) (2026-06-24)
 
 
