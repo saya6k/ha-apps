@@ -12,9 +12,17 @@ for _ in $(seq 1 60); do
 done
 
 # ── Create role + database (idempotent) ───────────────────────────────────
+# CREATE ROLE does not support IF NOT EXISTS, so we check in PL/pgSQL.
 echo "[backend] ensuring database and role exist …"
-psql -U postgres -p "${POSTGRES_PORT}" -c \
-  "CREATE ROLE IF NOT EXISTS ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
+psql -U postgres -p "${POSTGRES_PORT}" <<SQL
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
+    CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+  END IF;
+END
+\$\$;
+SQL
 
 psql -U postgres -p "${POSTGRES_PORT}" <<SQL
 SELECT 'CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};'
