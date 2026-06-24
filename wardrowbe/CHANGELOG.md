@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.18](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.17...wardrowbe-v4.1.18) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** use DO block for role creation instead of IF NOT EXISTS ([54f30fb](https://github.com/saya6k/ha-apps/commit/54f30fb62f3f1e9d635d4331eb8692f3dd1a23fe))
+* **wardrowbe:** use DO block for role creation instead of IF NOT EXISTS ([1f6c608](https://github.com/saya6k/ha-apps/commit/1f6c6085a1cc6f94472f500d2ab4ea37a99bd107))
+* **wardrowbe:** use DO block for role creation instead of IF NOT EXISTS ([1abc5ba](https://github.com/saya6k/ha-apps/commit/1abc5bae338026fc3a6c0909e40fdc126504b527))
+
 ## [4.1.17](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.16...wardrowbe-v4.1.17) (2026-06-24)
 
 
