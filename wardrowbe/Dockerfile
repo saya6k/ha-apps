@@ -119,7 +119,9 @@ RUN mkdir -p \
       /run/postgresql \
       /run/nginx \
       /var/lib/nginx/logs \
- && chmod 755 /var/lib/postgresql /run/postgresql /var/lib/nginx/logs
+ && chmod 755 /var/lib/postgresql /run/postgresql /var/lib/nginx/logs \
+ && chown 0:0 /var/lib/nginx /var/lib/nginx/logs \
+ && chmod 755 /var/lib/nginx
 
 # ---- postgres root-bypass shim -------------------------------------------
 # libfakeeuid.so: LD_PRELOAD shim — postgres/initdb see geteuid()=999 (non-root).
