@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.1.13](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.12...wardrowbe-v4.1.13) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** add AppArmor capability chown and gate postgres migration behind config option ([7072760](https://github.com/saya6k/ha-apps/commit/7072760c90a9bd8aeddc700862128fb3c6138672))
+* **wardrowbe:** add capability chown to AppArmor profile ([d20ba38](https://github.com/saya6k/ha-apps/commit/d20ba38ed4b3033ab893e50421077321e15985e4))
+* **wardrowbe:** add hidden migrate_postgres_ownership schema option ([c11a670](https://github.com/saya6k/ha-apps/commit/c11a6709ddd11073ab569b0937087b6f7d585276))
+* **wardrowbe:** AppArmor chown capability and postgres migration gating ([cb45e22](https://github.com/saya6k/ha-apps/commit/cb45e22481dbdab08fc735a79e000faaaf34d650))
+* **wardrowbe:** gate postgres ownership migration behind config option ([fcbb53b](https://github.com/saya6k/ha-apps/commit/fcbb53b91af360ff2567c56873018ca47f9029c8))
+* **wardrowbe:** harden chown migration against partial runs and edge cases ([80cd8ec](https://github.com/saya6k/ha-apps/commit/80cd8ec04af7a1ed0da3abb1eff2879d63dc5f1f))
+* **wardrowbe:** remove invalid cap_add key from config.yaml ([b634eed](https://github.com/saya6k/ha-apps/commit/b634eedd28dd5b3df6dba1804c985cb3fd62c6ea))
+
 ## [4.1.12](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.11...wardrowbe-v4.1.12) (2026-06-23)
 
 
