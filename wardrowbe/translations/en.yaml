@@ -81,6 +81,13 @@ configuration:
       Public URL where wardrowbe is reachable through your reverse proxy
       (e.g. `https://wardrowbe.example.com`). Required for OIDC callbacks
       to work — HA ingress URLs can't be used as OIDC redirect targets.
+  migrate_postgres_ownership:
+    name: Migrate PostgreSQL file ownership
+    description: >-
+      Enable once when upgrading from wardrowbe &lt; v4.1.x. Changes the
+      PostgreSQL data directory owner from the old postgres system user to
+      root so the database can start. Disable after a successful start —
+      it's a one-time step. New installs should leave this disabled.
   ntfy_server:
     name: ntfy.sh server URL
     description: >-

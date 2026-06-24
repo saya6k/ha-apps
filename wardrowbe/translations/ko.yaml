@@ -78,6 +78,13 @@ configuration:
       리버스 프록시를 통해 wardrowbe에 접근하는 공개 URL (예:
       `https://wardrowbe.example.com`). OIDC 콜백이 동작하려면 필수입니다 —
       HA ingress URL은 OIDC 리다이렉트 대상으로 사용할 수 없습니다.
+  migrate_postgres_ownership:
+    name: PostgreSQL 파일 소유권 마이그레이션
+    description: >-
+      wardrowbe v4.1.x 미만에서 업그레이드할 때 한 번 활성화하세요.
+      PostgreSQL 데이터 디렉토리 소유자를 구 postgres 시스템 사용자에서
+      root로 변경하여 데이터베이스가 시작될 수 있도록 합니다. 성공 후에는
+      비활성화하세요 — 일회성 작업입니다. 신규 설치에서는 비활성 상태로 두세요.
   ntfy_server:
     name: ntfy.sh 서버 URL
     description: >-
