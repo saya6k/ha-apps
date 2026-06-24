@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.1.14](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.13...wardrowbe-v4.1.14) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** add translations for migrate_postgres_ownership option ([f66eef6](https://github.com/saya6k/ha-apps/commit/f66eef61c13b9c3ee12c66522e515adabd1115b9))
+* **wardrowbe:** ensure nginx log directory is writable at startup ([813d634](https://github.com/saya6k/ha-apps/commit/813d63454396ef135d9f0d56148ef64e51a24e33))
+* **wardrowbe:** ensure nginx log directory is writable at startup ([ece22b4](https://github.com/saya6k/ha-apps/commit/ece22b43d33f7015ca272d93248cff1cbfb86be7))
+* **wardrowbe:** nginx log permission + translations ([5d603c1](https://github.com/saya6k/ha-apps/commit/5d603c1070197b82b9b84ca870a28ed6755006e9))
+
 ## [4.1.13](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.12...wardrowbe-v4.1.13) (2026-06-24)
 
 
