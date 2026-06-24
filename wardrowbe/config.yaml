@@ -11,6 +11,8 @@ arch:
   - amd64
 init: false
 startup: services
+cap_add:
+  - CHOWN
 map:
   - type: addon_config
     read_only: false
@@ -63,6 +65,7 @@ schema:
   oidc_client_secret: str?
   oidc_mobile_client_id: str?
   external_url: str?
+  migrate_postgres_ownership: bool?
   ntfy_server: str?
   ntfy_token: str?
   mattermost_webhook_url: str?
