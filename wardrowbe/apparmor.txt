@@ -5,6 +5,7 @@ profile hassio_wardrowbe flags=(attach_disconnected,mediate_deleted) {
 
   # Capabilities
   file,
+  capability chown,
   signal (send) set=(kill,term,int,hup,cont),
 
   # S6-Overlay (official HA example pattern)
