@@ -12,17 +12,15 @@ for _ in $(seq 1 60); do
 done
 
 # ── Create role + database (idempotent) ───────────────────────────────────
-# Connect via Unix socket as the postgres superuser (trust auth, no user-switch needed).
 echo "[backend] ensuring database and role exist …"
-psql -U postgres -p "${POSTGRES_PORT}" -tc \
-  "SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'" | grep -q 1 \
-  || psql -U postgres -p "${POSTGRES_PORT}" -c \
-       "CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
+psql -U postgres -p "${POSTGRES_PORT}" -c \
+  "CREATE ROLE IF NOT EXISTS ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';"
 
-psql -U postgres -p "${POSTGRES_PORT}" -tc \
-  "SELECT 1 FROM pg_database WHERE datname='${POSTGRES_DB}'" | grep -q 1 \
-  || psql -U postgres -p "${POSTGRES_PORT}" -c \
-       "CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};"
+psql -U postgres -p "${POSTGRES_PORT}" <<SQL
+SELECT 'CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}')
+\gexec
+SQL
 
 # ── Wait for Redis ────────────────────────────────────────────────────────
 echo "[backend] waiting for redis …"
