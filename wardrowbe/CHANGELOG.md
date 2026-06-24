@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.17](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.16...wardrowbe-v4.1.17) (2026-06-24)
+
+
+### Bug Fixes
+
+* **wardrowbe:** make backend DB init idempotent with IF NOT EXISTS ([28ec822](https://github.com/saya6k/ha-apps/commit/28ec8224f7398ff9641751d0b61723026b440157))
+* **wardrowbe:** make backend DB init idempotent with IF NOT EXISTS ([1765d8c](https://github.com/saya6k/ha-apps/commit/1765d8cbf9acde63409a28ec6d3991d100861db9))
+* **wardrowbe:** make backend DB init idempotent with IF NOT EXISTS ([c244158](https://github.com/saya6k/ha-apps/commit/c244158dd31f2f4639848f51a3cf36d98268a548))
+
 ## [4.1.16](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.15...wardrowbe-v4.1.16) (2026-06-24)
 
 
