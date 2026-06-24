@@ -11,8 +11,6 @@ arch:
   - amd64
 init: false
 startup: services
-cap_add:
-  - CHOWN
 map:
   - type: addon_config
     read_only: false
