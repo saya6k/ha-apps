@@ -220,18 +220,37 @@ mkdir -p /data/postgres
 # chown and can't traverse a 700 dir they don't own). Top-down chown works:
 # chown the directory first → root becomes owner → can enter via owner rwx.
 _pg_chown_r() {
-  chown 0:0 "$1"
+  chown -h 0:0 "$1"
   [ -d "$1" ] || return 0
+  local _bn
+  shopt -s dotglob nullglob 2>/dev/null || true
   for _child in "$1"/*; do
+    _bn=$(basename "$_child")
+    [ "$_bn" = "." ] || [ "$_bn" = ".." ] && continue
     [ -e "$_child" ] || continue
     _pg_chown_r "$_child"
   done
 }
+# Stat PGDATA itself — not its parent — so an interrupted migration
+# (parent chowned but cluster dirs still old-UID) is correctly detected.
 _pg_uid=$(stat -c '%u' /data/postgres 2>/dev/null || echo 0)
+# If parent is already root-owned (e.g. after interrupted migration),
+# check PGDATA too — partial chown can leave deep dirs at the old UID.
+if [ "$_pg_uid" = "0" ] && [ -d /data/postgres/data ]; then
+  _pg_data_uid=$(stat -c '%u' /data/postgres/data 2>/dev/null || echo 0)
+  [ "$_pg_data_uid" != "0" ] && _pg_uid="$_pg_data_uid"
+fi
 if [ "$_pg_uid" != "0" ]; then
-  bashio::log.info "Migrating PostgreSQL cluster from UID ${_pg_uid} to root …"
-  _pg_chown_r /data/postgres
-  bashio::log.info "Ownership migration complete."
+  if bashio::config.true 'migrate_postgres_ownership'; then
+    bashio::log.info "Migrating PostgreSQL cluster from UID ${_pg_uid} to root …"
+    _pg_chown_r /data/postgres
+    bashio::log.info "Ownership migration complete."
+  else
+    bashio::log.error "PostgreSQL data directory is owned by UID ${_pg_uid}, not root."
+    bashio::log.error "This can happen after an upgrade, backup restore, or manual filesystem operation."
+    bashio::log.error "→ Set 'migrate_postgres_ownership: true' in add-on config and restart."
+    bashio::exit.nok
+  fi
 fi
 unset _pg_uid _pg_chown_r
 
