@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.3...otelcol-v0.3.0) (2026-06-27)
+
+
+### Features
+
+* **otelcol:** add lifecycle traces, entity/event metrics to HA bridge ([8855e66](https://github.com/saya6k/ha-apps/commit/8855e66b685c17ddd818fa3ed76fe25dc3cf1ed6))
+* **otelcol:** add lifecycle traces, entity/event metrics to HA bridge ([#469](https://github.com/saya6k/ha-apps/issues/469)) ([ea43d1c](https://github.com/saya6k/ha-apps/commit/ea43d1c148b708d7df958d323bf27e0fcedc1601))
+
 ## [0.2.3](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.2...otelcol-v0.2.3) (2026-06-23)
 
 
