@@ -2,7 +2,7 @@
 # the multi-arch HA base manifest, pinned to an Alpine version tag (3.23 →
 # Node 24.14.1) instead of the moving :latest. Overridable with --build-arg.
 ARG BUILD_FROM=ghcr.io/home-assistant/base:3.23
-ARG WARDROWBE_VERSION=wardrowbe-v1.3.0
+ARG WARDROWBE_VERSION=wardrowbe-v1.3.1
 
 # =========================================================================
 # Stage 0 — Clone source from GitHub release tag
