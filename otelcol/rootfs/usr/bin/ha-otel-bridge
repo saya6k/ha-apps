@@ -111,6 +111,8 @@ _container_log.propagate = False
 # entity_id → (ObservableGauge, last_value); we use callback-style gauges.
 _gauge_values: dict[str, float] = {}
 _registered_gauges: set[str] = set()
+# entity_id → domain slug; populated by seed + state_changed; drives ha.entity.count
+_entity_domains: dict[str, str] = {}
 
 # OTel requires unit to be ASCII, max 63 chars. Map common HA non-ASCII units
 # to their UCUM equivalents; fall back to stripping non-ASCII.
@@ -179,6 +181,43 @@ _meter.create_observable_gauge(
     callbacks=[_container_mem_callback],
     unit="%",
     description="Memory usage percent per add-on/service",
+)
+
+# ── Entity domain count ───────────────────────────────────────────────────────
+
+def _entity_domain_count_callback(options: Any):
+    counts: dict[str, int] = {}
+    for domain in _entity_domains.values():
+        counts[domain] = counts.get(domain, 0) + 1
+    for domain, count in counts.items():
+        yield Observation(count, {"ha.domain": domain})
+
+
+_meter.create_observable_gauge(
+    name="ha.entity.count",
+    callbacks=[_entity_domain_count_callback],
+    unit="{entity}",
+    description="Number of registered HA entities per domain",
+)
+
+# ── Event throughput counter ──────────────────────────────────────────────────
+_event_counter = _meter.create_counter(
+    name="ha.events.total",
+    unit="{event}",
+    description="Total HA events processed by the bridge, by event type",
+)
+
+# ── Bridge health: open context LRU entries ───────────────────────────────────
+# _ctx_graph is defined below; callback is called lazily at export time.
+def _context_lru_size_callback(options: Any):
+    yield Observation(len(_ctx_graph._store))
+
+
+_meter.create_observable_gauge(
+    name="ha.bridge.context_lru_size",
+    callbacks=[_context_lru_size_callback],
+    unit="{context}",
+    description="Active context entries in the bridge LRU cache",
 )
 
 # ── Context graph (D4) ────────────────────────────────────────────────────────
@@ -258,11 +297,13 @@ def _try_float(value: str) -> float | None:
 
 
 def handle_state_changed(event_data: dict) -> None:
-    """D2: convert numeric state_changed to OTLP gauge."""
+    """D2: convert numeric state_changed to OTLP gauge; track entity domains."""
     if not HA_METRICS_ENABLED:
         return
     new_state = event_data.get("new_state") or {}
     entity_id: str = new_state.get("entity_id", "")
+    if entity_id:
+        _entity_domains[entity_id] = entity_id.split(".")[0]
     state_str: str = new_state.get("state", "")
     if state_str in ("unavailable", "unknown", ""):
         return
@@ -327,7 +368,12 @@ def handle_trace_event(event_type: str, event_data: dict, context: dict) -> None
             "ha.context_id": context_id,
             "ha.event_type": event_type,
             **{f"ha.{k}": str(v) for k, v in event_data.items()
-               if k in ("entity_id", "domain", "service", "old_state", "new_state")
+               if k in (
+                   "entity_id", "domain", "service", "old_state", "new_state",
+                   "component",           # component_loaded
+                   "notification_id",     # persistent_notifications_updated
+                   "action", "device_id", # device_registry_updated
+               )
                and v is not None},
         },
     )
@@ -518,7 +564,49 @@ _TRACE_EVENTS = {
     "script_started",
     "state_changed",
     "timer_finished",
+    "homeassistant_start",
+    "homeassistant_stop",
+    "component_loaded",
+    "persistent_notifications_updated",
+    "device_registry_updated",
 }
+
+# Lifecycle/registry events also forwarded as OTLP log records
+_LIFECYCLE_LOG_EVENTS = {
+    "homeassistant_start",
+    "homeassistant_stop",
+    "component_loaded",
+    "persistent_notifications_updated",
+    "device_registry_updated",
+}
+
+
+def handle_lifecycle_log(event_type: str, event_data: dict) -> None:
+    """Forward lifecycle/registry events as OTLP log records."""
+    if not HA_EVENTS_ENABLED:
+        return
+    level = logging.WARNING if event_type == "homeassistant_stop" else logging.INFO
+    if event_type == "homeassistant_start":
+        message = "Home Assistant started"
+    elif event_type == "homeassistant_stop":
+        message = "Home Assistant stopping"
+    elif event_type == "component_loaded":
+        message = f"Component loaded: {event_data.get('component', '?')}"
+    elif event_type == "persistent_notifications_updated":
+        message = f"Notification updated: {event_data.get('notification_id', '?')}"
+    elif event_type == "device_registry_updated":
+        message = (
+            f"Device registry {event_data.get('action', '?')}: "
+            f"{event_data.get('device_id', '?')}"
+        )
+    else:
+        message = event_type
+    extra: dict[str, str] = {"ha.event_type": event_type}
+    for key in ("component", "notification_id", "action", "device_id"):
+        val = event_data.get(key)
+        if val is not None:
+            extra[f"ha.{key}"] = str(val)
+    _ha_log.log(level, message, extra=extra)
 
 # ── WebSocket client ──────────────────────────────────────────────────────────
 
@@ -563,12 +651,17 @@ async def _seed_states(session: aiohttp.ClientSession) -> None:
             states = await resp.json()
         for state in states:
             entity_id = state.get("entity_id", "")
+            if entity_id:
+                _entity_domains[entity_id] = entity_id.split(".")[0]
             state_str = state.get("state", "")
             value = _try_float(state_str)
             if value is not None and state_str not in ("unavailable", "unknown"):
                 attrs = state.get("attributes") or {}
                 _upsert_gauge(entity_id, value, {k: str(v) for k, v in attrs.items()})
-        log.info("Seeded %d entity states", len(states))
+        log.info(
+            "Seeded %d entity states across %d domains",
+            len(states), len(set(_entity_domains.values())),
+        )
     except Exception as exc:
         log.warning("State seed error: %s", exc)
 
@@ -586,10 +679,14 @@ async def _event_loop(ws: aiohttp.ClientWebSocketResponse) -> None:
         event_data: dict = event.get("data") or {}
         context: dict = event.get("context") or {}
 
+        _event_counter.add(1, {"ha.event_type": event_type})
+
         if event_type == "state_changed":
             handle_state_changed(event_data)
         elif event_type == "system_log_event":
             handle_system_log_event(event_data)
+        elif event_type in _LIFECYCLE_LOG_EVENTS:
+            handle_lifecycle_log(event_type, event_data)
 
         if event_type in _TRACE_EVENTS:
             handle_trace_event(event_type, event_data, context)
@@ -635,6 +732,15 @@ async def run() -> None:
                     if HA_TRACES_ENABLED:
                         for etype in ("call_service", "automation_triggered",
                                       "script_started", "timer_finished"):
+                            await _subscribe(ws, msg_id, etype)
+                            msg_id += 1
+                    if HA_TRACES_ENABLED or HA_EVENTS_ENABLED:
+                        for etype in (
+                            "homeassistant_start", "homeassistant_stop",
+                            "component_loaded",
+                            "persistent_notifications_updated",
+                            "device_registry_updated",
+                        ):
                             await _subscribe(ws, msg_id, etype)
                             msg_id += 1
 
