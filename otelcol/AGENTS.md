@@ -29,39 +29,54 @@ release-please config, CI, labeler, and issue templates — fully tracked.
 ## Layout
 
 ```
-config.yaml / Dockerfile                     add-on packaging
-rootfs/etc/s6-overlay/s6-rc.d/otelcol/       s6 service (type/run/finish)
-rootfs/etc/otelcol-contrib/                   bundled self-monitoring config
-translations/{en,ko}.yaml                     option UI strings
-CHANGELOG.md / DOCS.md / README.md           user-facing docs
+config.yaml / Dockerfile                          add-on packaging
+rootfs/usr/bin/ha-otel-bridge                     Python bridge (WebSocket → OTLP)
+rootfs/etc/s6-overlay/s6-rc.d/otelcol/           s6 service for otelcol-contrib
+rootfs/etc/s6-overlay/s6-rc.d/ha-bridge/         s6 service for Python bridge
+rootfs/etc/otelcol-contrib/                       bundled self-monitoring config
+translations/{en,ko}.yaml                         option UI strings
+CHANGELOG.md / DOCS.md / README.md               user-facing docs
 ```
 
 ## Architecture
 
+Two processes under s6 supervision in one container:
+
 ```
-HA log file (/config/home-assistant.log) ──→ filelog receiver ──┐
-HA Prometheus (/api/prometheus) ───────────→ prometheus receiver │
-Container stdout/stderr (Docker socket) ────→ docker_stats rcvr  │
-Self-metrics (:8888) ──────────────────────→ prometheus/internal │
-                                                                  ├── batch ──→ memory_limiter ──→ otlp exporter ──→ LGTM
-Add-on traces (OTLP SDKs) ─────────────────→ otlp receiver ─────┘
+── ha-otel-bridge (Python sidecar) ───────────────────────────────────────────
+HA WebSocket API:
+  state_changed                    ──→ OTLP gauges  (numeric entity states)
+                                       + ha.entity.count{domain} aggregate
+  system_log_event                 ──→ OTLP logs    (structured + stack traces)
+  call_service                     ──┐
+  automation_triggered             ──┤
+  script_started                   ──┤ OTLP spans   (context.id chains parent→child)
+  timer_finished                   ──┤
+  homeassistant_start/stop         ──┤ + OTLP logs  (lifecycle)
+  component_loaded                 ──┤ + OTLP logs
+  persistent_notifications_updated ──┤ + OTLP logs
+  device_registry_updated          ──┘ + OTLP logs
+HA REST /api/states      ──→ gauge seed + entity domain map on connect
+Supervisor API (opt-in):
+  /addons/*/logs         ──→ OTLP logs    (tagged addon.slug / addon.name)
+  /addons/*/stats        ──→ OTLP gauges  (CPU % / memory %)
+        │
+        │  OTLP/HTTP  localhost:4318
+        ▼
+── otelcol-contrib ───────────────────────────────────────────────────────────
+Receivers:
+  otlp            ← bridge signals + external add-on SDKs (4317 gRPC / 4318 HTTP)
+  filelog/ha      ← /config/home-assistant.log (multiline + severity mapping)
+  prometheus/int  ← localhost:8888 (self-metrics)
+Processors: memory_limiter → batch → resource (ha.addon.version tag)
+Exporters:  otlp[http]/lgtm  +  debug
+        │
+        ▼
+LGTM stack (Loki / Grafana / Tempo / Mimir) or any OTLP backend
 ```
 
-The add-on runs `otelcol-contrib` (the full contrib binary, statically
-linked Go) under s6 supervision. Configuration is generated at startup
-from structured HA options; power users can paste raw otelcol YAML via
-`raw_config` to override everything.
-
-## Implementation phases
-
-(Design spec lives in `SPEC.md` locally — gitignored.)
-
-1. **Skeleton** (this scaffold) — builds, starts, health-checks
-2. **Config generation** — `run` script generates otelcol YAML from structured options
-3. **HA log collection** — `filelog` receiver tailing `/config/home-assistant.log`
-4. **HA metrics collection** — `prometheus` receiver scraping `/api/prometheus`
-5. **Container log collection** — Docker socket or journald (opt-in)
-6. **Polish & docs** — DOCS.md setup guide, error messages
+Config is generated at startup from structured HA options; power users can
+paste raw otelcol YAML via `raw_config` to override everything.
 
 ## Map / mount layout
 

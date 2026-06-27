@@ -44,9 +44,18 @@ By default, all four signal types are on:
 | Signal | Source | Toggle |
 |---|---|---|
 | Logs | `/config/home-assistant.log` tailed by filelog receiver | `ha_logs_enabled` |
-| Metrics | Numeric entity states via HA WebSocket API | `ha_metrics_enabled` |
+| Metrics | Numeric entity states — seeded from REST on connect, live via WebSocket | `ha_metrics_enabled` |
 | Logs (structured) | `system_log_event` errors/warnings with stack traces | `ha_events_enabled` |
-| Traces | HA event context graph (`call_service → automation → state_changed`) | `ha_traces_enabled` |
+| Traces | `call_service`, `automation_triggered`, `script_started`, `timer_finished`, `homeassistant_start/stop`, `component_loaded`, `persistent_notifications_updated`, `device_registry_updated` — linked by `context.id` into parent→child spans | `ha_traces_enabled` |
+| Logs (lifecycle) | `homeassistant_start/stop`, `component_loaded`, notification and device registry changes as OTLP log records | `ha_events_enabled` |
+| Metrics (entity count) | `ha.entity.count{ha.domain}` — entity count per domain, seeded on connect and updated live | `ha_metrics_enabled` |
+| Metrics (event rate) | `ha.events.total{ha.event_type}` — event throughput counter per type | `ha_metrics_enabled` |
+| Metrics (bridge health) | `ha.bridge.context_lru_size` — active context entries in the span-linking LRU | `ha_metrics_enabled` |
+| Logs + Metrics | Container stdout and CPU/memory% for Supervisor, HA Core, and all add-ons via Supervisor API | `container_logs_enabled` |
+
+The Python bridge (`ha-otel-bridge`) connects to HA's WebSocket API, subscribes to the
+events above, and pushes everything as OTLP to the local collector on `localhost:4318`.
+No Docker socket access or custom component required.
 
 ## Options
 
