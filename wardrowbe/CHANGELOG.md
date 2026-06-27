@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.19](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.18...wardrowbe-v4.1.19) (2026-06-27)
+
+
+### Bug Fixes
+
+* **wardrowbe:** bump upstream to wardrowbe-v1.3.1 ([#472](https://github.com/saya6k/ha-apps/issues/472)) ([8e801d9](https://github.com/saya6k/ha-apps/commit/8e801d9e2fef4627dcf6650662bd7ce8ed355fc7))
+
 ## [4.1.18](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.17...wardrowbe-v4.1.18) (2026-06-24)
 
 
