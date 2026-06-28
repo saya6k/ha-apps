@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.10](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.10)
+
+## What's Changed
+
+* fix: drop UNSPECIFIED-severity records from the debug exporter pipeline (#12) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.9...v0.3.10
+
 ## [0.3.9](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.9)
 
 ## What's Changed
