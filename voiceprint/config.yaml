@@ -1,4 +1,4 @@
-version: 0.10.1
+version: 0.10.2
 image: ghcr.io/saya6k/app-voiceprint
 slug: voiceprint
 name: Voiceprint
