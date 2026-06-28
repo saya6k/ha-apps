@@ -22,8 +22,6 @@ panel_icon: mdi:chart-line
 map:
   - type: homeassistant_config
     read_only: true
-  - type: addon_config
-    read_only: false
   - type: share
     read_only: false
   - type: ssl

@@ -84,8 +84,6 @@ paste raw otelcol YAML via `raw_config` to override everything.
 map:
   - type: homeassistant_config   # /config in container (read-only — we tail logs + scrape metrics)
     read_only: true
-  - type: addon_config           # /addon_config in container
-    read_only: false
   - type: share                  # /share in container
     read_only: false
   - type: ssl                    # /ssl in container (read-only)
