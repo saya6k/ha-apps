@@ -1,4 +1,5 @@
 version: 0.11.1
+image: ghcr.io/saya6k/app-nemo-asr-cpp
 slug: nemo-asr-cpp
 name: NeMo ASR (cpp)
 description: >-
