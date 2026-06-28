@@ -6,6 +6,15 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.9.4](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.4)
+
+## What's Changed
+
+* feat: replace debug_logging bool with log_level selector (#3) @saya6k
+* ci: upgrade docker/login-action v3 → v4 (Node.js 24) (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-nemotron-asr-c/compare/v0.9.3...v0.9.4
+
 ## [0.9.3](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.3)
 
 ## What's Changed
