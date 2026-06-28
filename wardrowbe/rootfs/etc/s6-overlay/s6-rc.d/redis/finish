@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-# shellcheck shell=bash
-exitcode="${1:-0}"
-signal="${2:-0}"
-echo "[redis] stopped (exit=${exitcode}, signal=${signal})"
-exit 0

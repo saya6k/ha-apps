@@ -1,5 +1,8 @@
 # Changelog
 
+Releases from 4.1.20 onward are tracked in
+[ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
+
 ## [4.1.19](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.18...wardrowbe-v4.1.19) (2026-06-27)
 
 
