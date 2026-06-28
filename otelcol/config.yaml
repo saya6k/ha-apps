@@ -1,4 +1,4 @@
-version: 0.3.2
+version: 0.3.3
 image: ghcr.io/saya6k/app-otelcol
 slug: otelcol
 name: OpenTelemetry Collector
