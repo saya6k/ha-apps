@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.7](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.7)
+
+## What's Changed
+
+* fix: fall back to /logs polling for add-ons without journald (#6) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.6...v0.3.7
+
 ## [0.3.6](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.6)
 
 ## What's Changed
