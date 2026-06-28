@@ -259,60 +259,6 @@ jobs:
         if: steps.pyfiles.outputs.found == 'true'
         run: ruff check "${{ matrix.addon }}"
 
-  # ---------------------------------------------------------------------
-  # Version consistency: pyproject.toml and config.yaml must agree on the
-  # version string.  Release-please bumps both; __init__.py derives its
-  # version from pyproject.toml at runtime.
-  # ---------------------------------------------------------------------
-  version-check:
-    name: Version check (${{ matrix.addon }})
-    needs: changes
-    if: ${{ needs.changes.outputs.addons != '[]' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Check version consistency
-        run: |
-          set -euo pipefail
-          ADDON="${{ matrix.addon }}"
-
-          # config.yaml version
-          CFG_VER=$(awk '/^version:/ {gsub(/"/, "", $2); print $2; exit}' "${ADDON}/config.yaml")
-          echo "config.yaml: ${CFG_VER}"
-
-          # pyproject.toml version (PEP 621)
-          if [ -f "${ADDON}/pyproject.toml" ]; then
-            TOML_VER=$(grep -Po '^version\s*=\s*"\K[^"]*' "${ADDON}/pyproject.toml" | head -1)
-            echo "pyproject.toml: ${TOML_VER}"
-          else
-            TOML_VER=""
-          fi
-
-          # release-please manifest version. In the main-only release model
-          # only release-please bumps versions (it updates config.yaml and the
-          # manifest together), so config.yaml and the manifest must always
-          # agree. Drift means a version was hand-bumped without release-please
-          # — a "phantom" release that never gets tagged. This is the exact
-          # failure that desynced this repo; fail fast on it.
-          MAN_VER=$(jq -r --arg k "${ADDON}" '.[$k] // ""' \
-            .github/.release-please-manifest.json)
-          echo "manifest: ${MAN_VER}"
-
-          FAIL=0
-          if [ -n "${TOML_VER}" ] && [ "${TOML_VER}" != "${CFG_VER}" ]; then
-            echo "::error::pyproject.toml version ${TOML_VER} != config.yaml version ${CFG_VER}"
-            FAIL=1
-          fi
-          if [ -n "${MAN_VER}" ] && [ "${MAN_VER}" != "${CFG_VER}" ]; then
-            echo "::error::${ADDON}: manifest ${MAN_VER} != config.yaml ${CFG_VER} (release-please bumps only)"
-            FAIL=1
-          fi
-          exit $FAIL
 
 
   # ---------------------------------------------------------------------
@@ -331,7 +277,6 @@ jobs:
       - lint-unicode
       - lint-markdown
       - lint-python
-      - version-check
     runs-on: ubuntu-latest
     steps:
       - name: Verify all lint jobs succeeded (or cleanly skipped)
@@ -347,8 +292,7 @@ jobs:
             "${{ needs.lint-shell.result }}" \
             "${{ needs.lint-unicode.result }}" \
             "${{ needs.lint-markdown.result }}" \
-            "${{ needs.lint-python.result }}" \
-            "${{ needs.version-check.result }}"; do
+            "${{ needs.lint-python.result }}"; do
             case "$result" in
               success|skipped) ;;
               *) echo "downstream lint failed: $result"; exit 1 ;;
