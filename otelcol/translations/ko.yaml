@@ -61,8 +61,11 @@ configuration:
   host_metrics_enabled:
     name: 호스트 메트릭 수집
     description: >-
-      HAOS 호스트의 CPU, 메모리, 디스크, 네트워크 메트릭을 수집합니다.
-      아직 구현되지 않음 — `raw_config`로 수동 설정하세요.
+      호스트 메트릭(CPU, 메모리, 디스크, 네트워크)은 `ha_metrics_enabled`가
+      켜져 있고 HA `system_monitor` 통합구성요소가 설정되어 있으면 자동으로
+      수집됩니다 — 별도 옵션이나 보호 모드 변경이 필요하지 않습니다.
+      이 토글은 향후 네이티브 구현을 위해 예약되어 있으며 현재는 동작하지
+      않습니다.
   raw_config:
     name: Raw otelcol 설정
     description: >-
