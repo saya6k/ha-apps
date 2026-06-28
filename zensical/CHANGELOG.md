@@ -1,5 +1,9 @@
 # Changelog
 
+Releases from the next version onward are tracked in
+[ha-app-* releases](https://github.com/saya6k/ha-app-zensical/releases).
+
+
 
 
 ## [0.3.7](https://github.com/saya6k/ha-apps/compare/zensical-v0.3.6...zensical-v0.3.7) (2026-06-23)

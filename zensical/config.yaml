@@ -1,4 +1,5 @@
 version: 0.3.7
+image: ghcr.io/saya6k/app-zensical
 slug: zensical
 name: Zensical
 description: >-

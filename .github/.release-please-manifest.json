@@ -1,9 +1,1 @@
-{
-  "livekit-wakeword": "0.10.1",
-  "nemotron-asr-c": "0.9.1",
-  "nemo-asr-cpp": "0.11.1",
-  "supertonic": "2.6.1",
-  "voiceprint": "0.10.1",
-  "zensical": "0.3.7",
-  "otelcol": "0.3.1"
-}
+{}

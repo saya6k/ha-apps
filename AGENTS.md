@@ -9,14 +9,14 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 
 | App | What it is |
 |---|---|
-| [`livekit-wakeword/`](livekit-wakeword/AGENTS.md) | Wyoming wake word — livekit-wakeword runtime + our incremental oWW-compatible bridge. Serves oWW zoo + custom `/share` models. |
-| [`nemotron-asr-c/`](nemotron-asr-c/AGENTS.md) | Wyoming STT — Nemotron 0.6B on pure C (nemotron-asr-streaming.c). Boot-time .nemo conversion, true-streaming (stateful mel→encoder→rnnt cascade), hotword biasing. |
-| [`nemo-asr-cpp/`](nemo-asr-cpp/AGENTS.md) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling; ctypes over a flat C API. |
-| [`supertonic/`](supertonic/AGENTS.md) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. |
-| [`voiceprint/`](voiceprint/AGENTS.md) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. |
+| `livekit-wakeword/` ([ha-app-livekit-wakeword](https://github.com/saya6k/ha-app-livekit-wakeword)) | Wyoming wake word — livekit-wakeword runtime + our incremental oWW-compatible bridge. Serves oWW zoo + custom `/share` models. Metadata only — source and CI live in ha-app-livekit-wakeword. |
+| `nemotron-asr-c/` ([ha-app-nemotron-asr-c](https://github.com/saya6k/ha-app-nemotron-asr-c)) | Wyoming STT — Nemotron 0.6B on pure C (nemotron-asr-streaming.c). Boot-time .nemo conversion, true-streaming (stateful mel→encoder→rnnt cascade), hotword biasing. Metadata only. |
+| `nemo-asr-cpp/` ([ha-app-nemo-asr-cpp](https://github.com/saya6k/ha-app-nemo-asr-cpp)) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling; ctypes over a flat C API. Metadata only. |
+| `supertonic/` ([ha-app-supertonic](https://github.com/saya6k/ha-app-supertonic)) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. Metadata only. |
+| `voiceprint/` ([ha-app-voiceprint](https://github.com/saya6k/ha-app-voiceprint)) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. Metadata only. |
 | `wardrowbe/` ([ha-app-wardrowbe](https://github.com/saya6k/ha-app-wardrowbe)) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. Metadata only — source and CI live in ha-app-wardrowbe. |
-| [`zensical/`](zensical/AGENTS.md) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. |
-| [`otelcol/`](otelcol/AGENTS.md) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. |
+| `zensical/` ([ha-app-zensical](https://github.com/saya6k/ha-app-zensical)) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. Metadata only. |
+| `otelcol/` ([ha-app-otelcol](https://github.com/saya6k/ha-app-otelcol)) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. Metadata only. |
 
 ## AI tooling (`.agents/`)
 

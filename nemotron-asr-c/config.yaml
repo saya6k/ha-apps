@@ -1,4 +1,5 @@
 version: 0.9.1
+image: ghcr.io/saya6k/app-nemotron-asr-c
 slug: nemotron-asr-c
 name: Nemotron ASR (C)
 description: >-

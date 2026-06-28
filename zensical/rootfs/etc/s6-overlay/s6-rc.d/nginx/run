@@ -1,7 +1,0 @@
-#!/command/with-contenv bashio
-# shellcheck shell=bash
-# ==============================================================================
-# Serve the built site at /var/lib/zensical/site/ on the ingress port.
-# init-zensical guarantees the directory exists before this longrun starts.
-# ==============================================================================
-exec nginx -e /dev/stderr -g "daemon off;"
