@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.11](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.11)
+
+## What's Changed
+
+## New Features
+
+* feat: attribute telemetry per-service with semconv resource names (#13) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.10...v0.3.11
+
 ## [0.3.10](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.10)
 
 ## What's Changed
