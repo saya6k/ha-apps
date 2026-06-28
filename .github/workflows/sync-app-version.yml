@@ -68,7 +68,7 @@ jobs:
           print(f"Prepended section to {cl_path}")
           PYEOF
 
-      - name: Open PR
+      - name: Open PR and enable auto-merge
         env:
           APP: ${{ github.event.client_payload.app }}
           VERSION: ${{ github.event.client_payload.version }}
@@ -82,8 +82,9 @@ jobs:
           git add "${APP}/config.yaml" "${APP}/CHANGELOG.md"
           git commit -m "chore(${APP}): release ${VERSION}"
           git push origin "${BRANCH}"
-          gh pr create \
+          PR=$(gh pr create \
             --base main \
             --head "${BRANCH}" \
             --title "chore(${APP}): release ${VERSION}" \
-            --body "Auto-synced from [ha-app-${APP} v${VERSION}](https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION})."
+            --body "Auto-synced from [ha-app-${APP} v${VERSION}](https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION}).")
+          gh pr merge "$PR" --squash --auto --delete-branch
