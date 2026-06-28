@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.3](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.3)
+
+## What's Changed
+
+* fix: switch container log collection to streaming /logs/follow endpoint (#1) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.2...v0.3.3
+
 ## [0.3.2](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.2)
 
 Re-dispatch after notify job fix.
