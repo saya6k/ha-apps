@@ -1,0 +1,89 @@
+---
+name: Sync app version
+
+# yamllint disable-line rule:truthy
+on:
+  repository_dispatch:
+    types: [app-released]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: >-
+      Sync ${{ github.event.client_payload.app }}
+      ${{ github.event.client_payload.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: dev
+
+      - name: Update config.yaml and CHANGELOG.md
+        env:
+          APP: ${{ github.event.client_payload.app }}
+          VERSION: ${{ github.event.client_payload.version }}
+          RELEASE_NOTES: ${{ github.event.client_payload.release_notes }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import os, re
+
+          app     = os.environ["APP"]
+          version = os.environ["VERSION"]
+          notes   = os.environ["RELEASE_NOTES"]
+          repo    = f"https://github.com/saya6k/ha-app-{app}"
+
+          # ── config.yaml version bump ──────────────────────────────────────
+          cfg_path = f"{app}/config.yaml"
+          with open(cfg_path) as f:
+              cfg = f.read()
+          cfg = re.sub(r"^(version:\s*).*$", f"version: {version}", cfg, flags=re.MULTILINE)
+          with open(cfg_path, "w") as f:
+              f.write(cfg)
+
+          # ── CHANGELOG.md prepend ──────────────────────────────────────────
+          cl_path = f"{app}/CHANGELOG.md"
+          with open(cl_path) as f:
+              cl = f.read()
+
+          section = (
+              f"## [{version}]({repo}/releases/tag/v{version})\n\n"
+              f"{notes.strip()}\n"
+          )
+
+          # Insert before the first existing ## [ version heading
+          idx = cl.find("\n## [")
+          if idx >= 0:
+              cl = cl[:idx + 1] + section + "\n" + cl[idx + 1:]
+          else:
+              cl = cl.rstrip("\n") + "\n\n" + section + "\n"
+
+          with open(cl_path, "w") as f:
+              f.write(cl)
+
+          print(f"Updated {cfg_path} → {version}")
+          print(f"Prepended section to {cl_path}")
+          PYEOF
+
+      - name: Open PR
+        env:
+          APP: ${{ github.event.client_payload.app }}
+          VERSION: ${{ github.event.client_payload.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          BRANCH="sync/${APP}-${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${BRANCH}"
+          git add "${APP}/config.yaml" "${APP}/CHANGELOG.md"
+          git commit -m "chore(${APP}): release ${VERSION}"
+          git push origin "${BRANCH}"
+          gh pr create \
+            --base dev \
+            --head "${BRANCH}" \
+            --title "chore(${APP}): release ${VERSION}" \
+            --body "Auto-synced from [ha-app-${APP} v${VERSION}](https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION})."
