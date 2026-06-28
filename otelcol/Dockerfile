@@ -42,8 +42,7 @@ COPY rootfs /
 
 # s6-overlay: ensure service scripts are executable; bridge script is executable
 RUN find /etc/s6-overlay/s6-rc.d -type f \( -name run -o -name finish -o -name up -o -name down \) -exec chmod +x {} \; \
-    && chmod +x /usr/bin/ha-otel-bridge \
-    && mkdir -p /addon_config
+    && chmod +x /usr/bin/ha-otel-bridge
 
 HEALTHCHECK --start-period=10s --interval=5m --timeout=3s --retries=3 \
     CMD /usr/bin/otelcol-contrib --feature-gates=-component.UseLocalHostAsDefaultHost healthcheck 2>/dev/null || \
