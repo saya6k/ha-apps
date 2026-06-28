@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.9](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.9)
+
+## What's Changed
+
+* fix: split logs pipeline so debug exporter respects log_level (#11) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.8...v0.3.9
+
 ## [0.3.8](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.8)
 
 ## What's Changed
