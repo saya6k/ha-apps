@@ -30,9 +30,9 @@ configuration:
   ha_logs_enabled:
     name: HA 로그 수집
     description: >-
-      `/config/home-assistant.log`를 tail하여 로그 항목을 OTLP 로그
-      레코드로 내보냅니다. `homeassistant_config` 마운트가 필요합니다
-      (기본 활성화).
+      Supervisor API(`/core/logs/follow`)를 통해 Home Assistant Core
+      로그를 스트리밍하여 OTLP 로그 레코드로 내보냅니다.
+      파일 마운트가 필요하지 않습니다.
   ha_metrics_enabled:
     name: HA 메트릭 수집
     description: >-

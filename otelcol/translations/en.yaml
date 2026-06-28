@@ -30,8 +30,9 @@ configuration:
   ha_logs_enabled:
     name: Collect HA logs
     description: >-
-      Tail `/config/home-assistant.log` and export log entries as OTLP
-      log records. Requires `homeassistant_config` mount (enabled by default).
+      Stream Home Assistant Core logs via the Supervisor API
+      (`/core/logs/follow`) and export as OTLP log records.
+      No file mount required.
   ha_metrics_enabled:
     name: Collect HA metrics
     description: >-
