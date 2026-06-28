@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.6](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.6)
+
+## What's Changed
+
+* fix: filter collected log records by severity based on log_level (#5) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.5...v0.3.6
+
 ## [0.3.5](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.5)
 
 ## What's Changed
