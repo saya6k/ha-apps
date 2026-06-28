@@ -4,6 +4,10 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-supertonic/releases).
 
 
+## [2.6.2](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.6.2)
+
+Re-dispatch after notify job fix.
+
 ## [2.6.1](https://github.com/saya6k/ha-apps/compare/supertonic-v2.6.0...supertonic-v2.6.1) (2026-06-23)
 
 
