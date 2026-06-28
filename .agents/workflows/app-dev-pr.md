@@ -1,39 +1,34 @@
 ---
 name: app-dev-pr
-description: Branch off dev, run checks, and integrate a change into the `dev` branch. Use at the start of any app change. For promotion to main, use [[app-promote-to-main]]. Defer to [[conventional-commit]] for message wording.
+description: Make a metadata change in ha-apps (catalog repo) and integrate it into dev. For changes to app source code, work in the ha-app-<slug> repo using its own [[app-dev-pr]] skill. For ha-apps promotion to main, use [[app-promote-to-main]].
 ---
 
-# Integrate a change into `dev`
+# Integrate a ha-apps change into `dev`
 
-- **`dev`** — integration branch. Branch protection: "CI passed" required on
-  PRs (`enforce_admins: false`). release-please creates prerelease PRs here
-  (versions like `0.5.1-dev.0`) after CI succeeds.
-- **`main`** — released/stable. Advanced only via [[app-promote-to-main]].
+ha-apps is the **catalog** — metadata, docs, CI config. Source code lives in
+ha-app-* repos. All changes here land on `dev` first.
 
-> Commit message wording: [[conventional-commit]]. Per-app sanity checks:
-> [[app-preflight]].
+- **`dev`** — integration branch. CI required on PRs.
+- **`main`** — stable. Advanced only via [[app-promote-to-main]].
+
+> Commit message: [[conventional-commit]] with scope (e.g. `fix(otelcol):`,
+> `ci(repo):`). Sanity checks: [[app-preflight]].
 
 ## 1. Branch off `dev`
 ```
-git fetch origin && git switch -c <type>/<short-slug> origin/dev
+git fetch origin && git switch -c <type>/<scope> origin/dev
 ```
 Never commit directly on `dev` or `main`.
 
 ## 2. Pre-merge checks
-Run [[app-preflight]] for the changed app (Python parse, yamllint, shellcheck;
-docker build / Wyoming `describe` on request).
+Run [[app-preflight]] — for metadata-only apps: yamllint + markdownlint.
 
 ## 3. Integrate into `dev`
-- Commit per [[conventional-commit]] — exactly one scope per commit; split
-  commits that span apps. Never `--no-verify` / `--no-gpg-sign`.
-- Open a PR targeting `dev`:
+- One scope per commit. Never `--no-verify` / `--no-gpg-sign`.
+- Open PR targeting `dev`:
   ```
   gh pr create --base dev --title "<type>(<scope>): <subject>" ...
   ```
-  GitHub defaults base to `main` — always pass `--base dev`.
-- **Merge method:** single-scope PR → squash is fine. Multi-scope PR → **do
-  not squash** — rebase-merge or split into one PR per scope.
+  GitHub defaults to `main` — always pass `--base dev`.
+- Single-scope PR → squash OK. Multi-scope → rebase-merge or split.
   See [[release-please-squash-gotcha]].
-
-After merge, release-please will open a prerelease PR on `dev` once CI passes.
-When dev is stable and the user approves, use [[app-promote-to-main]].
