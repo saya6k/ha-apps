@@ -3,6 +3,14 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.1.21](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.1.21)
+
+## What's Changed
+
+* test: verify catalog sync automation
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.1.20...v4.1.21
+
 ## [4.1.19](https://github.com/saya6k/ha-apps/compare/wardrowbe-v4.1.18...wardrowbe-v4.1.19) (2026-06-27)
 
 
