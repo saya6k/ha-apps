@@ -4,6 +4,10 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-nemo-asr-cpp/releases).
 
 
+## [0.11.2](https://github.com/saya6k/ha-app-nemo-asr-cpp/releases/tag/v0.11.2)
+
+Re-dispatch after notify job fix.
+
 ## [0.11.1](https://github.com/saya6k/ha-apps/compare/nemo-asr-cpp-v0.11.0...nemo-asr-cpp-v0.11.1) (2026-06-23)
 
 
