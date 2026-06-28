@@ -16,16 +16,16 @@ metadata (`config.yaml`, docs, changelogs) that Home Assistant reads.
 
 ## Add-ons in this repository
 
-| Directory | Add-on |
-| --- | --- |
-| [`livekit-wakeword/`](livekit-wakeword/) | Wyoming wake-word service. Runs the openWakeWord zoo plus custom `/share` models via an incremental bridge (~80 ms cadence). |
-| [`nemotron-asr-c/`](nemotron-asr-c/) | Buffered Wyoming STT running NVIDIA Nemotron ASR on a pure C runtime ([`kdrkdrkdr/nemotron-asr-streaming.c`](https://github.com/kdrkdrkdr/nemotron-asr-streaming.c)), with hotword boosting. |
-| [`nemo-asr-cpp/`](nemo-asr-cpp/) | Streaming Wyoming STT running NVIDIA Nemotron ASR on the ggml runtime via [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp), with hotword boosting. |
-| [`otelcol/`](otelcol/) | OpenTelemetry Collector Contrib packaged as a HA add-on. Collects logs, metrics, and traces from HA Core, the Supervisor, and add-on containers; exports via OTLP. |
-| [`supertonic/`](supertonic/) | Lightweight multilingual Wyoming TTS service running the [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) engine. |
-| [`voiceprint/`](voiceprint/) | Speaker-verifying Wyoming STT proxy — a pass-through gate that only forwards utterances from enrolled voices to a downstream ASR. |
-| [`wardrowbe/`](wardrowbe/) | Self-hosted AI-powered wardrobe management. Packages [`Anyesh/wardrowbe`](https://github.com/Anyesh/wardrowbe) (Postgres, Redis, FastAPI, arq, Next.js, nginx) in a single container. |
-| [`zensical/`](zensical/) | Renders `/config/docs/` as a [Zensical](https://zensical.org/) site served through the Home Assistant ingress side panel. |
+| Directory | Add-on | |
+| --- | --- | --- |
+| [`livekit-wakeword/`](livekit-wakeword/) | Wyoming wake-word service. Runs the openWakeWord zoo plus custom `/share` models via an incremental bridge (~80 ms cadence). | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_livekit-wakeword&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`nemotron-asr-c/`](nemotron-asr-c/) | Buffered Wyoming STT running NVIDIA Nemotron ASR on a pure C runtime ([`kdrkdrkdr/nemotron-asr-streaming.c`](https://github.com/kdrkdrkdr/nemotron-asr-streaming.c)), with hotword boosting. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_nemotron-asr-c&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`nemo-asr-cpp/`](nemo-asr-cpp/) | Streaming Wyoming STT running NVIDIA Nemotron ASR on the ggml runtime via [`mudler/parakeet.cpp`](https://github.com/mudler/parakeet.cpp), with hotword boosting. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_nemo-asr-cpp&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`otelcol/`](otelcol/) | OpenTelemetry Collector Contrib packaged as a HA add-on. Collects logs, metrics, and traces from HA Core, the Supervisor, and add-on containers; exports via OTLP. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_otelcol&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`supertonic/`](supertonic/) | Lightweight multilingual Wyoming TTS service running the [`supertonic-mnn`](https://github.com/vra/supertonic-mnn) engine. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_supertonic&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`voiceprint/`](voiceprint/) | Speaker-verifying Wyoming STT proxy — a pass-through gate that only forwards utterances from enrolled voices to a downstream ASR. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_voiceprint&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`wardrowbe/`](wardrowbe/) | Self-hosted AI-powered wardrobe management. Packages [`Anyesh/wardrowbe`](https://github.com/Anyesh/wardrowbe) (Postgres, Redis, FastAPI, arq, Next.js, nginx) in a single container. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_wardrowbe&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| [`zensical/`](zensical/) | Renders `/config/docs/` as a [Zensical](https://zensical.org/) site served through the Home Assistant ingress side panel. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_zensical&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 
 Each directory's `DOCS.md` is rendered as the Documentation tab inside
 Home Assistant; `CHANGELOG.md` is rendered in the add-on UI; `AGENTS.md`
