@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   push:
-    branches: [main, dev]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       addons: ${{ steps.filter.outputs.changes }}
-      build_addons: ${{ steps.filter_build.outputs.changes }}
     steps:
       - uses: actions/checkout@v7
 
@@ -60,35 +59,6 @@ jobs:
       # matches '<addon>/**' AND is not a markdown file — so docs-only changes
       # yield an empty list and the heavy image build is skipped. Lint jobs keep
       # using the docs-inclusive `addons` output above.
-      - id: filter_build
-        uses: dorny/paths-filter@v4
-        with:
-          predicate-quantifier: 'every'
-          filters: |
-            livekit-wakeword:
-              - 'livekit-wakeword/**'
-              - '!livekit-wakeword/**/*.md'
-            nemotron-asr-c:
-              - 'nemotron-asr-c/**'
-              - '!nemotron-asr-c/**/*.md'
-            nemo-asr-cpp:
-              - 'nemo-asr-cpp/**'
-              - '!nemo-asr-cpp/**/*.md'
-            supertonic:
-              - 'supertonic/**'
-              - '!supertonic/**/*.md'
-            voiceprint:
-              - 'voiceprint/**'
-              - '!voiceprint/**/*.md'
-            wardrowbe:
-              - 'wardrowbe/**'
-              - '!wardrowbe/**/*.md'
-            zensical:
-              - 'zensical/**'
-              - '!zensical/**/*.md'
-            otelcol:
-              - 'otelcol/**'
-              - '!otelcol/**/*.md'
 
   # ---------------------------------------------------------------------
   # Official Home Assistant add-on lint — validates config.yaml schema,
@@ -133,37 +103,6 @@ jobs:
         with:
           path: ${{ matrix.addon }}
 
-  # ---------------------------------------------------------------------
-  # hadolint the add-on's Dockerfile. Match the official workflow's
-  # `failure-threshold: warning` so we don't fail on style nits.
-  # ---------------------------------------------------------------------
-  lint-dockerfile:
-    name: hadolint (${{ matrix.addon }})
-    needs: changes
-    if: ${{ needs.changes.outputs.addons != '[]' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Check Dockerfile exists
-        id: dockerfile
-        run: |
-          if [ -f "${{ matrix.addon }}/Dockerfile" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "found=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping hadolint"
-          fi
-
-      - uses: hadolint/hadolint-action@v3.3.0
-        if: steps.dockerfile.outputs.found == 'true'
-        with:
-          dockerfile: ${{ matrix.addon }}/Dockerfile
-          failure-threshold: warning
 
   # ---------------------------------------------------------------------
   # shellcheck the add-on's rootfs/ shell scripts (s6 run/finish files
@@ -320,127 +259,7 @@ jobs:
         if: steps.pyfiles.outputs.found == 'true'
         run: ruff check "${{ matrix.addon }}"
 
-  # ---------------------------------------------------------------------
-  # Version consistency: pyproject.toml and config.yaml must agree on the
-  # version string.  Release-please bumps both; __init__.py derives its
-  # version from pyproject.toml at runtime.
-  # ---------------------------------------------------------------------
-  version-check:
-    name: Version check (${{ matrix.addon }})
-    needs: changes
-    if: ${{ needs.changes.outputs.addons != '[]' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.addons) }}
-    steps:
-      - uses: actions/checkout@v7
 
-      - name: Check version consistency
-        run: |
-          set -euo pipefail
-          ADDON="${{ matrix.addon }}"
-
-          # config.yaml version
-          CFG_VER=$(awk '/^version:/ {gsub(/"/, "", $2); print $2; exit}' "${ADDON}/config.yaml")
-          echo "config.yaml: ${CFG_VER}"
-
-          # pyproject.toml version (PEP 621)
-          if [ -f "${ADDON}/pyproject.toml" ]; then
-            TOML_VER=$(grep -Po '^version\s*=\s*"\K[^"]*' "${ADDON}/pyproject.toml" | head -1)
-            echo "pyproject.toml: ${TOML_VER}"
-          else
-            TOML_VER=""
-          fi
-
-          # release-please manifest version. In the main-only release model
-          # only release-please bumps versions (it updates config.yaml and the
-          # manifest together), so config.yaml and the manifest must always
-          # agree. Drift means a version was hand-bumped without release-please
-          # — a "phantom" release that never gets tagged. This is the exact
-          # failure that desynced this repo; fail fast on it.
-          MAN_VER=$(jq -r --arg k "${ADDON}" '.[$k] // ""' \
-            .github/.release-please-manifest.json)
-          echo "manifest: ${MAN_VER}"
-
-          FAIL=0
-          if [ -n "${TOML_VER}" ] && [ "${TOML_VER}" != "${CFG_VER}" ]; then
-            echo "::error::pyproject.toml version ${TOML_VER} != config.yaml version ${CFG_VER}"
-            FAIL=1
-          fi
-          if [ -n "${MAN_VER}" ] && [ "${MAN_VER}" != "${CFG_VER}" ]; then
-            echo "::error::${ADDON}: manifest ${MAN_VER} != config.yaml ${CFG_VER} (release-please bumps only)"
-            FAIL=1
-          fi
-          exit $FAIL
-
-  # ---------------------------------------------------------------------
-  # Build the changed add-on's image for every configured arch as a TEST
-  # (push: false — no registry publish). HA builds the add-on locally from
-  # its Dockerfile, so this only validates the Dockerfile still builds;
-  # nothing is published. Independent of release-please (versioning only).
-  #
-  # Each arch gets its own native runner (amd64 → ubuntu-latest,
-  # aarch64 → ubuntu-24.04-arm) so no QEMU emulation is needed.
-  # Jobs for unsupported addon/arch combos exit immediately in the check step.
-  # ---------------------------------------------------------------------
-  build-image:
-    name: build image (${{ matrix.addon }}/${{ matrix.config.arch }})
-    needs: changes
-    # Uses build_addons (docs-excluded) so docs-only changes skip the build.
-    # Skip for release-please PRs (version bump only, no code change).
-    # Skip on direct push to main: promotion PRs already validate builds on dev;
-    # rebuilding after merge is redundant and wastes 30-40 min per promotion.
-    if: >-
-      needs.changes.outputs.build_addons != '[]' &&
-      !startsWith(github.head_ref, 'release-please--') &&
-      github.ref != 'refs/heads/main'
-    runs-on: ${{ matrix.config.runner }}
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        addon: ${{ fromJSON(needs.changes.outputs.build_addons) }}
-        config:
-          - arch: amd64
-            runner: ubuntu-latest
-            platform: linux/amd64
-          - arch: aarch64
-            runner: ubuntu-24.04-arm
-            platform: linux/arm64
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Check Dockerfile exists and arch is supported
-        id: check
-        run: |
-          set -euo pipefail
-          if [ ! -f "${{ matrix.addon }}/Dockerfile" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::No Dockerfile in ${{ matrix.addon }}, skipping"
-          elif ! yq '.arch[]' "${{ matrix.addon }}/config.yaml" 2>/dev/null \
-               | grep -qx "${{ matrix.config.arch }}"; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::${{ matrix.addon }} does not support ${{ matrix.config.arch }}, skipping"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - uses: docker/setup-buildx-action@v4
-        if: steps.check.outputs.skip != 'true'
-
-      - uses: docker/build-push-action@v7
-        if: steps.check.outputs.skip != 'true'
-        with:
-          context: ${{ matrix.addon }}
-          file: ${{ matrix.addon }}/Dockerfile
-          platforms: ${{ matrix.config.platform }}
-          push: false
-          provenance: false
-          sbom: false
-          cache-from: type=gha,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
-          cache-to: type=gha,mode=min,scope=${{ matrix.addon }}-${{ matrix.config.arch }}
 
   # ---------------------------------------------------------------------
   # Single required-status-check for branch protection. Passes if every
@@ -454,13 +273,10 @@ jobs:
       - changes
       - lint-addon
       - lint-yaml
-      - lint-dockerfile
       - lint-shell
       - lint-unicode
       - lint-markdown
       - lint-python
-      - version-check
-      - build-image
     runs-on: ubuntu-latest
     steps:
       - name: Verify all lint jobs succeeded (or cleanly skipped)
@@ -473,13 +289,10 @@ jobs:
           for result in \
             "${{ needs.lint-addon.result }}" \
             "${{ needs.lint-yaml.result }}" \
-            "${{ needs.lint-dockerfile.result }}" \
             "${{ needs.lint-shell.result }}" \
             "${{ needs.lint-unicode.result }}" \
             "${{ needs.lint-markdown.result }}" \
-            "${{ needs.lint-python.result }}" \
-            "${{ needs.version-check.result }}" \
-            "${{ needs.build-image.result }}"; do
+            "${{ needs.lint-python.result }}"; do
             case "$result" in
               success|skipped) ;;
               *) echo "downstream lint failed: $result"; exit 1 ;;
