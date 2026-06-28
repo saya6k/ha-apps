@@ -40,24 +40,22 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 | 파일 | 역할 |
 |---|---|
 | `app-preflight` | PR 전 Python parse · yamllint · shellcheck 실행법 |
-| `conventional-commit` | release-please용 커밋 메시지 작성법 |
+| `conventional-commit` | 커밋 메시지 작성법 |
 
 **`workflows/`** — task procedures, opened at the start of a task:
 
 | 파일 | 역할 |
 |---|---|
 | `new-app-scaffold.md` | 새 앱 추가 절차 (파일 생성 → `.github/` 등록) |
-| `app-dev-pr.md` | 브랜치 생성 → preflight → `dev`에 통합 |
-| `app-promote-to-main.md` | 승인된 `dev → main` 승격 → 릴리즈 검증 → 로컬 sync |
+| `app-dev-pr.md` | 브랜치 생성 → preflight → `main`에 통합 |
 
 **Typical flow:**
 - New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
 - Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
-- Promotion: (user approval) → `app-promote-to-main`
 
 **`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Memory can go stale; always verify against current files.
 
-## Commits (enforced — release-please depends on this)
+## Commits
 
 ```
 <type>(<scope>): <subject>
@@ -65,9 +63,7 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 
 **Scopes:** `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `otelcol` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
 
-**Types:** `feat` (minor) · `fix`/`perf`/`revert` (patch) · `docs`/`refactor`/`build`/`ci` (patch, in CHANGELOG) · `chore`/`test`/`style` (no release) · `type!` / `BREAKING CHANGE:` footer (major)
-
-Wrong or missing scope = release-please silently drops the change. Multi-app commits must be split by scope. See `.agents/skills/conventional-commit/SKILL.md`.
+**Types:** `feat` · `fix`/`perf`/`revert` · `docs`/`refactor`/`build`/`ci` · `chore`/`test`/`style`
 
 ## Releases
 
@@ -77,17 +73,12 @@ ha-apps is the **catalog** — it stores only metadata. Versioning and images ar
 1. Merge changes to `main` → release-drafter updates the draft.
 2. **Publish the draft** → `build.yml` pushes `ghcr.io/saya6k/app-<slug>:{ver}` to GHCR.
 3. `build.yml` dispatches to ha-apps → `sync-app-version.yml` opens
-   `chore(<slug>): release <ver>` PR to `dev`, bumping `config.yaml` + prepending
+   `chore(<slug>): release <ver>` PR to `main`, bumping `config.yaml` + prepending
    release notes to `CHANGELOG.md`.
-4. Merge sync PR → promote `dev → main` as usual.
+4. Merge sync PR.
 
 **ha-apps-only changes (CI, docs, metadata fixes):**
-Land on `dev` via PR → promote. `packages: {}` in release-please config — no
-automatic release PRs are generated for ha-apps itself.
-
-Never squash-merge a multi-scope PR — squash collapses all scopes to the title's
-scope. Use rebase-merge or split into one PR per scope.
-See [[release-please-squash-gotcha]].
+PR directly to `main` via [[app-dev-pr]].
 
 ## Invariants
 

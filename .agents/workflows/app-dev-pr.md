@@ -1,34 +1,28 @@
 ---
 name: app-dev-pr
-description: Make a metadata change in ha-apps (catalog repo) and integrate it into dev. For changes to app source code, work in the ha-app-<slug> repo using its own [[app-dev-pr]] skill. For ha-apps promotion to main, use [[app-promote-to-main]].
+description: Make a metadata change in ha-apps (catalog repo) and land it on main. For changes to app source code, work in the ha-app-<slug> repo using its own [[app-dev-pr]] skill.
 ---
 
-# Integrate a ha-apps change into `dev`
+# Land a ha-apps change on `main`
 
 ha-apps is the **catalog** — metadata, docs, CI config. Source code lives in
-ha-app-* repos. All changes here land on `dev` first.
-
-- **`dev`** — integration branch. CI required on PRs.
-- **`main`** — stable. Advanced only via [[app-promote-to-main]].
+ha-app-* repos. Changes PR directly to `main`.
 
 > Commit message: [[conventional-commit]] with scope (e.g. `fix(otelcol):`,
 > `ci(repo):`). Sanity checks: [[app-preflight]].
 
-## 1. Branch off `dev`
+## 1. Branch off `main`
 ```
-git fetch origin && git switch -c <type>/<scope> origin/dev
+git fetch origin && git switch -c <type>/<scope> origin/main
 ```
-Never commit directly on `dev` or `main`.
 
 ## 2. Pre-merge checks
-Run [[app-preflight]] — for metadata-only apps: yamllint + markdownlint.
+Run [[app-preflight]] — yamllint + markdownlint.
 
-## 3. Integrate into `dev`
+## 3. PR to `main`
 - One scope per commit. Never `--no-verify` / `--no-gpg-sign`.
-- Open PR targeting `dev`:
+- Open PR targeting `main`:
   ```
-  gh pr create --base dev --title "<type>(<scope>): <subject>" ...
+  gh pr create --base main --title "<type>(<scope>): <subject>" ...
   ```
-  GitHub defaults to `main` — always pass `--base dev`.
-- Single-scope PR → squash OK. Multi-scope → rebase-merge or split.
-  See [[release-please-squash-gotcha]].
+- CI ("CI passed") must be green before merge.
