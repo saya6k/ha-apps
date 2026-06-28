@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.5](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.5)
+
+## What's Changed
+
+* docs: update ha_logs_enabled description to reflect Supervisor API streaming (#4) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.4...v0.3.5
+
 ## [0.3.4](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.4)
 
 ## What's Changed
