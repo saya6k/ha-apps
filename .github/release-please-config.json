@@ -153,21 +153,6 @@
         }
       ]
     },
-    "wardrowbe": {
-      "component": "wardrowbe",
-      "package-name": "wardrowbe",
-      "changelog-path": "CHANGELOG.md",
-      "exclude-paths": [
-        "wardrowbe/.agents"
-      ],
-      "extra-files": [
-        {
-          "type": "yaml",
-          "path": "config.yaml",
-          "jsonpath": "$.version"
-        }
-      ]
-    },
     "zensical": {
       "component": "zensical",
       "package-name": "zensical",

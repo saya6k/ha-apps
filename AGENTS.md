@@ -3,7 +3,7 @@
 > `CLAUDE.md` and `GEMINI.md` are local symlinks to this file (gitignored) — edit `AGENTS.md`.
 > Per-app guidance lives in each subproject's own `AGENTS.md`. **Read it first when working in a subproject.**
 
-HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Each add-on has its own version, Dockerfile, and CHANGELOG. Subproject names use the bare slug (no `ha-` prefix); keep `ha-` in GitHub URLs, package names, Wyoming Info strings, and CHANGELOG cross-references.
+HA add-on catalog repo. Shared git history, issue tracker, and release pipeline. Apps with their own `ha-app-*` repo keep only metadata here (`config.yaml`, `icon.png`, `logo.png`, `translations/`, `DOCS.md`, `README.md`); source, Dockerfile, and CI live in the per-app repo. Apps without a dedicated repo still carry full source here. Subproject names use the bare slug (no `ha-` prefix); keep `ha-` in GitHub URLs, package names, Wyoming Info strings, and CHANGELOG cross-references.
 
 ## Apps
 
@@ -14,7 +14,7 @@ HA add-on monorepo. Shared git history, issue tracker, and release pipeline. Eac
 | [`nemo-asr-cpp/`](nemo-asr-cpp/AGENTS.md) | Wyoming STT — Nemotron 0.6B on ggml/parakeet.cpp (GGUF). Fast/light CPU sibling; ctypes over a flat C API. |
 | [`supertonic/`](supertonic/AGENTS.md) | Wyoming TTS — supertonic-mnn. Python bridge with auto-precision detection. |
 | [`voiceprint/`](voiceprint/AGENTS.md) | Speaker-verifying Wyoming STT proxy. Pass-through gate for enrolled voices. CAM++ embeddings on LiteRT. |
-| [`wardrowbe/`](wardrowbe/AGENTS.md) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. |
+| `wardrowbe/` ([ha-app-wardrowbe](https://github.com/saya6k/ha-app-wardrowbe)) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. Metadata only — source and CI live in ha-app-wardrowbe. |
 | [`zensical/`](zensical/AGENTS.md) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. |
 | [`otelcol/`](otelcol/AGENTS.md) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. |
 
