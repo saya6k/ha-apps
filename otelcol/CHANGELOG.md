@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/saya6k/ha-apps/compare/otelcol-v0.3.0...otelcol-v0.3.1) (2026-06-28)
+
+
+### Bug Fixes
+
+* **otelcol:** remove unused addon_config mount to fix HA backup failure ([#475](https://github.com/saya6k/ha-apps/issues/475)) ([43ef1c2](https://github.com/saya6k/ha-apps/commit/43ef1c246081ccba970c6994477c423189b9cbd9))
+
 ## [0.3.0](https://github.com/saya6k/ha-apps/compare/otelcol-v0.2.3...otelcol-v0.3.0) (2026-06-27)
 
 
