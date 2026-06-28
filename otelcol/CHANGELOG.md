@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.8](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.8)
+
+## What's Changed
+
+* fix: decouple log_level from OTLP severity filtering (#9) @saya6k
+* docs(otelcol): update host_metrics_enabled description (#8) @saya6k
+* fix: handle SIGTERM gracefully to flush pending telemetry (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.7...v0.3.8
+
 ## [0.3.7](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.7)
 
 ## What's Changed
