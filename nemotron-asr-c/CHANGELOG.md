@@ -6,6 +6,14 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.9.3](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.3)
+
+## What's Changed
+
+* fix: build per-ISA .so variants to prevent SIGILL on heterogeneous ARM/x86 (#1) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-nemotron-asr-c/compare/v0.9.2...v0.9.3
+
 ## [0.9.2](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.2)
 
 Re-dispatch after notify job fix.
