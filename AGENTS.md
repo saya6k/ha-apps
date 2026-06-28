@@ -71,11 +71,23 @@ Wrong or missing scope = release-please silently drops the change. Multi-app com
 
 ## Releases
 
-1. Land Conventional-Commit PRs on `main`.
-2. release-please opens `chore(<addon>): release <ver>` PR — auto-bumps `config.yaml` / `CHANGELOG.md` (+ `pyproject.toml` where applicable).
-3. Merge → tags `<addon>-v<ver>`. No image is published — HA builds each add-on locally from its Dockerfile; CI build-tests the Dockerfile (`.github/workflows/ci.yml`, `push: false`).
+ha-apps is the **catalog** — it stores only metadata. Versioning and images are driven by ha-app-* repos.
 
-Never squash-merge a multi-scope PR — squash collapses all scopes to the title's scope; use rebase-merge or split into one PR per scope. Config: `.github/release-please-config.json` + `.github/.release-please-manifest.json`. No `version.txt`.
+**Per-app release flow (in the ha-app-* repo):**
+1. Merge changes to `main` → release-drafter updates the draft.
+2. **Publish the draft** → `build.yml` pushes `ghcr.io/saya6k/app-<slug>:{ver}` to GHCR.
+3. `build.yml` dispatches to ha-apps → `sync-app-version.yml` opens
+   `chore(<slug>): release <ver>` PR to `dev`, bumping `config.yaml` + prepending
+   release notes to `CHANGELOG.md`.
+4. Merge sync PR → promote `dev → main` as usual.
+
+**ha-apps-only changes (CI, docs, metadata fixes):**
+Land on `dev` via PR → promote. `packages: {}` in release-please config — no
+automatic release PRs are generated for ha-apps itself.
+
+Never squash-merge a multi-scope PR — squash collapses all scopes to the title's
+scope. Use rebase-merge or split into one PR per scope.
+See [[release-please-squash-gotcha]].
 
 ## Invariants
 

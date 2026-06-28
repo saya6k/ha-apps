@@ -6,6 +6,10 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.9.2](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.2)
+
+Re-dispatch after notify job fix.
+
 ## [0.9.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.9.0...nemotron-asr-c-v0.9.1) (2026-06-23)
 
 

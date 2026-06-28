@@ -4,6 +4,10 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.2](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.2)
+
+Re-dispatch after notify job fix.
+
 ## [0.3.1](https://github.com/saya6k/ha-apps/compare/otelcol-v0.3.0...otelcol-v0.3.1) (2026-06-28)
 
 
