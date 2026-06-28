@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: dev
+          ref: main
 
       - name: Update config.yaml and CHANGELOG.md
         env:
@@ -83,7 +83,7 @@ jobs:
           git commit -m "chore(${APP}): release ${VERSION}"
           git push origin "${BRANCH}"
           gh pr create \
-            --base dev \
+            --base main \
             --head "${BRANCH}" \
             --title "chore(${APP}): release ${VERSION}" \
             --body "Auto-synced from [ha-app-${APP} v${VERSION}](https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION})."
