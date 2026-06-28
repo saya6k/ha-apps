@@ -4,6 +4,10 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-voiceprint/releases).
 
 
+## [0.10.2](https://github.com/saya6k/ha-app-voiceprint/releases/tag/v0.10.2)
+
+Re-dispatch after notify job fix.
+
 ## [0.10.1](https://github.com/saya6k/ha-apps/compare/voiceprint-v0.10.0...voiceprint-v0.10.1) (2026-06-23)
 
 
