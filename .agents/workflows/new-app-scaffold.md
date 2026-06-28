@@ -1,111 +1,153 @@
 ---
 name: new-app-scaffold
-description: Scaffolds a new Home Assistant app in this monorepo and registers it across the root .github config and conventions. Use when adding a new app subproject.
+description: Scaffold a new app — create the ha-app-<slug> source repo and add metadata-only entry to ha-apps. Use when adding a new app. Ask for slug and stage first.
 ---
 
 # Scaffold a new app
 
-Create a new app subproject plus every place its slug must be registered. The
-authoritative conventions are in `.github/copilot-instructions.md`; follow them.
-Ask for the slug (bare, no `ha-` prefix) and stage (`experimental` | `stable`)
-first.
+Two things happen in parallel: create the **ha-app-`<slug>`** source repo and
+add a **metadata-only entry** to ha-apps.
 
-## Steps
-1. **Subproject files** in `<slug>/`:
-   - `config.yaml` (slug, name, `stage`, `arch: [amd64, aarch64]`, options +
-     schema, ports; `discovery: [wyoming]` for Wyoming services). `config.yaml`
-     lives only at the subproject root.
-   - `Dockerfile` (+ `build.yaml` if needed). s6 silently ignores non-executable
-     scripts — add a wildcard `chmod +x` block:
-     `RUN shopt -s nullglob && chmod +x /etc/s6-overlay/s6-rc.d/*/{run,up,finish,down}`
-   - `rootfs/etc/s6-overlay/s6-rc.d/<slug>/{run,finish,type}` (+ `discovery` oneshot
-     for Wyoming). LF line endings only.
-     - `run` — exec the service (see [[conventional-commit]] for go template).
-     - **`finish` — MUST use the 3-way template below.** The common copy-paste
-       `halt`-on-any-error pattern causes a restart loop on bootstrap failure
-       (model download, dependency, etc.). Distinguish transient exits (signal /
-       exit 0 → halt) from permanent failure (exit >0 → stay down).
-   - `translations/{en,ko}.yaml` for the option UI strings.
-   - `AGENTS.md` (deep invariants/build/don'ts), `DOCS.md` (user knobs),
-     `CHANGELOG.md`, `README.md` (see **README template** below). Symlink `CLAUDE.md -> AGENTS.md`.
-   - `icon.png` (256², square) + `logo.png` — see the `app-icon` skill.
-2. **Register the slug at the repo root** (`repo` scope):
-   - `.github/release-please-config.json` + `.github/.release-please-manifest.json`
-     (start `0.1.0`; `simple` releaser, no `version.txt`).
-   - `.github/labels.yml` + `.github/labeler.yml` (`addon:<slug>` label by path).
-   - `.github/ISSUE_TEMPLATE/{bug,feature}.yml` dropdowns.
-   - The allowed-scopes list in `.github/copilot-instructions.md` **and**
-     `CONTRIBUTING.md` (keep them in lockstep).
-3. **Stage gating** (root `.gitignore`):
-   - `experimental` → add a `/<slug>/` line (local-only, not tracked).
-   - `stable` → no gitignore line; `git add` the subproject. Before stable, host
-     any large model as a pinned release asset, not vendored in git.
-4. Optionally set up the agent dir: `.agents/` + `.claude -> .agents`.
-5. Run the `app-preflight` skill on the new app.
+Ask for:
+- `<slug>` — bare name, no `ha-` prefix (e.g. `otelcol`, `supertonic`)
+- `stage` — `experimental` | `stable`
 
-## IMPORTANT
-- Keep the `ha-` prefix in GitHub project name / brand / URLs / Wyoming Info,
-  but NOT in the directory slug.
-- An unregistered slug = release-please can't route its commits. Don't skip
-  step 2.
+---
+
+## Part A — ha-app-`<slug>` source repo
+
+### 1. Create GitHub repo
+```
+gh repo create saya6k/ha-app-<slug> --public --description "<one-line desc>"
+```
+
+### 2. Scaffold locally (use ha-app-wardrowbe as template)
+
+Copy from an existing ha-app-* repo (wardrowbe is the reference):
+```
+rsync -a \
+  --exclude='.agents/' --exclude='wardrowbe/' \
+  ~/Projects/ha-app-wardrowbe/ ~/Projects/ha-app-<slug>/
+```
+
+Then create `<slug>/` subdir with:
+- `config.yaml` — slug, name, stage, `arch: [amd64, aarch64]`, options/schema.
+  **No `image:` line** here — that lives in ha-apps.
+- `Dockerfile` — `ARG BUILD_FROM`, labels, `COPY rootfs /`. s6 `chmod +x` block:
+  ```dockerfile
+  RUN find /etc/s6-overlay/s6-rc.d -name 'run' -o -name 'finish' | xargs chmod +x
+  ```
+- `rootfs/etc/s6-overlay/s6-rc.d/<slug>/` — `run`, `finish` (use s6 finish template
+  from ha-apps old `new-app-scaffold`), `type`
+- `translations/{en,ko}.yaml`
+- `AGENTS.md`, `DOCS.md`, `README.md` (see README template below)
+- `icon.png` (256×256) + `logo.png`
+
+### 3. CI / release workflows
+
+`.github/workflows/` from the template already has:
+- `ci.yml` — lint + build-test (update slug references)
+- `build.yml` — GHCR publish on release + `repository_dispatch` to ha-apps
+- `release-drafter.yml` + `.github/release-drafter.yml` — with autolabeler
+
+Substitute `wardrowbe` → `<slug>` in `ci.yml` and `build.yml`.
+
+### 4. .agents/ + .claude/ structure
+
+```
+mkdir -p .agents/{workflows,skills/app-preflight} .claude
+cp ~/Projects/ha-app-wardrowbe/.agents/workflows/app-dev-pr.md .agents/workflows/
+cp ~/Projects/ha-app-wardrowbe/.agents/skills/app-preflight/SKILL.md .agents/skills/app-preflight/
+ln -s ../.agents/workflows .claude/commands
+ln -s ../.agents/skills .claude/skills
+```
+
+### 5. Set CATALOG_PAT secret
+```
+gh secret set CATALOG_PAT --repo saya6k/ha-app-<slug> --body "$(gh auth token)"
+```
+
+### 6. Enable workflow write permissions
+```
+gh api -X PUT repos/saya6k/ha-app-<slug>/actions/permissions/workflow \
+  -f default_workflow_permissions=write \
+  -F can_approve_pull_request_reviews=true
+```
+
+### 7. Initial commit + push
+```
+cd ~/Projects/ha-app-<slug>
+git init -b main && git add . && git commit -m "chore: initial repo setup"
+git remote add origin https://github.com/saya6k/ha-app-<slug>.git
+git push -u origin main
+```
+
+### 8. Create base release
+```
+gh release create v<ver> --repo saya6k/ha-app-<slug> \
+  --title "v<ver>" --notes "Initial release." --latest
+```
+This gives release-drafter a base to compute the next version from.
+
+---
+
+## Part B — ha-apps metadata entry
+
+### 1. Add `<slug>/` to ha-apps
+
+Files to create in ha-apps (metadata-only — no Dockerfile, no source):
+- `<slug>/config.yaml` — same as ha-app-* but WITH `image: ghcr.io/saya6k/app-<slug>`
+  and the current version
+- `<slug>/CHANGELOG.md` — minimal stub
+- `<slug>/DOCS.md`, `<slug>/README.md`
+- `<slug>/icon.png`, `<slug>/logo.png`
+- `<slug>/translations/{en,ko}.yaml`
+- `<slug>/apparmor.txt` (if needed)
+
+### 2. Register in ha-apps root
+
+- `.github/labels.yml` — add `addon:<slug>` label
+- `.github/labeler.yml` — add path rule for `<slug>/`
+- `.github/ISSUE_TEMPLATE/{bug,feature}.yml` — add slug to dropdowns
+- `AGENTS.md` — add row to the Apps table
+- `.github/workflows/sync-app-version.yml` — no changes needed (dispatch-driven,
+  slug comes from payload)
+
+**No release-please registration** — `packages: {}` stays empty. Versioning is
+driven entirely by ha-app-* dispatch.
+
+### 3. Open PR to dev
+```
+git switch -c feat/<slug>-initial origin/dev
+git add <slug>/ .github/
+git commit -m "feat(<slug>): add <Name> app"
+gh pr create --base dev --title "feat(<slug>): add <Name> app"
+```
+
+---
 
 ## s6 finish template
-
-Every app's `rootfs/etc/s6-overlay/s6-rc.d/<slug>/finish` must use this pattern.
-The common copy-paste from s6-overlay docs halts on **any** non-zero exit, which
-causes a restart loop when a startup dependency (model download, C library, etc.)
-fails permanently. This template distinguishes transient from permanent:
 
 ```bash
 #!/command/with-contenv bashio
 # shellcheck shell=bash
-# ==============================================================================
-# Service finish handler.
-#
-# s6-supervise restarts the service ONLY when finish exits 0.  Bootstrap /
-# non-transient failures exit non-zero -> service stays down (no restart loop).
-# A manual add-on stop sends SIGTERM -> the run script exits cleanly (0) or is
-# killed by signal (256).  Both are transient -> halt the container.
-# ==============================================================================
-# shellcheck disable=SC2155
 readonly exit_code_container=$(</run/s6-linux-init-container-results/exitcode)
 readonly exit_code_service="${1}"
 readonly exit_code_signal="${2}"
-
-bashio::log.info \
-  "Service exited with code ${exit_code_service}" \
-  "(by signal ${exit_code_signal})"
-
+bashio::log.info "Service exited with code ${exit_code_service} (by signal ${exit_code_signal})"
 if [[ "${exit_code_signal}" -ne 0 ]]; then
-  # Killed by signal — transient (manual stop / resource limit).  Halt.
-  if [[ "${exit_code_container}" -eq 0 ]]; then
-    echo $((128 + exit_code_signal)) > /run/s6-linux-init-container-results/exitcode
-  fi
+  [[ "${exit_code_container}" -eq 0 ]] && echo $((128 + exit_code_signal)) > /run/s6-linux-init-container-results/exitcode
   exec /run/s6/basedir/bin/halt
 elif [[ "${exit_code_service}" -eq 0 ]]; then
-  # Clean exit — transient (graceful shutdown).  Halt.
   exec /run/s6/basedir/bin/halt
 else
-  # Non-zero exit — permanent failure (bootstrap, model download, conversion,
-  # etc.).  Exit non-zero so s6-supervise does NOT restart.  Container stays up
-  # so the user can read logs via the HA UI and fix the configuration.
-  bashio::log.error \
-    "<slug>: permanent failure (exit ${exit_code_service}) —" \
-    "service will not be restarted. Fix the configuration and restart the add-on."
-  if [[ "${exit_code_container}" -eq 0 ]]; then
-    echo "${exit_code_service}" > /run/s6-linux-init-container-results/exitcode
-  fi
+  bashio::log.error "<slug>: permanent failure (exit ${exit_code_service}) — fix config and restart."
+  [[ "${exit_code_container}" -eq 0 ]] && echo "${exit_code_service}" > /run/s6-linux-init-container-results/exitcode
   exit "${exit_code_service}"
 fi
 ```
 
-Replace `<slug>` with the app directory name.
-
 ## README template
-
-Every app's `README.md` must use this badge order. **Arch badges first, then
-for-the-badge badges (Claude Code + Coffee + tech stack), then Show add-on at the
-very bottom of the shield block, then the one-paragraph description.**
 
 ```markdown
 # Home Assistant App: <Name>
@@ -114,19 +156,15 @@ very bottom of the shield block, then the one-paragraph description.**
 
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with%20Claude%20Code-D97757?style=for-the-badge&logo=claude&logoColor=white)](https://claude.ai/code)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/saya6k)
-[![<Tech>](https://img.shields.io/badge/<Tech>-<color>?style=for-the-badge&logo=<logo>&logoColor=white)](<tech-url>)
 
 [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_<slug>&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps)
 
-One-paragraph description. Details go in `DOCS.md`.
+One-paragraph description.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 ```
 
-Add or remove tech-stack badges as appropriate. Show add-on is always last among
-the shields, immediately before the description.
-
 ## Output format
-- A checklist of files created and each registration touched, with anything
-  left for the user (e.g. real Dockerfile contents, model hosting).
+- Checklist: files created (ha-app-* and ha-apps), registrations touched.
+- Flag anything left for the user (Dockerfile content, model hosting, icon design).
