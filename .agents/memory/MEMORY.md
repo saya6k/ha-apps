@@ -10,6 +10,7 @@
 - [nemo-asr-cpp chunk-size](nemo-asr-cpp-chunk-size.md) — accuracy/speed dial via in-place GGUF att_context_right KV edit (verified); default 320ms, 4 presets {80,320,560,1120}ms, no engine refactor
 - [deployment facts](deployment-facts.md) — repo is public; HA repo id `03f32180`; GHCR `{arch}-addon-<slug>` images private→need web-UI publish; voiceprint-model-v1 release published
 - [release-please squash gotcha](release-please-squash-gotcha.md) — squash-merging multi-scope PRs drops release-please releases; use rebase-merge or a conventional PR title; revert+cherry-pick to recover
+- [promotion PR title gotcha](promotion-pr-title-gotcha.md) — dev→main PR title must be `chore(repo): promote dev to main`; feat/fix title causes duplicate CHANGELOG entries (release-please reads PR titles via GitHub API)
 - [zeroconf default=None](zeroconf-default-none.md) — Wyoming --zeroconf must default to None, not a truthy string; truthy default imports wyoming.zeroconf → uninstalled zeroconf package → ModuleNotFoundError at boot
 - [patch-path-prefix-consistency](patch-path-prefix-consistency.md) — git apply fails when .patch files mix a/b prefix styles in a single invocation; keep all patches consistent
 - [nemo-asr-cpp .nemo source](nemo-asr-cpp-nemo-source.md) — .nemo → GGUF conversion evaluated 2026-06-18 and rejected; nemo_toolkit ~3 GB image bloat kills the value prop for HAOS targets

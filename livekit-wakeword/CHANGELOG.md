@@ -1,5 +1,9 @@
 # Changelog
 
+Releases from the next version onward are tracked in
+[ha-app-* releases](https://github.com/saya6k/ha-app-livekit-wakeword/releases).
+
+
 ## [0.10.1](https://github.com/saya6k/ha-apps/compare/livekit-wakeword-v0.10.0...livekit-wakeword-v0.10.1) (2026-06-23)
 
 

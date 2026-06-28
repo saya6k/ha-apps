@@ -1,5 +1,9 @@
 # Changelog
 
+Releases from the next version onward are tracked in
+[ha-app-* releases](https://github.com/saya6k/ha-app-nemotron-asr-c/releases).
+
+
 
 
 ## [0.9.1](https://github.com/saya6k/ha-apps/compare/nemotron-asr-c-v0.9.0...nemotron-asr-c-v0.9.1) (2026-06-23)

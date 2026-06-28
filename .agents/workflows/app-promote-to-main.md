@@ -21,10 +21,18 @@ If empty, dev and main are already in sync — nothing to promote.
 ## 3. Open promotion PR — on user approval
 ```
 gh pr create --base main --head dev \
-  --title "<type>(<scope>): <subject>" \
+  --title "chore(repo): promote dev to main" \
   --body "Promotion. CI must pass before merge."
 gh pr merge <number> --merge --auto
 ```
+**PR title must be `chore(repo): promote dev to main`** — never use a
+`feat`/`fix`/`perf` type here. release-please reads PR titles via the GitHub
+API in addition to git commit messages. If the promotion PR title is a
+conventional `feat(...)`, release-please counts it alongside the original
+squash commit on dev, producing duplicate CHANGELOG entries.
+`chore` is not included in the CHANGELOG and does not trigger a release, so
+only the actual feature/fix commits in the merge parent chain are counted.
+
 **Must use `--merge` (merge commit), not `--squash` or `--rebase`.**
 - `--squash`: collapses everything into the PR title — release-please ignores
   individual commits. See [[release-please-squash-gotcha]].

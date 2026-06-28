@@ -1,1 +1,0 @@
-{"upstream_uri": "tcp://host.docker.internal:10300", "threshold": 0.5, "require_match": true, "tag_speaker": false, "debug_logging": true}
