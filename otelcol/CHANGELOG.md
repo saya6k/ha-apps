@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.15](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.15)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: drop self-access log noise and make the panel severity filter work (#18) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.14...v0.3.15
+
 ## [0.3.14](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.14)
 
 ## What's Changed
