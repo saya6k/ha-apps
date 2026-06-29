@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.13](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.13)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: poll add-on logs instead of holding a /logs/follow stream each (#16) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.12...v0.3.13
+
 ## [0.3.12](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.12)
 
 ## What's Changed
