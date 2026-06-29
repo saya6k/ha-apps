@@ -22,6 +22,7 @@ options:
   hotwords: []
   hotword_boost: 2
   speech_enhancement: false
+  log_level: info
 schema:
   model: str
   quantization: list(f32|q8p)
@@ -31,7 +32,7 @@ schema:
     - str?
   hotword_boost: float?
   speech_enhancement: bool?
-  debug_logging: bool?
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
 ports:
   10370/tcp: null
 ports_description:

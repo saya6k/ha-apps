@@ -31,6 +31,9 @@ configuration:
       전사 전에 입력 오디오에 경량 FastEnhancer 노이즈 제거 필터를 적용합니다.
       시끄러운 환경에서 정확도를 높일 수 있지만, 이미 깨끗한 오디오에서는 약간
       저하될 수 있습니다. 기본값은 꺼짐입니다.
-  debug_logging:
-    name: 디버그 로깅
-    description: 문제 해결을 위한 상세 로깅을 활성화합니다.
+  log_level:
+    name: 로그 레벨
+    description: >-
+      Home Assistant 로그 레벨 이름을 사용한 로그 상세도입니다. trace · debug ·
+      info (기본값) · notice · warning · error · fatal 중 하나입니다. 문제 해결
+      시에는 debug (또는 trace)를 사용하세요.

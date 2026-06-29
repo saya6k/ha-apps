@@ -40,6 +40,8 @@ denoise filter on incoming 16 kHz audio before transcription. Can improve
 accuracy in noisy rooms, but may slightly degrade already-clean audio. Default:
 `false`.
 
-### `debug_logging`
+### `log_level`
 
-Enable verbose logging for troubleshooting.
+Log verbosity, using Home Assistant log level names. One of `trace`, `debug`,
+`info`, `notice`, `warning`, `error`, `fatal`. Use `debug` (or `trace`) for
+troubleshooting. Default: `info`.

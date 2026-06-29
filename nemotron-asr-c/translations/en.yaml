@@ -31,6 +31,9 @@ configuration:
       Run a lightweight FastEnhancer denoise filter on incoming audio before
       transcription. Can improve accuracy in noisy rooms, but may slightly hurt
       already-clean audio. Off by default.
-  debug_logging:
-    name: Debug logging
-    description: Enable verbose logging for troubleshooting.
+  log_level:
+    name: Log level
+    description: >-
+      Log verbosity, using Home Assistant log level names. One of trace, debug,
+      info (default), notice, warning, error, fatal. Use debug (or trace) for
+      troubleshooting.
