@@ -6,6 +6,17 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.9.5](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.5)
+
+## What's Changed
+
+* feat: AVX-VNNI int8 kernel + drop redundant sve/avx512 variants (#8) @saya6k
+* chore: bump upstream pins 2026-06-29 (#6) @[github-actions[bot]](https://github.com/apps/github-actions)
+* fix(ci): resolve upstream default branch via HEAD (#5) @saya6k
+* ci: derive release version from change type (version-resolver) (#4) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-nemotron-asr-c/compare/v0.9.4...v0.9.5
+
 ## [0.9.4](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.4)
 
 ## What's Changed
