@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.18](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.18)
+
+## What's Changed
+
+* fix: use paste instead of jq for ha_trace_events config (#21) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.17...v0.3.18
+
 ## [0.3.17](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.17)
 
 ## What's Changed
