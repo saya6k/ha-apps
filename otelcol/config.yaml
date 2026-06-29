@@ -43,6 +43,17 @@ options:
   ha_metrics_enabled: true
   ha_events_enabled: true
   ha_traces_enabled: true
+  ha_trace_events:
+    - state_changed
+    - call_service
+    - automation_triggered
+    - script_started
+    - timer_finished
+    - homeassistant_start
+    - homeassistant_stop
+    - component_loaded
+    - persistent_notifications_updated
+    - device_registry_updated
   container_logs_enabled: false
   host_metrics_enabled: false
   raw_config: ''
@@ -58,6 +69,8 @@ schema:
   ha_metrics_enabled: bool
   ha_events_enabled: bool
   ha_traces_enabled: bool
+  ha_trace_events:
+    - str
   container_logs_enabled: bool
   host_metrics_enabled: bool
   raw_config: str?

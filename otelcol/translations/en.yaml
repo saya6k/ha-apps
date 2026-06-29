@@ -52,6 +52,13 @@ configuration:
       Map Home Assistant event context chains (service_call → automation_triggered
       → state_changed) to OTLP traces using the `context.id` / `context.parent_id`
       graph. No extra HA configuration required.
+  ha_trace_events:
+    name: Trace event types
+    description: >-
+      List of Home Assistant event types that generate OTLP trace spans.
+      Remove event types you don't want traces for (e.g. `state_changed`
+      to eliminate verbose span attributes). Unknown event types are allowed
+      but logged as a warning.
   container_logs_enabled:
     name: Collect container logs
     description: >-
