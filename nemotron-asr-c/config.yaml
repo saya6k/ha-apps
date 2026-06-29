@@ -1,11 +1,12 @@
-version: 0.9.5
+---
+version: 0.9.6
 image: ghcr.io/saya6k/app-nemotron-asr-c
 slug: nemotron-asr-c
 name: Nemotron ASR (C)
 description: >-
   Streaming speech-to-text over Wyoming — NVIDIA Nemotron ASR on pure C
   (nemotron-asr-streaming.c), converts .nemo at boot
-url: https://github.com/kdrkdrkdr/nemotron-asr-streaming.c
+url: https://github.com/saya6k/ha-app-nemotron-asr-c
 arch:
   - amd64
   - aarch64

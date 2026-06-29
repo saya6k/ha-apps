@@ -6,6 +6,17 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.9.6](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.6)
+
+## What's Changed
+
+## Maintenance
+
+* docs: document log_level option in DOCS and translations (#10) @saya6k
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#9) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-nemotron-asr-c/compare/v0.9.5...v0.9.6
+
 ## [0.9.5](https://github.com/saya6k/ha-app-nemotron-asr-c/releases/tag/v0.9.5)
 
 ## What's Changed
