@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.14](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.14)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: jitter log-poll start to avoid a journald thundering herd (#17) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.13...v0.3.14
+
 ## [0.3.13](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.13)
 
 ## What's Changed
