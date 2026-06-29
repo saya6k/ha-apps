@@ -52,6 +52,13 @@ configuration:
       Home Assistant 이벤트 컨텍스트 체인(service_call → automation_triggered
       → state_changed)을 `context.id`/`context.parent_id` 그래프를 사용해
       OTLP 트레이스로 변환합니다. 추가 HA 설정이 필요하지 않습니다.
+  ha_trace_events:
+    name: 트레이스 이벤트 유형
+    description: >-
+      OTLP 트레이스 스팬을 생성할 Home Assistant 이벤트 유형의 목록입니다.
+      트레이스가 필요하지 않은 이벤트 유형은 목록에서 제거하세요
+      (예: `state_changed`를 제거하면 상세 스팬 속성이 생성되지 않습니다).
+      알 수 없는 이벤트 유형도 허용되지만 경고가 기록됩니다.
   container_logs_enabled:
     name: 컨테이너 로그 수집
     description: >-
