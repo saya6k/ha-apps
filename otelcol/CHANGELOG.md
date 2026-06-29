@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.19](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.19)
+
+## What's Changed
+
+* chore: bump otelcol-contrib 0.154.0 → 0.155.0 (#22) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.18...v0.3.19
+
 ## [0.3.18](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.18)
 
 ## What's Changed
