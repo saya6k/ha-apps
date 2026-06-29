@@ -4,6 +4,20 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.12](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.12)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: use context-prefixed OTTL path so the severity filter drops DEBUG (#15) @saya6k
+
+## Maintenance
+
+* ci: derive release version from change type (version-resolver) (#14) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.11...v0.3.12
+
 ## [0.3.11](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.11)
 
 ## What's Changed
