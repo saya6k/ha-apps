@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.16](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.16)
+
+## What's Changed
+
+## Maintenance
+
+* chore: context-prefix transform OTTL paths to silence the migration log (#19) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.15...v0.3.16
+
 ## [0.3.15](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.15)
 
 ## What's Changed
