@@ -22,51 +22,78 @@ jobs:
           ref: main
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
-      - name: Update config.yaml and CHANGELOG.md
+      - name: Sync files from source repo and update CHANGELOG.md
         env:
           APP: ${{ github.event.client_payload.app }}
           VERSION: ${{ github.event.client_payload.version }}
           RELEASE_NOTES: ${{ github.event.client_payload.release_notes }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: |
           set -euo pipefail
           python3 - <<'PYEOF'
-          import os, re
+          import os, re, subprocess, base64, json
 
           app     = os.environ["APP"]
           version = os.environ["VERSION"]
           notes   = os.environ["RELEASE_NOTES"]
           repo    = f"https://github.com/saya6k/ha-app-{app}"
+          image   = f"ghcr.io/saya6k/app-{app}"
 
-          # ── config.yaml version bump ──────────────────────────────────────
-          cfg_path = f"{app}/config.yaml"
-          with open(cfg_path) as f:
-              cfg = f.read()
-          cfg = re.sub(r"^(version:\s*).*$", f"version: {version}", cfg, flags=re.MULTILINE)
-          with open(cfg_path, "w") as f:
-              f.write(cfg)
+          def gh_file(path):
+              r = subprocess.run(
+                  ["gh", "api", f"repos/saya6k/ha-app-{app}/contents/{app}/{path}",
+                   "--jq", ".content"],
+                  capture_output=True, text=True, check=True,
+              )
+              return base64.b64decode(r.stdout.strip()).decode()
+
+          def gh_ls(path):
+              r = subprocess.run(
+                  ["gh", "api", f"repos/saya6k/ha-app-{app}/contents/{app}/{path}",
+                   "--jq", ".[].name"],
+                  capture_output=True, text=True, check=True,
+              )
+              return [n for n in r.stdout.strip().splitlines() if n]
+
+          def write(path, content):
+              os.makedirs(os.path.dirname(path), exist_ok=True)
+              with open(path, "w") as f:
+                  f.write(content)
+              print(f"  synced {path}")
+
+          # ── README.md and DOCS.md ─────────────────────────────────────────
+          write(f"{app}/README.md", gh_file("README.md"))
+          write(f"{app}/DOCS.md",   gh_file("DOCS.md"))
+
+          # ── translations/* ────────────────────────────────────────────────
+          for fname in gh_ls("translations"):
+              write(f"{app}/translations/{fname}", gh_file(f"translations/{fname}"))
+
+          # ── config.yaml: sync from source, inject version + image ─────────
+          cfg = gh_file("config.yaml")
+          cfg = re.sub(r"^version:.*$", f"version: {version}", cfg, flags=re.MULTILINE)
+          if re.search(r"^image:", cfg, flags=re.MULTILINE):
+              cfg = re.sub(r"^image:.*$", f"image: {image}", cfg, flags=re.MULTILINE)
+          else:
+              cfg = re.sub(r"^(version:[^\n]*\n)", rf"\1image: {image}\n", cfg, flags=re.MULTILINE)
+          write(f"{app}/config.yaml", cfg)
 
           # ── CHANGELOG.md prepend ──────────────────────────────────────────
           cl_path = f"{app}/CHANGELOG.md"
           with open(cl_path) as f:
               cl = f.read()
-
           section = (
               f"## [{version}]({repo}/releases/tag/v{version})\n\n"
               f"{notes.strip()}\n"
           )
-
-          # Insert before the first existing ## [ version heading
           idx = cl.find("\n## [")
           if idx >= 0:
               cl = cl[:idx + 1] + section + "\n" + cl[idx + 1:]
           else:
               cl = cl.rstrip("\n") + "\n\n" + section + "\n"
-
           with open(cl_path, "w") as f:
               f.write(cl)
-
-          print(f"Updated {cfg_path} → {version}")
-          print(f"Prepended section to {cl_path}")
+          print(f"  prepended to {cl_path}")
           PYEOF
 
       - name: Open PR and enable auto-merge
@@ -80,12 +107,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "${BRANCH}"
-          git add "${APP}/config.yaml" "${APP}/CHANGELOG.md"
+          git add "${APP}/"
           git commit -m "chore(${APP}): release ${VERSION}"
           git push origin "${BRANCH}"
+          BODY="Auto-synced from [ha-app-${APP} v${VERSION}]"
+          BODY+="(https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION})."
           PR=$(gh pr create \
             --base main \
             --head "${BRANCH}" \
             --title "chore(${APP}): release ${VERSION}" \
-            --body "Auto-synced from [ha-app-${APP} v${VERSION}](https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION}).")
+            --body "${BODY}" \
+          )
           gh pr merge "$PR" --squash --auto --delete-branch
