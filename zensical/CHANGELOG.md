@@ -6,6 +6,18 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.3.9](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.9)
+
+## What's Changed
+
+* ci: derive release version from change type (version-resolver) (#1) @saya6k
+
+## Maintenance
+
+* chore: bump zensical 0.0.43 → 0.0.46 (#2) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+**Full Changelog**: https://github.com/saya6k/ha-app-zensical/compare/v0.3.8...v0.3.9
+
 ## [0.3.8](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.8)
 
 Re-dispatch after notify job fix.
