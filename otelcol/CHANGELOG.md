@@ -4,6 +4,14 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.3.17](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.17)
+
+## What's Changed
+
+* No changes
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.16...v0.3.17
+
 ## [0.3.16](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.16)
 
 ## What's Changed
