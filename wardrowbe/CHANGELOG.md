@@ -3,6 +3,17 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.2.1](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(nginx): honor external X-Forwarded-Proto for OIDC secure cookies (#8) @saya6k
+* fix: add wardrowbe/README.md for ha-apps catalog sync (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.2.0...v4.2.1
+
 ## [4.2.0](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.0)
 
 ## What's Changed
