@@ -68,11 +68,11 @@ configuration:
   host_metrics_enabled:
     name: 호스트 메트릭 수집
     description: >-
-      호스트 메트릭(CPU, 메모리, 디스크, 네트워크)은 `ha_metrics_enabled`가
-      켜져 있고 HA `system_monitor` 통합구성요소가 설정되어 있으면 자동으로
-      수집됩니다 — 별도 옵션이나 보호 모드 변경이 필요하지 않습니다.
-      이 토글은 향후 네이티브 구현을 위해 예약되어 있으며 현재는 동작하지
-      않습니다.
+      OpenTelemetry `hostmetrics` 리시버로 호스트 CPU, 메모리, 부하(load),
+      디스크 I/O, 파일시스템 사용량을 수집합니다. `service.name:
+      homeassistant-host`로 보고됩니다. 보호 모드 변경이 필요하지 않습니다.
+      네트워크는 수집하지 않습니다(애드온은 자체 네트워크 네임스페이스만
+      볼 수 있음). 기본값은 비활성화입니다.
   raw_config:
     name: Raw otelcol 설정
     description: >-

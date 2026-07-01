@@ -4,6 +4,22 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.4.0](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.4.0)
+
+## What's Changed
+
+* docs: update otelcol-contrib pin reference to 0.155.0 (#23) @saya6k
+
+## New Features
+
+* feat(otelcol): host metrics, container I/O stats, richer entity attributes (#25) @saya6k
+
+## Maintenance
+
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#24) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.3.19...v0.4.0
+
 ## [0.3.19](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.3.19)
 
 ## What's Changed
