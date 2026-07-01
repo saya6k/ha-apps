@@ -68,11 +68,11 @@ configuration:
   host_metrics_enabled:
     name: Collect host metrics
     description: >-
-      Host metrics (CPU, memory, disk, network) are collected automatically
-      when `ha_metrics_enabled` is on and the HA `system_monitor` integration
-      is configured — no extra option or protection-mode change needed.
-      This toggle is reserved for a future native implementation and has no
-      effect today.
+      Collect host CPU, memory, load, disk I/O, and filesystem usage via the
+      OpenTelemetry `hostmetrics` receiver. Reported under
+      `service.name: homeassistant-host`. No protection-mode change required.
+      Network is not collected (the add-on only sees its own network
+      namespace). Off by default.
   raw_config:
     name: Raw otelcol config
     description: >-

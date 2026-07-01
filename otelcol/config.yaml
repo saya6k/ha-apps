@@ -1,4 +1,5 @@
-version: 0.3.19
+---
+version: 0.4.0
 image: ghcr.io/saya6k/app-otelcol
 slug: otelcol
 name: OpenTelemetry Collector
@@ -6,7 +7,7 @@ description: >-
   Collect logs, metrics, and traces from Home Assistant Core, the Supervisor,
   and every add-on container. Export via OTLP to Grafana LGTM (Loki, Tempo,
   Mimir) or any OTLP-compatible backend.
-url: https://github.com/saya6k/ha-apps
+url: https://github.com/saya6k/ha-app-otelcol
 arch:
   - amd64
   - aarch64
