@@ -55,6 +55,25 @@ configuration:
     description: >-
       Text model used for outfit recommendations. Can be the same as the
       vision model.
+  ai_internal_enabled:
+    name: Internal AI
+    description: >-
+      Hidden master switch (add via the YAML editor). Set to false to disable
+      the built-in AI entirely and defer all tagging, suggestions, and pairings
+      to an external agent (e.g. mcp-wardrowbe). When off, the vision and text
+      sub-switches below are ignored. Defaults to true.
+  ai_vision_enabled:
+    name: Internal vision AI
+    description: >-
+      Hidden option (add via the YAML editor). Set to false to disable the
+      built-in vision model and defer clothing tagging to an external agent
+      (e.g. mcp-wardrowbe). Requires Internal AI to be on. Defaults to true.
+  ai_text_enabled:
+    name: Internal text AI
+    description: >-
+      Hidden option (add via the YAML editor). Set to false to disable the
+      built-in text model and defer outfit suggestions to an external agent
+      (e.g. mcp-wardrowbe). Requires Internal AI to be on. Defaults to true.
   oidc_issuer_url:
     name: OIDC issuer URL
     description: >-

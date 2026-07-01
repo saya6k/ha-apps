@@ -3,6 +3,23 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.2.0](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.0)
+
+## What's Changed
+
+* ci: derive release version from change type (version-resolver) (#2) @saya6k
+
+## New Features
+
+* feat: bump upstream to wardrowbe-v1.4.0 with hidden internal-AI toggles (#4) @saya6k
+
+## Maintenance
+
+* refactor: drop sed patches now redundant in wardrowbe v1.4.0 (#6) @saya6k
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#3) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.1.21...v4.2.0
+
 ## [4.1.21](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.1.21)
 
 Re-dispatch after notify job fix.
