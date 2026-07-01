@@ -52,6 +52,25 @@ configuration:
     name: 텍스트 모델
     description: >-
       의상 추천에 쓰이는 텍스트 모델. 비전 모델과 같아도 됩니다.
+  ai_internal_enabled:
+    name: 내장 AI
+    description: >-
+      숨김 마스터 스위치 (YAML 편집기로 추가). false로 설정하면 내장 AI를
+      완전히 끄고 태깅·추천·매칭을 모두 외부 에이전트(예: mcp-wardrowbe)에
+      위임합니다. 꺼져 있으면 아래 비전·텍스트 하위 스위치는 무시됩니다.
+      기본값은 true입니다.
+  ai_vision_enabled:
+    name: 내장 비전 AI
+    description: >-
+      숨김 옵션 (YAML 편집기로 추가). false로 설정하면 내장 비전 모델을
+      끄고 옷 태깅을 외부 에이전트(예: mcp-wardrowbe)에 위임합니다.
+      내장 AI가 켜져 있어야 적용됩니다. 기본값은 true입니다.
+  ai_text_enabled:
+    name: 내장 텍스트 AI
+    description: >-
+      숨김 옵션 (YAML 편집기로 추가). false로 설정하면 내장 텍스트 모델을
+      끄고 의상 추천을 외부 에이전트(예: mcp-wardrowbe)에 위임합니다.
+      내장 AI가 켜져 있어야 적용됩니다. 기본값은 true입니다.
   oidc_issuer_url:
     name: OIDC issuer URL
     description: >-
