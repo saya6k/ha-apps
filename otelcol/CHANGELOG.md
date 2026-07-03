@@ -4,6 +4,23 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-otelcol/releases).
 
 
+## [0.4.1](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.4.1)
+
+## What's Changed
+
+* Revert least-privilege AppArmor profile — add-on fails to start on HAOS (#28) @saya6k
+* security(apparmor): least-privilege profile (staged via complain mode) (#27) @saya6k
+
+## Bug Fixes
+
+* perf(otelcol): move bridge<->collector telemetry off TCP loopback to a unix socket (#29) @saya6k
+
+## Maintenance
+
+* docs(spec): reconcile AppArmor §11.2 with the shipped blanket file rule (#26) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-otelcol/compare/v0.4.0...v0.4.1
+
 ## [0.4.0](https://github.com/saya6k/ha-app-otelcol/releases/tag/v0.4.0)
 
 ## What's Changed
