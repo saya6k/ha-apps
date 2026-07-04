@@ -1,0 +1,33 @@
+---
+version: 0.1.0-rc.1
+image: ghcr.io/saya6k/app-registry-cache
+slug: registry-cache
+name: Registry Cache
+description: >-
+  Pull-through cache for docker.io and ghcr.io container registries. Repeated
+  image pulls are served from local disk instead of upstream, behind a single
+  nginx-fronted port.
+url: https://github.com/saya6k/ha-app-registry-cache
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+apparmor: true
+ports:
+  5000/tcp: 5000
+ports_description:
+  5000/tcp: OCI registry cache endpoint (nginx; routes by Host header — see DOCS.md)
+options:
+  docker_enabled: true
+  docker_cache_ttl: "168h"
+  ghcr_enabled: true
+  ghcr_cache_ttl: "168h"
+  prefetch: []
+schema:
+  docker_enabled: bool
+  docker_cache_ttl: "match(^[0-9]+[hm]$)"
+  ghcr_enabled: bool
+  ghcr_cache_ttl: "match(^[0-9]+[hm]$)"
+  prefetch:
+    - str
