@@ -4,7 +4,7 @@ name: Sync app version
 # yamllint disable-line rule:truthy
 on:
   repository_dispatch:
-    types: [app-released]
+    types: [app-released, app-released-beta]
 
 permissions:
   contents: write
@@ -16,11 +16,17 @@ jobs:
       Sync ${{ github.event.client_payload.app }}
       ${{ github.event.client_payload.version }}
     runs-on: ubuntu-latest
+    env:
+      CHANNEL: ${{ github.event.action == 'app-released-beta' && 'beta' || 'stable' }}
+      BASE_BRANCH: ${{ github.event.action == 'app-released-beta' && 'beta' || 'main' }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: main
+          ref: ${{ env.BASE_BRANCH }}
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+      - name: Install Jinja2
+        run: pip install --quiet jinja2
 
       - name: Sync files from source repo and update CHANGELOG.md
         env:
@@ -31,13 +37,26 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PYEOF'
-          import os, re, subprocess, base64, json
+          import os, re, subprocess, base64, hashlib, urllib.parse
+          import jinja2
 
           app     = os.environ["APP"]
           version = os.environ["VERSION"]
           notes   = os.environ["RELEASE_NOTES"]
+          channel = os.environ["CHANNEL"]
           repo    = f"https://github.com/saya6k/ha-app-{app}"
           image   = f"ghcr.io/saya6k/app-{app}"
+
+          # Same URL (+ "#beta" branch fragment for the beta channel) HA
+          # Supervisor's own repository-slug hash uses, so the rendered
+          # "Show add-on" badge points at the repo the user actually has
+          # added (stable ha-apps vs ha-apps#beta) -- see
+          # supervisor/store/utils.py::get_hash_from_repository and
+          # supervisor/validate.py::RE_REPOSITORY (branch fragment is part
+          # of the hashed string, not stripped).
+          catalog_url = "https://github.com/saya6k/ha-apps" + ("#beta" if channel == "beta" else "")
+          addon_hash = hashlib.sha1(catalog_url.lower().encode()).hexdigest()[:8]
+          repository_url_encoded = urllib.parse.quote(catalog_url, safe="")
 
           def gh_file(path):
               r = subprocess.run(
@@ -61,9 +80,19 @@ jobs:
                   f.write(content)
               print(f"  synced {path}")
 
-          # ── README.md and DOCS.md ─────────────────────────────────────────
-          write(f"{app}/README.md", gh_file("README.md"))
-          write(f"{app}/DOCS.md",   gh_file("DOCS.md"))
+          # ── README.md: render .README.j2 from source repo ─────────────────
+          env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True)
+          readme_tmpl = gh_file(".README.j2")
+          readme = env.from_string(readme_tmpl).render(
+              channel=channel, slug=app,
+              addon_hash=addon_hash, repository_url_encoded=repository_url_encoded,
+          )
+          if not readme.endswith("\n"):
+              readme += "\n"
+          write(f"{app}/README.md", readme)
+
+          # ── DOCS.md ─────────────────────────────────────────────────────
+          write(f"{app}/DOCS.md", gh_file("DOCS.md"))
 
           # ── translations/* ────────────────────────────────────────────────
           for fname in gh_ls("translations"):
@@ -113,7 +142,7 @@ jobs:
           BODY="Auto-synced from [ha-app-${APP} v${VERSION}]"
           BODY+="(https://github.com/saya6k/ha-app-${APP}/releases/tag/v${VERSION})."
           PR=$(gh pr create \
-            --base main \
+            --base "${BASE_BRANCH}" \
             --head "${BRANCH}" \
             --title "chore(${APP}): release ${VERSION}" \
             --body "${BODY}" \
