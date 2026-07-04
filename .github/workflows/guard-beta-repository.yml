@@ -1,0 +1,39 @@
+---
+name: Guard beta repository.yaml
+
+# Protects the one hand-maintained divergence between main and beta:
+# repository.yaml must stay branded as the beta channel on this branch
+# (name says "Beta", url carries the #beta fragment HA Supervisor hashes
+# into a distinct repository slug -- see supervisor/store/utils.py). Runs
+# on pushes to beta and on PRs targeting beta (including sync-app-version's
+# auto-merged PRs), and is a required status check on the beta branch so a
+# bad edit or an accidental main->beta merge can't land silently.
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches: [beta]
+  pull_request:
+    branches: [beta]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: repository.yaml stays branded as beta
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify repository.yaml
+        run: |
+          set -euo pipefail
+          if ! grep -qF '#beta' repository.yaml; then
+            echo "::error file=repository.yaml::url must include the #beta branch fragment on the beta branch"
+            exit 1
+          fi
+          if ! grep -qF 'Beta' repository.yaml; then
+            echo "::error file=repository.yaml::name must be marked Beta on the beta branch"
+            exit 1
+          fi
+          echo "OK: repository.yaml is branded as beta"
