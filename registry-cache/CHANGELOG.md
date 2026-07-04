@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1-rc.2](https://github.com/saya6k/ha-app-registry-cache/releases/tag/v0.1.1-rc.2)
+
+## What's Changed
+
+* debug: drop custom AppArmor profile to isolate s6-overlay /init failure (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-registry-cache/compare/v0.1.1-rc.1...v0.1.1-rc.2
+
 ## [0.1.1-rc.1](https://github.com/saya6k/ha-app-registry-cache/releases/tag/v0.1.1-rc.1)
 
 ## What's Changed

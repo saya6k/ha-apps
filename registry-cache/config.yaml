@@ -1,5 +1,5 @@
 ---
-version: 0.1.1-rc.1
+version: 0.1.1-rc.2
 image: ghcr.io/saya6k/app-registry-cache
 slug: registry-cache
 name: Registry Cache
