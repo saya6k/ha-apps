@@ -108,9 +108,17 @@ jobs:
           write(f"{app}/config.yaml", cfg)
 
           # ── CHANGELOG.md prepend ──────────────────────────────────────────
+          # Self-heals a missing file instead of crashing: happens for any
+          # app whose very first-ever release lands on a branch it was never
+          # manually scaffolded onto (e.g. a brand-new app's first release is
+          # a prerelease, so this is the first time it's synced to `beta`).
           cl_path = f"{app}/CHANGELOG.md"
-          with open(cl_path) as f:
-              cl = f.read()
+          if os.path.exists(cl_path):
+              with open(cl_path) as f:
+                  cl = f.read()
+          else:
+              cl = f"# Changelog\n"
+              print(f"  {cl_path} missing, creating stub")
           section = (
               f"## [{version}]({repo}/releases/tag/v{version})\n\n"
               f"{notes.strip()}\n"
