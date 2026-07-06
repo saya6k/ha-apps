@@ -6,6 +6,20 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.3.10](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.10)
+
+## What's Changed
+
+* chore: bump zensical 0.0.46 → 0.0.47 (#6) @[github-actions[bot]](https://github.com/apps/github-actions)
+* ci: bump docker/login-action v3 → v4 (#3) @saya6k
+
+## Maintenance
+
+* chore: finish release-drafter migration, tidy .agents, add devcontainer (#5) @saya6k
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#4) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-zensical/compare/v0.3.9...v0.3.10
+
 ## [0.3.9](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.9)
 
 ## What's Changed
