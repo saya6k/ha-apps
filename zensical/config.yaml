@@ -1,11 +1,12 @@
-version: 0.3.9
+---
+version: 0.3.10
 image: ghcr.io/saya6k/app-zensical
 slug: zensical
 name: Zensical
 description: >-
   Render /config/docs/ as a Zensical site (Material for MkDocs successor),
   served via the ingress panel.
-url: https://github.com/saya6k/ha-mkdocs
+url: https://github.com/saya6k/ha-app-zensical
 arch:
   - amd64
   - aarch64
