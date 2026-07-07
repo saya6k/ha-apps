@@ -25,6 +25,7 @@ body:
         - wardrowbe
         - zensical
         - otelcol
+        - transcribe-cpp
         - repository tooling (CI / docs / labels)
     validations:
       required: true

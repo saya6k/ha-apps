@@ -80,6 +80,7 @@ super-linter-output/
 !/wardrowbe/
 !/zensical/
 !/otelcol/
+!/transcribe-cpp/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/
