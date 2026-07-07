@@ -53,6 +53,8 @@ jobs:
               - 'zensical/**'
             otelcol:
               - 'otelcol/**'
+            transcribe-cpp:
+              - 'transcribe-cpp/**'
 
       # Same per-add-on filters but excluding docs (*.md). With
       # predicate-quantifier 'every', an add-on counts only when a changed file
