@@ -1,0 +1,43 @@
+---
+configuration:
+  model:
+    name: Model
+    description: >-
+      Which ASR model to download and run, from the transcribe.cpp GGUF
+      catalog. The language comes from the Home Assistant voice pipeline.
+      Changing this downloads the new model on next start.
+  quantization:
+    name: Model quantization
+    description: >-
+      GGUF weight precision of the downloaded model. q4_k_m = smallest/fastest
+      and lowest RAM (default); f16 = best quality but much larger. If the
+      selected model doesn't publish the chosen precision, the nearest larger
+      one is used automatically. Changing this re-downloads the model.
+  custom_model:
+    name: Custom model (HuggingFace repo ID)
+    description: >-
+      Convert your own fine-tuned checkpoint (e.g. a Whisper fine-tune) to
+      GGUF on this device and serve it — overrides the model selection above.
+      First conversion installs torch-cpu into /data and is slow; the result
+      is cached. Whisper-architecture checkpoints are supported.
+  speech_enhancement:
+    name: Speech enhancement
+    description: >-
+      Denoise the audio with FastEnhancer before transcription. Helps in
+      noisy rooms. Runs frame by frame, so live partial transcripts keep
+      working.
+  fastenhancer_size:
+    name: FastEnhancer model size
+    description: >-
+      Size of the speech enhancement model. Larger sizes denoise better but
+      use more CPU. Leave unset for base.
+  hf_token:
+    name: HuggingFace token
+    description: >-
+      Optional access token for gated/private model repos and to lift anonymous
+      download rate limits. Leave empty for public models.
+  log_level:
+    name: Log level
+    description: >-
+      Verbosity of the app log. Use debug/trace for troubleshooting;
+      info (default) for normal operation.
