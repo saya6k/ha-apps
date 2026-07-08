@@ -53,6 +53,8 @@ jobs:
               - 'zensical/**'
             otelcol:
               - 'otelcol/**'
+            transcribe-cpp:
+              - 'transcribe-cpp/**'
 
       # Same per-add-on filters but excluding docs (*.md). With
       # predicate-quantifier 'every', an add-on counts only when a changed file
@@ -210,7 +212,7 @@ jobs:
             echo "Found ${COUNT} Markdown file(s)"
           fi
 
-      - uses: DavidAnson/markdownlint-cli2-action@v23
+      - uses: DavidAnson/markdownlint-cli2-action@v24
         if: steps.mdfiles.outputs.found == 'true'
         with:
           globs: |

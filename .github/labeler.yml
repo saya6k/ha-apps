@@ -34,6 +34,10 @@
   - changed-files:
       - any-glob-to-any-file: "otelcol/**"
 
+"addon:transcribe-cpp":
+  - changed-files:
+      - any-glob-to-any-file: "transcribe-cpp/**"
+
 "scope:repo":
   - changed-files:
       - any-glob-to-any-file:
