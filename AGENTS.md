@@ -17,6 +17,7 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 | `wardrowbe/` ([ha-app-wardrowbe](https://github.com/saya6k/ha-app-wardrowbe)) | Anyesh/wardrowbe: Postgres + Redis + FastAPI + arq + Next.js + nginx + daily backup in one s6-overlay v3 container. Metadata only — source and CI live in ha-app-wardrowbe. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_wardrowbe&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 | `zensical/` ([ha-app-zensical](https://github.com/saya6k/ha-app-zensical)) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_zensical&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 | `otelcol/` ([ha-app-otelcol](https://github.com/saya6k/ha-app-otelcol)) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_otelcol&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| `transcribe-cpp/` ([ha-app-transcribe-cpp](https://github.com/saya6k/ha-app-transcribe-cpp)) | Wyoming STT — the full transcribe.cpp GGUF model catalog (Whisper, Parakeet, Canary, Qwen3-ASR, Moonshine) on ggml. FastEnhancer streaming denoiser. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_transcribe-cpp&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 
 ## AI tooling (`.agents/`)
 
@@ -44,14 +45,13 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 
 **`workflows/`** — task procedures, opened at the start of a task:
 
-| 파일 | 역할 |
-|---|---|
-| `new-app-scaffold.md` | 새 앱 추가 절차 (파일 생성 → `.github/` 등록) |
-| `app-dev-pr.md` | 브랜치 생성 → preflight → `main`에 통합 |
+> `new-app-scaffold`는 `ha-app-*` repo와 ha-apps 양쪽을 동시에 다루는 범용 절차라
+> 특정 repo 소속이 아니고, `~/Projects/.agents/workflows/new-app-scaffold.md`에 있음.
+> `app-dev-pr.md`도 ha-apps엔 없고 각 `ha-app-*` repo 안에 개별적으로 있음.
 
 **Typical flow:**
-- New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
-- Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
+- New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`(해당 repo 내)
+- Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`(해당 repo 내)
 
 **`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Memory can go stale; always verify against current files.
 
