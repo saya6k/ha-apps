@@ -44,14 +44,13 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 
 **`workflows/`** — task procedures, opened at the start of a task:
 
-| 파일 | 역할 |
-|---|---|
-| `new-app-scaffold.md` | 새 앱 추가 절차 (파일 생성 → `.github/` 등록) |
-| `app-dev-pr.md` | 브랜치 생성 → preflight → `main`에 통합 |
+> `new-app-scaffold`는 `ha-app-*` repo와 ha-apps 양쪽을 동시에 다루는 범용 절차라
+> 특정 repo 소속이 아니고, `~/Projects/.agents/workflows/new-app-scaffold.md`에 있음.
+> `app-dev-pr.md`도 ha-apps엔 없고 각 `ha-app-*` repo 안에 개별적으로 있음.
 
 **Typical flow:**
-- New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
-- Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`
+- New app: `new-app-scaffold` → implement → `app-preflight` → `conventional-commit` → `app-dev-pr`(해당 repo 내)
+- Existing change: implement → `app-preflight` → `conventional-commit` → `app-dev-pr`(해당 repo 내)
 
 **`memory/`** carries context that isn't in the code — boot gotchas, decisions, verified workarounds. Memory can go stale; always verify against current files.
 

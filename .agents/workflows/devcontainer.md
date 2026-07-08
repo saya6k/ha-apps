@@ -1,109 +1,90 @@
-# Dev container: running Home Assistant
+# Container workflow: standalone build/smoke-test (no devcontainer)
 
-This repo opens in the official Home Assistant **add-on** devcontainer
-(`ghcr.io/home-assistant/devcontainer:2-addons`, pinned in
-[`devcontainer.json`](../../.devcontainer/devcontainer.json)). The workspace is
-bind-mounted under `/mnt/supervisor/addons/local/ha-apps`.
+> **Historical note:** this repo used to open in an HA add-on VS Code
+> devcontainer (`ghcr.io/home-assistant/devcontainer:2-addons`, since renamed
+> upstream to `ghcr.io/home-assistant/devcontainer:apps` —
+> [home-assistant/devcontainer](https://github.com/home-assistant/devcontainer),
+> which also ships a sibling `:supervisor` image for Supervisor-core
+> development). Use the floating `:apps` tag, not a numbered one
+> (`5-apps` etc.) — the numbered tag keeps bumping on non-backwards-compatible
+> changes, so pinning one in docs goes stale fast. That devcontainer
+> was removed from *this repo* in #496 (2026-06-28) when
+> `ha-apps` became metadata-only — app source, Dockerfiles, and builds now
+> live in each `ha-app-*` repo. The upstream image itself is still maintained
+> and works the same way it always did; there is just no `devcontainer.json`
+> here anymore, so no Supervisor-based integration test flow currently has a
+> home. See "Why this can't just be ported" below.
 
-Runtime on this Mac is **Docker Desktop** — Apple `container` and Podman are
-both removed. See the `container-runtime-preference` memory.
+## Current workflow
 
-## Normal flow (VS Code)
+Docker Desktop is no longer installed on this Mac. The container runtime is
+Apple's **`container` CLI** (Virtualization.framework-based, arm64-native).
+Each `ha-app-*` repo builds and smoke-tests its own Dockerfile directly with
+it — there's no devcontainer and no running HA Supervisor involved.
 
-1. **Reopen in Container** — runs `postStartCommand` (`devcontainer_bootstrap`,
-   regenerates machine-id and bind-mounts the workspace; does **not** start
-   Docker or HA).
-2. Run **Start Home Assistant** task — execs `supervisor_run`.
-3. HA boots at <http://localhost:7123> (observer: <http://localhost:7357>).
-   First boot pulls Supervisor + plugin images — several minutes.
-
-## From the host CLI
-
-Find the container name once and reuse it:
-
-```bash
-CNAME=$(docker ps -a --filter "ancestor=ghcr.io/home-assistant/devcontainer:2-addons" --format '{{.Names}}' | head -n1)
-```
-
-### Boot (up)
+### Build
 
 ```bash
-# 1. Start container if stopped
-docker start "$CNAME"
+# Builder VM's default memory (2G) starves RAM-heavy native builds
+# (e.g. dx_rt's install.sh check needs >=4G). Bump before building:
+container builder start --memory 6G
 
-# 2. Mount each app dir into apps/local BEFORE starting the Supervisor
-docker exec "$CNAME" bash -lc '
-  REPO=/mnt/supervisor/addons/local/ha-apps
-  APPS=/mnt/supervisor/apps/local
-  sudo mkdir -p "$APPS"
-  for d in "$REPO"/*/; do
-    app=$(basename "$d")
-    [ -f "${d}config.yaml" ] || continue
-    mountpoint -q "$APPS/$app" && continue
-    sudo mkdir -p "$APPS/$app"
-    sudo mount --bind "$d" "$APPS/$app"
-  done
-  ls "$APPS"
-'
-
-# 3. Start Supervisor (needs a TTY — use -dt, never -d)
-docker exec -dt "$CNAME" bash -lc \
-  'sudo mkdir -p /run/supervisor && sudo -E supervisor_run > /tmp/supervisor_run.log 2>&1'
-
-# 4. Wait for HA
-until curl -sf -o /dev/null http://localhost:7123; do echo -n "."; sleep 5; done && echo " up!"
+container build -t <tag> .
 ```
 
-### Restart (apps missing on already-running HA)
+### Smoke-test (no HA Supervisor)
+
+Add-on images normally boot via bashio/s6-overlay, which expects a running
+Supervisor. To smoke-test standalone, override the entrypoint and exercise the
+app directly instead of relying on the add-on's own startup:
 
 ```bash
-# Stop Supervisor and its containers, then re-mount and boot fresh
-docker exec "$CNAME" bash -lc \
-  'sudo pkill -x supervisor_run 2>/dev/null; docker rm -f hassio_supervisor 2>/dev/null; true'
-# then run the Boot steps above from step 2
+container run --rm -it --entrypoint /bin/bash <tag>
+# then import/run the app's modules by hand, or curl its HTTP endpoints
 ```
 
-### Status / log
+### Status / cleanup
 
 ```bash
-# Inner container status
-docker exec "$CNAME" docker ps --format '{{.Names}}\t{{.Status}}'
-# HA HTTP check
-curl -s -o /dev/null -w "host :7123 -> HTTP %{http_code}\n" http://localhost:7123
-
-# Supervisor log
-docker exec "$CNAME" bash -lc 'tail -40 /tmp/supervisor_run.log'
+container system status
+container builder status
+container list -a
+container image list
 ```
 
-## Why apps need bind-mounting
+## Apple Container CLI limitations
 
-Supervisor renamed the local custom-app folder `addons/local` → `apps/local`
-([supervisor PR #6837](https://github.com/home-assistant/supervisor/pull/6837),
-merged 2026-05-13; live in the 2026.06 dev builds). The devcontainer still
-mounts the workspace at `addons/local/ha-apps` and this is a monorepo (apps in
-subdirs), so Supervisor scans an empty `apps/local` and the store shows no local
-apps.
+- **No `devcontainer.json` support.** VS Code's Dev Containers extension has
+  an experimental *"Attach to Running Apple Container"* command, but it
+  bypasses `devcontainer.json` entirely — you pre-create and start the
+  container yourself (`container create`/`start`), then attach; there's no
+  auto-build, `postStartCommand`, `runArgs`, or `mounts` handling. The actual
+  `devcontainer.json` engine ([devcontainers/cli](https://github.com/devcontainers/cli))
+  calls out to the `docker` CLI surface directly (with special-cased podman
+  support) and has no provider abstraction for other runtimes — so "Reopen in
+  Container" isn't an option with Apple container regardless
+  ([apple/container#912](https://github.com/apple/container/discussions/912)).
+- **No privileged docker-in-docker.** Apple container's VM-per-container
+  model has no equivalent of `--privileged` nested dind, which the HA
+  Supervisor needs to manage its own add-on containers.
+- **Builder VM memory isn't auto-sized.** Default builder memory (2G) is too
+  low for RAM-heavy native builds; must explicitly
+  `container builder start --memory <N>G` beforehand.
+- **Native build arch is arm64 only** on Apple Silicon — no local amd64 build
+  path. Matters for dependencies only published as x86_64 wheels/binaries.
+- **No HA Supervisor in a standalone `container run`.** bashio/s6-overlay
+  add-on entrypoints assume a Supervisor is present; smoke tests must
+  override the entrypoint and drive the app directly instead.
 
-Mounting must happen **before** `supervisor_run` — the Supervisor's fresh
-`-v /mnt/supervisor:/data` rbind captures them at boot time. Mounts made after
-it starts do not propagate in. Apps appear as `local_<slug>` (e.g.
-`local_supertonic`).
+## Why this can't just be ported to a full HA test flow
 
-## Gotchas
-
-1. **The container entrypoint only idles** — it does not start `dockerd` or the
-   Supervisor. `supervisor_run` does. A plain `docker start` leaves nothing on
-   7123/7357.
-2. **Do not pre-start `dockerd`.** `supervisor_run` launches its own
-   docker-in-docker. A second daemon fights over `/run/docker.sock` and the boot
-   hangs at *"Waiting for Docker to initialize..."*. Fix: kill the stray daemon,
-   remove `/run/docker.pid` + `/run/docker.sock`, re-run.
-3. **`supervisor_run` needs a TTY.** Under `docker exec -d` its `stty sane` call
-   fails and `set -e` aborts before the Supervisor starts. Always use `-dt`.
-
-## Ports
-
-| Host   | Container | Service     |
-|--------|-----------|-------------|
-| `7123` | `8123`    | HA frontend |
-| `7357` | `4357`    | observer    |
+The previous devcontainer used Docker Desktop specifically because the HA
+Supervisor needs privileged nested docker-in-docker to manage its own add-on
+containers, and `devcontainer.json`'s build/launch engine has no Apple-container
+provider (only an experimental "attach to an already-running container" path
+that skips `devcontainer.json` handling entirely — see limitations above).
+Neither constraint has changed. If a real Supervisor-based
+integration test flow (boot HA, install the app from the local store, hit
+`:7123`) is needed again, it would have to live in a `ha-app-*` repo and would
+still need Docker (or Podman) — Apple `container` cannot replace it for that
+specific use case.
