@@ -84,9 +84,6 @@ super-linter-output/
 !/zensical/
 !/otelcol/
 !/transcribe-cpp/
-# Beta-branch-only test entry — validating the 2-track/.README.j2 pipeline.
-# Deliberately NOT added to main's .gitignore.
-!/registry-cache/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/
