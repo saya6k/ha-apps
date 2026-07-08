@@ -41,6 +41,9 @@ yarn-error.log*
 
 # AI tooling dirs — tracked in full; only local-override files are excluded.
 **/.agents/settings.local.json
+# .agents/memory — cross-session notes, gitignored (contains internal
+# reasoning/decisions not meant for the public repo tree).
+/.agents/memory/
 # .claude is a real dir (not a symlink) with individual symlinks inside.
 # settings.local.json inside is gitignored (local overrides only).
 .claude
