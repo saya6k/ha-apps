@@ -1,5 +1,5 @@
 ---
-version: 0.1.0
+version: 0.2.0-rc.0
 image: ghcr.io/saya6k/app-transcribe-cpp
 slug: transcribe-cpp
 name: Transcribe.cpp
@@ -24,6 +24,7 @@ options:
   model: whisper-large-v3-turbo
   quantization: q4_k_m
   custom_model: ''
+  model_options: []
   speech_enhancement: false
   hf_token: ''
   log_level: info
@@ -31,6 +32,9 @@ schema:
   model: list(breeze-asr-25|canary-180m-flash|canary-1b-flash|canary-1b-v2|canary-qwen-2.5b|cohere-transcribe-03-2026|fun-asr-mlt-nano-2512|fun-asr-nano-2512|gigaam-v3-ctc|gigaam-v3-e2e-ctc|gigaam-v3-e2e-rnnt|gigaam-v3-rnnt|granite-4.0-1b-speech|granite-speech-4.1-2b|granite-speech-4.1-2b-nar|granite-speech-4.1-2b-plus|medasr|moonshine-base|moonshine-base-ar|moonshine-base-ja|moonshine-base-ko|moonshine-base-uk|moonshine-base-vi|moonshine-base-zh|moonshine-streaming-medium|moonshine-streaming-small|moonshine-streaming-tiny|moonshine-tiny|moonshine-tiny-ar|moonshine-tiny-ja|moonshine-tiny-ko|moonshine-tiny-uk|moonshine-tiny-vi|moonshine-tiny-zh|nemotron-3.5-asr-streaming-0.6b|nemotron-speech-streaming-en-0.6b|parakeet-ctc-0.6b|parakeet-ctc-1.1b|parakeet-rnnt-0.6b|parakeet-rnnt-1.1b|parakeet-tdt-0.6b-v2|parakeet-tdt-0.6b-v3|parakeet-tdt-1.1b|parakeet-tdt_ctc-1.1b|parakeet-tdt_ctc-110m|parakeet-unified-en-0.6b|qwen3-asr-0.6b|qwen3-asr-1.7b|sensevoice-small|voxtral-mini-3b-2507|voxtral-mini-4b-realtime-2602|voxtral-small-24b-2507|whisper-base|whisper-base.en|whisper-large|whisper-large-v2|whisper-large-v3|whisper-large-v3-turbo|whisper-medium|whisper-medium.en|whisper-small|whisper-small.en|whisper-tiny|whisper-tiny.en)
   quantization: list(q4_k_m|q5_k_m|q6_k|q8_0|f16)
   custom_model: str?
+  model_options:
+    - name: str
+      value: str
   speech_enhancement: bool
   # Optional and unset by default -> hidden behind "unused optional
   # configuration options" in the HA UI. Code default: base.
