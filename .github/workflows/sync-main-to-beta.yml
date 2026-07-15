@@ -1,18 +1,18 @@
 ---
 name: Sync main to beta
 
-# Keeps `beta` from drifting off `main` for shared infra (workflows, docs,
-# .gitignore, CI config, etc.) that has nothing to do with the beta channel.
-# repository.yaml's beta branding is the one intentional divergence -- main
-# never touches that file post-fork, so a plain merge never conflicts on it,
-# and guard-beta-repository.yml (a required check on beta) still verifies
-# the branding survives every merge here.
+# Keeps shared infra (workflows, docs, lint config, etc.) from drifting
+# between main and beta. Copies an explicit path allowlist from main's tree
+# onto beta -- never a branch merge -- so this can never conflict with the
+# per-app content (config.yaml, CHANGELOG.md) that main and beta legitimately
+# diverge on; sync-app-version.yml now syncs app content to both branches
+# directly on every release, so no reconciliation is needed here.
+# repository.yaml (the beta branding) and every app directory are
+# deliberately excluded from SHARED_PATHS; guard-beta-repository.yml still
+# verifies the branding survives every merge here.
 #
-# App content that legitimately differs between branches (rc versions,
-# beta-only catalog entries) can still conflict with an app added on both
-# branches independently -- when that happens this job's merge step fails
-# and no PR is opened; resolve by hand:
-#   git checkout beta && git merge main   # fix conflicts, commit, push, PR
+# New shared-infra files/dirs at repo root need to be added to SHARED_PATHS
+# below -- they aren't picked up automatically.
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -27,9 +27,16 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  SHARED_PATHS: >-
+    .agents .claude .editorconfig .gitattributes .github .gitignore
+    .hadolint.yaml .markdownlint.yaml .shellcheckrc .yamllint
+    AGENTS.md CODE_OF_CONDUCT.md CONTRIBUTING.md LICENSE README.md
+    SECURITY.md
+
 jobs:
   sync:
-    name: Merge main into beta
+    name: Copy shared infra from main to beta
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -38,37 +45,33 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
-      - name: Check for drift
-        id: check
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          if git merge-base --is-ancestor origin/main HEAD; then
-            echo "drift=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "drift=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Merge main and open PR
-        if: steps.check.outputs.drift == 'true'
+      - name: Copy shared-infra paths from main and open PR if changed
         env:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: |
           set -euo pipefail
+          git fetch origin main
+          # shellcheck disable=SC2086
+          git checkout origin/main -- $SHARED_PATHS
+
+          if git diff --quiet --cached && git diff --quiet; then
+            echo "No shared-infra drift, nothing to do."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           BRANCH="sync/main-to-beta-$(date +%Y%m%d%H%M%S)"
           git checkout -b "${BRANCH}"
-          git merge origin/main --no-edit
+          # shellcheck disable=SC2086
+          git add $SHARED_PATHS
+          git commit -m "chore(repo): sync shared infra from main to beta"
           git push origin "${BRANCH}"
-          BODY="Automated merge of \`main\` into \`beta\` to keep shared infra"
-          BODY+=" from drifting. repository.yaml's beta branding is untouched"
-          BODY+=" (main doesn't modify that file); guard-beta-repository.yml"
-          BODY+=" re-verifies it anyway."
           PR=$(gh pr create \
             --base beta \
             --head "${BRANCH}" \
             --title "chore(repo): sync main into beta" \
-            --body "${BODY}" \
+            --body "Automated copy of shared-infra paths from \`main\`.
+          App content and \`repository.yaml\` are untouched." \
           )
           gh pr merge "$PR" --merge --auto --delete-branch
