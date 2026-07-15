@@ -1,6 +1,13 @@
 ---
 name: Sync app version
 
+# A stable release is by definition newer than any rc that preceded it, so
+# it's also the newest available beta build -- `app-released` therefore
+# fans out to both `main` and `beta`, while `app-released-beta` (an rc)
+# only ever targets `beta`. Each target gets its own independent sync run
+# (never a git merge between main and beta), so the two branches can carry
+# different CHANGELOG.md / config.yaml content without ever needing
+# reconciliation.
 # yamllint disable-line rule:truthy
 on:
   repository_dispatch:
@@ -11,14 +18,35 @@ permissions:
   pull-requests: write
 
 jobs:
+  targets:
+    name: Resolve sync targets
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.resolve.outputs.targets }}
+    steps:
+      - id: resolve
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.action }}" = "app-released-beta" ]; then
+            targets='[{"channel":"beta","base_branch":"beta"}]'
+          else
+            targets='[{"channel":"stable","base_branch":"main"},{"channel":"beta","base_branch":"beta"}]'
+          fi
+          echo "targets=${targets}" >> "$GITHUB_OUTPUT"
+
   sync:
     name: >-
       Sync ${{ github.event.client_payload.app }}
-      ${{ github.event.client_payload.version }}
+      ${{ github.event.client_payload.version }} (${{ matrix.channel }})
+    needs: targets
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.targets.outputs.targets) }}
     env:
-      CHANNEL: ${{ github.event.action == 'app-released-beta' && 'beta' || 'stable' }}
-      BASE_BRANCH: ${{ github.event.action == 'app-released-beta' && 'beta' || 'main' }}
+      CHANNEL: ${{ matrix.channel }}
+      BASE_BRANCH: ${{ matrix.base_branch }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -140,7 +168,9 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: |
           set -euo pipefail
-          BRANCH="sync/${APP}-${VERSION}"
+          # Channel-suffixed: a stable release fans out to both main and
+          # beta in parallel matrix legs, so the two need distinct branches.
+          BRANCH="sync/${APP}-${VERSION}-${CHANNEL}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "${BRANCH}"
