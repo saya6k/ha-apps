@@ -27,6 +27,7 @@ final transcript at end of utterance.
 | `model` | `whisper-large-v3-turbo` | ASR model from the transcribe.cpp GGUF catalog (table below) |
 | `quantization` | `q4_k_m` | GGUF weight precision, smallest → largest: `q4_k_m` → `f16`. If the model doesn't publish the chosen one, the nearest larger is used |
 | `custom_model` | `''` | HF repo ID of your own fine-tune to convert on-device (see below) — overrides `model` |
+| `model_options` | `[]` | Per-model runtime knobs, e.g. `att_context_right` for streaming Parakeet/Nemotron models (see below) |
 | `speech_enhancement` | `false` | FastEnhancer denoise before decoding (noisy rooms; live partials keep working) |
 | `fastenhancer_size` | unset | Enhancement model size `tiny`–`large` (unset = `base`); hidden under unused optional options |
 | `hf_token` | `''` | HuggingFace token for gated repos / rate limits |
@@ -78,6 +79,56 @@ on-device: `whisper` (incl. Breeze), `moonshine`, `moonshine_streaming`,
 Unsupported or undetectable checkpoints stop the add-on with a clear
 log message — fix `custom_model` (or clear it to use the catalog
 `model`) and start the add-on again.
+
+## Model options (`model_options`)
+
+Some models accept runtime tuning knobs beyond `language` — e.g.
+`nemotron-speech-streaming-en-0.6b`'s right-context lookahead, or Whisper's
+initial-prompt biasing. `model_options` is a list of `{name, value}` pairs
+(add rows in the app configuration UI) applied once when the model loads.
+
+Every option that's actually applied logs an `INFO` line naming the option
+and the value used, so you can confirm it took effect without raising
+verbosity. A key that doesn't apply to the loaded model is **not an
+error** — the add-on ignores it and keeps running, but always logs why
+(visible at the default `log_level`), at a level matched to how likely it
+is to be a mistake: an unrecognized key name, or a correct key with a bad
+value (typo, wrong type), logs a `WARNING`; a correct `name`/`value` that
+simply belongs to a different model family logs at `INFO` — routine,
+since one `model_options` list is often reused across several model
+choices.
+
+transcribe.cpp documents each option's exact semantics and valid ranges
+better than a second copy here would, and that documentation stays in sync
+with the exact commit this add-on vendors (`TRANSCRIBE_REF` in the
+`Dockerfile`, currently v0.1.3 / `a94e021e`):
+
+- [Python binding source](https://github.com/handy-computer/transcribe.cpp/blob/a94e021ef658dc7c788837341a13f6acea3baf3c/bindings/python/src/transcribe_cpp/__init__.py) —
+  full docstrings for every option class (search for `WhisperRunOptions`,
+  `ParakeetStreamOptions`, `ParakeetBufferedStreamOptions`,
+  `VoxtralRealtimeStreamOptions`, `MoonshineStreamingOptions`)
+- [Reference CLI `--help` text](https://github.com/handy-computer/transcribe.cpp/blob/a94e021ef658dc7c788837341a13f6acea3baf3c/examples/cli/main.cpp) —
+  the most human-readable per-option description, including the
+  `att_context_right` menu values published for
+  `nemotron-speech-streaming-en-0.6b`
+
+`model_options`' `name` is the literal Python binding keyword — the
+mapping below is this add-on's own glue (which upstream class each name
+routes to); everything else about what a value does lives upstream:
+
+| `name` | Routes to | Applies when the model is |
+|---|---|---|
+| `initial_prompt`, `condition_on_prev_tokens`, `temperature`, `temperature_inc`, `compression_ratio_thold`, `logprob_thold`, `no_speech_thold`, `max_prev_context_tokens`, `seed`, `max_initial_timestamp` | `WhisperRunOptions` | Whisper family, non-streaming |
+| `att_context_right` | `ParakeetStreamOptions` | Parakeet streaming (e.g. `nemotron-speech-streaming-en-0.6b`) |
+| `left_ms`, `chunk_ms`, `right_ms` | `ParakeetBufferedStreamOptions` | Parakeet buffered streaming (`parakeet-unified-en-0.6b`) |
+| `num_delay_tokens`, `min_decode_interval_ms` | `VoxtralRealtimeStreamOptions` | Voxtral Realtime streaming |
+| `min_decode_interval_ms` | `MoonshineStreamingOptions` | Moonshine streaming |
+| `spec_k_drafts` | *(not a family option — a plain decode kwarg)* | Any family that advertises speculative decode; **non-streaming only** — streaming always uses the family default |
+
+Two upstream fields with no config knob here: `itn` and `pnc` exist in the
+C API but the Python bindings at the pinned commit never expose them, so
+there's currently no way to set them regardless of add-on config — not a
+bug in this add-on, a gap in the vendored bindings version.
 
 ## Speaker attribution
 
@@ -184,6 +235,13 @@ catalog table above.
 - [ ] Live partials visible with a streaming model (e.g. `moonshine-streaming-tiny`)
 - [ ] `speech_enhancement: true` transcribes a noisy WAV sensibly
 - [ ] `speech_enhancement: true` + a streaming model still shows live partials
+- [ ] `model_options` with a valid key (e.g. `att_context_right` on
+      `nemotron-speech-streaming-en-0.6b`) transcribes normally and logs a
+      visible `INFO` line confirming it was applied; a typo'd key name
+      produces a visible `WARNING`; a correctly-named key from a different
+      family (e.g. `initial_prompt` on that same Nemotron model) produces
+      a visible `INFO` line saying it doesn't apply — none of these crash
+      the add-on
 - [ ] One `custom_model` Whisper fine-tune converts and serves (amd64)
 - [ ] One NeMo-family conversion (e.g. a parakeet checkpoint) completes
       on amd64 (slow; needs several GB free in `/data`)
