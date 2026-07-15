@@ -1,5 +1,5 @@
 ---
-version: 0.2.0-rc.0
+version: 0.2.0-rc.1
 image: ghcr.io/saya6k/app-transcribe-cpp
 slug: transcribe-cpp
 name: Transcribe.cpp

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0-rc.1](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.2.0-rc.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: accept single-entry model_options as a bare JSON object (#5) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-transcribe-cpp/compare/v0.2.0-rc.0...v0.2.0-rc.1
+
 ## [0.2.0-rc.0](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.2.0-rc.0)
 
 ## What's Changed
