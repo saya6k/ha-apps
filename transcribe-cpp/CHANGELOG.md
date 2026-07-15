@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0-rc.2](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.2.0-rc.2)
+
+## What's Changed
+
+## New Features
+
+* feat: log INFO when a model_options value is actually applied (#6) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-transcribe-cpp/compare/v0.2.0-rc.1...v0.2.0-rc.2
+
 ## [0.2.0-rc.1](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.2.0-rc.1)
 
 ## What's Changed

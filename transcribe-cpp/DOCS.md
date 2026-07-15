@@ -87,13 +87,16 @@ Some models accept runtime tuning knobs beyond `language` — e.g.
 initial-prompt biasing. `model_options` is a list of `{name, value}` pairs
 (add rows in the app configuration UI) applied once when the model loads.
 
-A key that doesn't apply to the loaded model is **not an error** — the
-add-on ignores it and keeps running, but always logs why (visible at the
-default `log_level`), at a level matched to how likely it is to be a
-mistake: an unrecognized key name, or a correct key with a bad value (typo,
-wrong type), logs a `WARNING`; a correct `name`/`value` that simply belongs
-to a different model family logs at `INFO` — routine, since one
-`model_options` list is often reused across several model choices.
+Every option that's actually applied logs an `INFO` line naming the option
+and the value used, so you can confirm it took effect without raising
+verbosity. A key that doesn't apply to the loaded model is **not an
+error** — the add-on ignores it and keeps running, but always logs why
+(visible at the default `log_level`), at a level matched to how likely it
+is to be a mistake: an unrecognized key name, or a correct key with a bad
+value (typo, wrong type), logs a `WARNING`; a correct `name`/`value` that
+simply belongs to a different model family logs at `INFO` — routine,
+since one `model_options` list is often reused across several model
+choices.
 
 transcribe.cpp documents each option's exact semantics and valid ranges
 better than a second copy here would, and that documentation stays in sync
@@ -233,11 +236,12 @@ catalog table above.
 - [ ] `speech_enhancement: true` transcribes a noisy WAV sensibly
 - [ ] `speech_enhancement: true` + a streaming model still shows live partials
 - [ ] `model_options` with a valid key (e.g. `att_context_right` on
-      `nemotron-speech-streaming-en-0.6b`) transcribes normally with no log
-      output about it; a typo'd key name produces a visible `WARNING`; a
-      correctly-named key from a different family (e.g. `initial_prompt`
-      on that same Nemotron model) produces a visible `INFO` line — none
-      of these crash the add-on
+      `nemotron-speech-streaming-en-0.6b`) transcribes normally and logs a
+      visible `INFO` line confirming it was applied; a typo'd key name
+      produces a visible `WARNING`; a correctly-named key from a different
+      family (e.g. `initial_prompt` on that same Nemotron model) produces
+      a visible `INFO` line saying it doesn't apply — none of these crash
+      the add-on
 - [ ] One `custom_model` Whisper fine-tune converts and serves (amd64)
 - [ ] One NeMo-family conversion (e.g. a parakeet checkpoint) completes
       on amd64 (slow; needs several GB free in `/data`)
