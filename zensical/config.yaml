@@ -1,5 +1,5 @@
 ---
-version: 0.3.11-rc.0
+version: 0.3.11
 image: ghcr.io/saya6k/app-zensical
 slug: zensical
 name: Zensical
