@@ -1,6 +1,6 @@
 ---
 name: CRW Web Tools
-version: 0.2.0-rc.3
+version: 0.2.0
 image: ghcr.io/saya6k/app-crw
 slug: crw
 description: >-
