@@ -3,6 +3,20 @@
 Releases are tracked in
 [ha-app-crw releases](https://github.com/saya6k/ha-app-crw/releases).
 
+## [0.2.0](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0)
+
+## What's Changed
+
+## New Features
+
+* feat(crw): engine multi-select whitelist + graceful crash shutdown (#3) @saya6k
+
+## Bug Fixes
+
+* fix(crw): remove the whole qwant engine family together (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.1.0...v0.2.0
+
 ## [0.1.0](https://github.com/saya6k/ha-app-crw/releases/tag/v0.1.0)
 
 Initial release — CRW Web Tools for Home Assistant.
