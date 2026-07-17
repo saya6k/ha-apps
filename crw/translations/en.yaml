@@ -19,8 +19,9 @@ configuration:
   search_engines:
     name: Search engines
     description: >-
-      SearXNG engine names to enable (e.g. duckduckgo, brave, startpage).
-      Leave empty to use the SearXNG defaults minus a few engines that
-      fail or spam errors in typical deployments — wikidata (startup 403),
+      Pick the engines to search — selected engines become the whole
+      active set, and engine dependencies are added automatically. Leave
+      empty to use the SearXNG defaults minus a few engines that fail or
+      spam errors in typical deployments — wikidata (startup 403),
       ahmia/torch (need a Tor proxy), startpage (broken parser), qwant
-      (instant rate limiting). List an engine here to opt back in.
+      (instant rate limiting). Select one of those to opt back in.
