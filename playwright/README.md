@@ -8,7 +8,7 @@
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Shell](https://img.shields.io/badge/Shell-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)](https://www.gnu.org/software/bash/)
 
-[![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_playwright&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps)
+[![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=4fdf9462_playwright&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps%23beta)
 
 Safe browser automation for Assist conversation agents over MCP —
 Playwright drives a headless Chromium behind a domain allowlist, with
