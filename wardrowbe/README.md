@@ -7,6 +7,16 @@ tag them, and get daily outfit suggestions based on weather and occasion.
 
 Upstream: <https://github.com/Anyesh/wardrowbe>
 
+## ⚠️ THIS IS A BETA VERSION
+
+This build comes from the beta channel — a pre-release (rc) of this app.
+
+- It may not work at all.
+- It might stop working or change without notice.
+- It could have a negative impact on your system.
+
+If you want the stable release: <https://github.com/saya6k/ha-apps>
+
 ## Quick start
 
 1. Install **Wardrowbe** from the add-on store.
