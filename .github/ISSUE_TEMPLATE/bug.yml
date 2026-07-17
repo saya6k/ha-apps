@@ -26,6 +26,7 @@ body:
         - zensical
         - otelcol
         - transcribe-cpp
+        - playwright
         - repository tooling (CI / docs / labels)
     validations:
       required: true
