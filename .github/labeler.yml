@@ -38,6 +38,10 @@
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"
 
+"addon:playwright":
+  - changed-files:
+      - any-glob-to-any-file: "playwright/**"
+
 "scope:repo":
   - changed-files:
       - any-glob-to-any-file:
