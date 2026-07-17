@@ -18,7 +18,8 @@ configuration:
   search_engines:
     name: 검색 엔진
     description: >-
-      활성화할 SearXNG 엔진 이름 목록 (예: duckduckgo, brave, startpage).
-      비우면 SearXNG 기본값에서 문제 있는 엔진 몇 개를 뺀 셋을 사용합니다 —
-      wikidata(시작 시 403), ahmia/torch(Tor 프록시 필요), startpage(응답
-      파서 고장), qwant(즉시 rate limit). 다시 쓰려면 여기에 추가하세요.
+      검색에 사용할 엔진을 선택하세요 — 선택한 엔진들이 전체 활성 셋이
+      되며, 엔진 간 의존성은 자동으로 추가됩니다. 비우면 SearXNG 기본값에서
+      문제 있는 엔진 몇 개를 뺀 셋을 사용합니다 — wikidata(시작 시 403),
+      ahmia/torch(Tor 프록시 필요), startpage(응답 파서 고장), qwant(즉시
+      rate limit). 해당 엔진을 선택하면 다시 켤 수 있습니다.
