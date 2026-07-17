@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0-rc.2](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0-rc.2)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(crw): remove the whole qwant engine family together (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.2.0-rc.1...v0.2.0-rc.2
+
 ## [0.2.0-rc.1](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0-rc.1)
 
 Release candidate — search customization & clean startup.
