@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0)
+
+## What's Changed
+
+## New Features
+
+* feat(crw): engine multi-select whitelist + graceful crash shutdown (#3) @saya6k
+
+## Bug Fixes
+
+* fix(crw): remove the whole qwant engine family together (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.1.0...v0.2.0
+
 ## [0.2.0-rc.3](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0-rc.3)
 
 ## What's Changed
