@@ -1,6 +1,6 @@
 ---
 name: Playwright Browser
-version: 0.1.1-rc.1
+version: 0.1.1
 image: ghcr.io/saya6k/app-playwright
 slug: playwright
 description: >-
@@ -14,7 +14,6 @@ arch:
   - amd64
 init: false
 startup: services
-stage: experimental
 discovery:
   - mcp
 ingress: true
