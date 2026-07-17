@@ -1,0 +1,36 @@
+---
+version: 0.1.0
+image: ghcr.io/saya6k/app-crw
+name: CRW Web Tools
+slug: crw
+description: >-
+  Web search and page scraping for Assist conversation agents over MCP.
+  Bundles SearXNG meta search and the crw scraper, exposed as web_search
+  and web_scrape tools via streamable HTTP.
+url: https://github.com/saya6k/ha-app-crw
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+stage: experimental
+discovery:
+  - mcp
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: >-
+    MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
+    reaches it over the internal network; map it only for external MCP
+    clients.
+options:
+  max_search_results: 3
+  outgoing_proxy: ''
+  safe_search: 1
+  search_engines: []
+schema:
+  max_search_results: int(1,6)
+  outgoing_proxy: str?
+  safe_search: int(0,2)
+  search_engines:
+    - str?

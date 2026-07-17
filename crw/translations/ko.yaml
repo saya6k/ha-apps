@@ -1,0 +1,24 @@
+---
+configuration:
+  max_search_results:
+    name: 최대 검색 결과 수
+    description: >-
+      web_search가 conversation agent에 반환하는 결과 수의 상한 (1-6).
+      agent가 호출마다 더 적게 요청할 수 있습니다.
+  outgoing_proxy:
+    name: 아웃고잉 프록시
+    description: >-
+      모든 검색·스크레이핑 트래픽에 사용할 HTTP/SOCKS 프록시 URL
+      (예: socks5://10.0.0.2:1080). 검색 엔진이나 사이트가 현재 네트워크
+      주소를 차단(anti-bot)할 때 유용합니다. 비우면 직접 연결합니다.
+  safe_search:
+    name: 세이프 서치
+    description: >-
+      SearXNG 세이프 서치 수준 — 0 끔, 1 보통, 2 엄격.
+  search_engines:
+    name: 검색 엔진
+    description: >-
+      활성화할 SearXNG 엔진 이름 목록 (예: duckduckgo, brave, startpage).
+      비우면 SearXNG 기본값에서 문제 있는 엔진 몇 개를 뺀 셋을 사용합니다 —
+      wikidata(시작 시 403), ahmia/torch(Tor 프록시 필요), startpage(응답
+      파서 고장), qwant(즉시 rate limit). 다시 쓰려면 여기에 추가하세요.

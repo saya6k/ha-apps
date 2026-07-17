@@ -27,6 +27,7 @@ body:
         - otelcol
         - transcribe-cpp
         - playwright
+        - crw
         - repository tooling (CI / docs / labels)
     validations:
       required: true
