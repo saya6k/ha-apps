@@ -1,0 +1,59 @@
+---
+configuration:
+  advanced_tools:
+    name: Advanced tools
+    description: >-
+      Expose browser_evaluate (arbitrary JavaScript) and browser_screenshot
+      to the conversation agent. Off by default — enable only if you
+      understand the risk surface.
+  allowed_domains:
+    name: Allowed domains
+    description: >-
+      Domains the browser may navigate to (subdomains included, HTTPS
+      only). An empty list rejects every navigation — you must add at
+      least one domain for the app to be useful.
+  bitwarden_access_token:
+    name: Bitwarden access token
+    description: >-
+      Machine account access token for Bitwarden Secrets Manager. Used
+      only when the secret provider is set to bitwarden.
+  bitwarden_organization_id:
+    name: Bitwarden organization ID
+    description: >-
+      Organization UUID for listing secret names with the secret_names
+      tool. Optional — resolving secrets by UUID works without it.
+  bitwarden_server_url:
+    name: Bitwarden server URL
+    description: >-
+      Bitwarden server to talk to. Keep the default for bitwarden.com or
+      point it at your self-hosted instance.
+  local_secrets:
+    name: Local secrets (testing only)
+    description: >-
+      ⚠️ For testing only — entries are stored in plain text in the
+      add-on configuration. The values are still never shown to the
+      conversation agent (it only sees <site>/id and <site>/pw
+      references), but use 1Password or Bitwarden for real credentials.
+      The default entry works with the-internet.herokuapp.com's login
+      demo page.
+  onepassword_token:
+    name: 1Password token
+    description: >-
+      Service Account token for 1Password. Used only when the secret
+      provider is set to 1password.
+  persist_session:
+    name: Persist browser session
+    description: >-
+      Keep cookies and storage across browser sessions inside the
+      container. Off by default — every session starts clean.
+  secret_provider:
+    name: Secret provider
+    description: >-
+      Where {{secret:...}} placeholders are resolved from. Secret values
+      are injected by the bridge and never returned to the conversation.
+      "local" reads the local_secrets option and is for testing only.
+  session_idle_timeout:
+    name: Session idle timeout
+    description: >-
+      Seconds of inactivity before the browser session is closed
+      automatically (30-3600).
