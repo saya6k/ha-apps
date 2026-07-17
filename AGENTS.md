@@ -18,6 +18,7 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 | `zensical/` ([ha-app-zensical](https://github.com/saya6k/ha-app-zensical)) | Renders `/config/docs/` as a Zensical site via the HA ingress panel. Stateless renderer + inotify watcher. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_zensical&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 | `otelcol/` ([ha-app-otelcol](https://github.com/saya6k/ha-app-otelcol)) | OpenTelemetry Collector — otelcol-contrib + Python HA-API bridge. Collects logs, metrics, and traces from HA Core, Supervisor, and add-ons; exports via OTLP. `stage: experimental`. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_otelcol&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 | `transcribe-cpp/` ([ha-app-transcribe-cpp](https://github.com/saya6k/ha-app-transcribe-cpp)) | Wyoming STT — the full transcribe.cpp GGUF model catalog (Whisper, Parakeet, Canary, Qwen3-ASR, Moonshine) on ggml. FastEnhancer streaming denoiser. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_transcribe-cpp&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
+| `crw/` ([ha-app-crw](https://github.com/saya6k/ha-app-crw)) | MCP tool supply for Assist — web_search/web_scrape via bundled SearXNG + crw-server (fastcrw sidecar pattern), streamable HTTP `/mcp`. `stage: experimental`. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_crw&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 | `playwright/` ([ha-app-playwright](https://github.com/saya6k/ha-app-playwright)) | Safe browser automation over MCP — Playwright + headless Chromium behind a domain allowlist, bridge-side secret injection (local/1Password/Bitwarden), ingress session viewer. `stage: experimental`. Metadata only. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_playwright&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 
 ## AI tooling (`.agents/`)
@@ -62,7 +63,7 @@ HA add-on catalog repo. Shared git history, issue tracker, and release pipeline.
 <type>(<scope>): <subject>
 ```
 
-**Scopes:** `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `otelcol` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
+**Scopes:** `crw` · `livekit-wakeword` · `nemotron-asr-c` · `nemo-asr-cpp` · `otelcol` · `supertonic` · `voiceprint` · `wardrowbe` · `zensical` · `repo`
 
 **Types:** `feat` · `fix`/`perf`/`revert` · `docs`/`refactor`/`build`/`ci` · `chore`/`test`/`style`
 
