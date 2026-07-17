@@ -1,0 +1,19 @@
+# Changelog
+
+## [0.2.0-rc.1](https://github.com/saya6k/ha-app-crw/releases/tag/v0.2.0-rc.1)
+
+Release candidate — search customization & clean startup.
+
+## Features
+* `outgoing_proxy` option — HTTP/SOCKS egress proxy for search+scrape (anti-bot bypass)
+* `search_engines` option — SearXNG engine keep_only list
+* Settings rendered by a tested Python renderer (was sed)
+
+## Fixes
+* Default engine set drops noisy/broken engines: wikidata (startup 403), ahmia/torch (need Tor), startpage (broken parser), qwant (instant 429)
+* crw waits for SearXNG readiness — no more UNREACHABLE warning at boot
+* limiter.toml warning silenced; granian capped at 4 blocking threads
+
+## Branding
+* Transparent crw mark as icon/logo (AGPL brand assets from us/crw)
+

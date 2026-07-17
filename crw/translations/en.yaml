@@ -1,0 +1,26 @@
+---
+configuration:
+  max_search_results:
+    name: Maximum search results
+    description: >-
+      Upper bound on the number of results web_search returns to the
+      conversation agent (1-6). The agent may request fewer per call.
+  outgoing_proxy:
+    name: Outgoing proxy
+    description: >-
+      Optional HTTP/SOCKS proxy URL (e.g. socks5://10.0.0.2:1080) for all
+      outgoing search and scrape traffic. Useful when search engines or
+      sites block your network's address (anti-bot). Leave empty for a
+      direct connection.
+  safe_search:
+    name: Safe search
+    description: >-
+      SearXNG safe search level — 0 off, 1 moderate, 2 strict.
+  search_engines:
+    name: Search engines
+    description: >-
+      SearXNG engine names to enable (e.g. duckduckgo, brave, startpage).
+      Leave empty to use the SearXNG defaults minus a few engines that
+      fail or spam errors in typical deployments — wikidata (startup 403),
+      ahmia/torch (need a Tor proxy), startpage (broken parser), qwant
+      (instant rate limiting). List an engine here to opt back in.
