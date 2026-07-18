@@ -1,5 +1,30 @@
 ---
 configuration:
+  image_search_providers:
+    name: 이미지 검색 제공자
+    description: >-
+      image_search tool이 사용할 제공자. 비우면 tool 자체가 비활성화되어
+      conversation agent에 노출되지 않습니다.
+  news_search_providers:
+    name: 뉴스 검색 제공자
+    description: >-
+      news_search tool이 사용할 제공자. 비우면 tool이 비활성화됩니다.
+  provider_api_keys:
+    name: 제공자 API 키
+    description: >-
+      키가 필요한 SearXNG 엔진을 활성화하는 "엔진이름: 키" 항목들
+      (예: "youtube_api: <YouTube Data API v3 키>", "flickr_api: <키>").
+      대부분의 제공자는 키가 필요 없습니다.
+  video_search_providers:
+    name: 동영상 검색 제공자
+    description: >-
+      video_search tool이 사용할 제공자 (naver를 고르면 네이버 동영상,
+      youtube를 고르면 YouTube를 검색). 비우면 tool이 비활성화됩니다.
+  wiki_search_providers:
+    name: 위키 검색 제공자
+    description: >-
+      wiki_search tool이 사용할 위키 (Wikipedia 계열). 비우면 tool이
+      비활성화됩니다.
   max_search_results:
     name: 최대 검색 결과 수
     description: >-
