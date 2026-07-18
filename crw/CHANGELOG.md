@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0-rc.0](https://github.com/saya6k/ha-app-crw/releases/tag/v0.4.0-rc.0)
+
+## What's Changed
+
+## New Features
+
+* feat(crw): promote to stable (#7) @saya6k
+
+## Bug Fixes
+
+* fix(crw): drop karmasearch family from default engines (#8) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.3.0...v0.4.0-rc.0
+
 ## [0.3.0](https://github.com/saya6k/ha-app-crw/releases/tag/v0.3.0)
 
 ## What's Changed
