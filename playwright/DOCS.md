@@ -68,6 +68,16 @@ placeholder. Login items expose the same canonical fields everywhere —
 `/username`, `/password`, and `/totp` where the backend supports it —
 so switching providers never changes how conversations work.
 
+**References never contain your account name.** Vault entries are
+commonly titled with the login itself ("nid.naver.com (myid)"), so
+references are built from the entry's **site** instead —
+`nid.naver.com/username`, `nid.naver.com/password`. The conversation
+agent never learns your ID: it fills the field with a placeholder and
+the bridge substitutes the value. When one site holds several accounts
+they are numbered — `nid.naver.com#1`, `nid.naver.com#2` — never named.
+Entries with no website and no passkey fall back to their title, so
+avoid putting anything private in the title of those.
+
 | `secret_provider` | Backend | Credentials | Reference format |
 |---|---|---|---|
 | `local` | add-on config (testing only) | – (reads `local_secrets`) | `<site>/username`, `<site>/password` (also `/id`, `/pw`) |
@@ -140,7 +150,9 @@ With `passkeys: true` and the `bitwarden-vault` provider, passkeys
 stored in your vault are injected into an **in-memory virtual
 authenticator** when a browser session starts. Sites that ask for a
 passkey get an answer automatically — no new tools, the normal
-goto/click flow just works.
+goto/click flow just works. `secret_names` also tells the agent which
+sites have a vault passkey, so it clicks the passkey button instead of
+hunting for a password field.
 
 - The add-on is a passkey **client only**: it can sign in with existing
   vault passkeys but can never create, modify, or export one. Keys are
