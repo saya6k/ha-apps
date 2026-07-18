@@ -3,6 +3,20 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.3.1](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.3.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* perf(playwright): fit HA's 10s MCP timeout — in-memory vault snapshot + warmup (#6) @saya6k
+
+## Maintenance
+
+* docs(playwright): record Chromium pre-warming as rejected (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.3.0...v0.3.1
+
 ## [0.3.1-rc.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.3.1-rc.0)
 
 ## What's Changed
