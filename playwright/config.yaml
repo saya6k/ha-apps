@@ -1,6 +1,6 @@
 ---
 name: Playwright Browser
-version: 0.1.2
+version: 0.2.0-rc.0
 image: ghcr.io/saya6k/app-playwright
 slug: playwright
 description: >-
@@ -31,13 +31,20 @@ options:
   allowed_domains:
     - the-internet.herokuapp.com
   bitwarden_access_token: ""
+  bitwarden_ca_cert: ""
+  bitwarden_client_id: ""
+  bitwarden_client_secret: ""
+  bitwarden_master_password: ""
   bitwarden_organization_id: ""
   bitwarden_server_url: "https://vault.bitwarden.com"
   local_secrets:
     - site: "https://the-internet.herokuapp.com"
       id: "tomsmith"
       pw: "SuperSecretPassword!"
+  onepassword_connect_host: ""
+  onepassword_connect_token: ""
   onepassword_token: ""
+  passkeys: false
   persist_session: false
   secret_provider: "local"
   session_idle_timeout: 300
@@ -46,13 +53,20 @@ schema:
   allowed_domains:
     - str
   bitwarden_access_token: password
+  bitwarden_ca_cert: str?
+  bitwarden_client_id: str?
+  bitwarden_client_secret: password
+  bitwarden_master_password: password
   bitwarden_organization_id: str?
   bitwarden_server_url: url
   local_secrets:
     - site: url
       id: str
       pw: password
+  onepassword_connect_host: str?
+  onepassword_connect_token: password
   onepassword_token: password
+  passkeys: bool
   persist_session: bool
-  secret_provider: list(local|1password|bitwarden)
+  secret_provider: list(local|1password|1password-connect|bitwarden|bitwarden-vault)
   session_idle_timeout: int(30,3600)

@@ -17,6 +17,28 @@ configuration:
     description: >-
       Machine account access token for Bitwarden Secrets Manager. Used
       only when the secret provider is set to bitwarden.
+  bitwarden_ca_cert:
+    name: Bitwarden CA certificate (PEM)
+    description: >-
+      Optional PEM certificate to trust when your self-hosted Bitwarden /
+      Vaultwarden uses a self-signed or private-CA TLS certificate. The
+      Bitwarden CLI requires HTTPS — plain http server URLs do not work.
+  bitwarden_client_id:
+    name: Bitwarden API key client_id
+    description: >-
+      Personal API key client_id (user.xxxxxxxx…) for the bitwarden-vault
+      provider. Found in the web vault under Settings → Security → Keys.
+      SSO accounts can use this too — no interactive login needed.
+  bitwarden_client_secret:
+    name: Bitwarden API key client_secret
+    description: >-
+      Personal API key client_secret for the bitwarden-vault provider.
+  bitwarden_master_password:
+    name: Bitwarden master password
+    description: >-
+      Master password used to unlock the personal vault (bitwarden-vault
+      provider only). Kept in memory and masked from every log and tool
+      result; nothing is written to disk.
   bitwarden_organization_id:
     name: Bitwarden organization ID
     description: >-
@@ -36,11 +58,29 @@ configuration:
       references), but use 1Password or Bitwarden for real credentials.
       The default entry works with the-internet.herokuapp.com's login
       demo page.
+  onepassword_connect_host:
+    name: 1Password Connect host
+    description: >-
+      URL of your self-hosted 1Password Connect server (e.g.
+      http://192.168.1.10:8080). Used only when the secret provider is
+      set to 1password-connect.
+  onepassword_connect_token:
+    name: 1Password Connect token
+    description: >-
+      Access token for your 1Password Connect server. Used only when the
+      secret provider is set to 1password-connect.
   onepassword_token:
     name: 1Password token
     description: >-
       Service Account token for 1Password. Used only when the secret
       provider is set to 1password.
+  passkeys:
+    name: Passkeys (WebAuthn)
+    description: >-
+      Let the browser sign in to sites with passkeys stored in your
+      Bitwarden personal vault (bitwarden-vault provider only). Keys are
+      injected into an in-memory virtual authenticator and are never
+      written to disk. The add-on cannot create new passkeys.
   persist_session:
     name: Persist browser session
     description: >-
@@ -51,7 +91,11 @@ configuration:
     description: >-
       Where {{secret:...}} placeholders are resolved from. Secret values
       are injected by the bridge and never returned to the conversation.
-      "local" reads the local_secrets option and is for testing only.
+      1password = cloud Service Account · 1password-connect = self-hosted
+      Connect server · bitwarden = Secrets Manager access token ·
+      bitwarden-vault = personal vault via API key (works with
+      Vaultwarden and SSO accounts) · local = the local_secrets option,
+      testing only.
   session_idle_timeout:
     name: Session idle timeout
     description: >-
