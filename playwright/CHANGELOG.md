@@ -3,6 +3,16 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.1.2](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.1.2)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(playwright): stop mcp-bridge crash-loop on missing secret config (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.1.1...v0.1.2
+
 ## [0.1.1](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.1.1)
 
 First stable release.
