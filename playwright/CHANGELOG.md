@@ -3,6 +3,16 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.3.2-rc.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.3.2-rc.0)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(playwright): secret tools must not vanish on a secretd startup race (#8) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.3.1...v0.3.2-rc.0
+
 ## [0.3.1](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.3.1)
 
 ## What's Changed
