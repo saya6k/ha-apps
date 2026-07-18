@@ -3,6 +3,20 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.3.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.3.0)
+
+## What's Changed
+
+## New Features
+
+* feat(playwright): secrets v3 — secretd privilege separation + embedded 1Password Connect (#5) @saya6k
+
+## Maintenance
+
+* chore(playwright): transparent icon/logo from official Playwright mark (#4) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.2.0...v0.3.0
+
 ## [0.2.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.2.0)
 
 ## What's Changed
