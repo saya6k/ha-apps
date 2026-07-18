@@ -41,6 +41,14 @@ playwright for interactive missions (logins, forms, clicks).
   `browser_type`. The bridge resolves the placeholder at injection time;
   tool results, logs, and error messages are scrubbed of the value and
   any page echo of it. There is no tool that returns a secret value.
+- **Process isolation** — credentials live only in a dedicated
+  `secretd` process. The browser/MCP process runs as an unprivileged
+  user with no secret environment variables and no read access to the
+  add-on options; it can only ask secretd to resolve individual
+  references over an internal unix socket. Compromising the browser
+  surface therefore never exposes your master password, API keys, or
+  vault state. (Resolved values themselves still pass to the browser for
+  injection — that part is inherent to filling a login form.)
 - **Minimal surface** — one exposed endpoint (`:8099`, not published to
   the host by default; Home Assistant reaches it over the internal
   network). JavaScript evaluation and screenshots are disabled unless
@@ -91,6 +99,33 @@ so switching providers never changes how conversations work.
 - `<item>/totp` resolves the item's current TOTP code — two-factor
   logins can be automated end to end.
 
+### Embedded 1Password Connect (`onepassword_connect_embedded`)
+
+Don't have a Connect server? The add-on can run one for you:
+
+1. [Create a Connect server](https://developer.1password.com/docs/connect/get-started/)
+   in your 1Password account to get `1password-credentials.json` and an
+   access token.
+2. Set `onepassword_connect_embedded: true`, put the **base64** of the
+   credentials file in `onepassword_credentials`, and the token in
+   `onepassword_connect_token`. Select the `1password-connect` provider.
+
+On first start the add-on downloads the official
+`1password/connect-api` and `connect-sync` images **directly from
+Docker Hub to your machine** (every layer digest-verified; this add-on
+never redistributes 1Password software) and runs them isolated in a
+chroot as an unprivileged user, listening only inside the container.
+
+- Use of Connect is governed by 1Password's terms; a 1Password account
+  is required.
+- The Connect server keeps its encrypted cache and credentials under
+  `/data/connect` — Connect is designed to run from disk, so this is a
+  documented exception to the add-on's no-disk-secrets rule. Prefer an
+  external Connect server or the `1password` Service Account provider
+  if you want nothing on disk.
+- A failed download never breaks the add-on: browsing keeps working and
+  the Connect services simply stay parked.
+
 ### Passkeys (WebAuthn) and Sign in with Apple
 
 With `passkeys: true` and the `bitwarden-vault` provider, passkeys
@@ -129,8 +164,11 @@ goto/click flow just works.
 | `bitwarden_organization_id` | – | Only needed for `secret_names` listing (`bitwarden`) |
 | `bitwarden_server_url` | `https://vault.bitwarden.com` | Shared by both Bitwarden providers; https only |
 | `local_secrets` | demo entry | ⚠️ Testing only — plain-text site/id/pw entries for the `local` provider |
-| `onepassword_connect_host` | – | Self-hosted Connect server URL (`1password-connect`) |
-| `onepassword_connect_token` | – | Connect access token (`1password-connect`) |
+| `onepassword_connect_embedded` | `false` | Run a Connect server inside the add-on (fetched from Docker Hub at first start) |
+| `onepassword_connect_host` | – | Self-hosted Connect server URL (`1password-connect`); ignored when embedded |
+| `onepassword_connect_token` | – | Connect access token (`1password-connect`, embedded included) |
+| `onepassword_connect_version` | `1.8.0` | Version tag for the embedded Connect images |
+| `onepassword_credentials` | – | base64 of 1password-credentials.json (embedded Connect) |
 | `onepassword_token` | – | Service Account token (`1password`) |
 | `passkeys` | `false` | Sign in with vault passkeys (`bitwarden-vault` only) |
 | `persist_session` | `false` | Keep cookies/storage between sessions (inside `/data` only) |

@@ -58,6 +58,15 @@ configuration:
       references), but use 1Password or Bitwarden for real credentials.
       The default entry works with the-internet.herokuapp.com's login
       demo page.
+  onepassword_connect_embedded:
+    name: Embedded 1Password Connect
+    description: >-
+      Run a 1Password Connect server inside the add-on. On first start
+      your machine downloads the official Connect images straight from
+      Docker Hub (digest-verified; nothing is redistributed by this
+      add-on) and runs them isolated in a chroot. Requires
+      onepassword_credentials and onepassword_connect_token. Use of
+      Connect is governed by 1Password's terms.
   onepassword_connect_host:
     name: 1Password Connect host
     description: >-
@@ -69,6 +78,17 @@ configuration:
     description: >-
       Access token for your 1Password Connect server. Used only when the
       secret provider is set to 1password-connect.
+  onepassword_connect_version:
+    name: Embedded Connect version
+    description: >-
+      Version tag of the official Connect images to fetch for the
+      embedded server.
+  onepassword_credentials:
+    name: 1Password Connect credentials (base64)
+    description: >-
+      Contents of your 1password-credentials.json, base64-encoded. Only
+      used by the embedded Connect server; stored under /data like every
+      Connect deployment.
   onepassword_token:
     name: 1Password token
     description: >-
