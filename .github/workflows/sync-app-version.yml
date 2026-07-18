@@ -126,6 +126,31 @@ jobs:
           for fname in gh_ls("translations"):
               write(f"{app}/translations/{fname}", gh_file(f"translations/{fname}"))
 
+          # ── optional assets: icon/logo (binary) + apparmor.txt ────────────
+          # Self-heals the beta-scaffold gap: a brand-new app's first release
+          # can land on a branch it was never manually scaffolded onto, and
+          # these files were previously never synced — leaving the beta
+          # catalog without icons. Fetched when the source repo has them;
+          # never deleted here if the source lacks them.
+          def gh_file_optional(path):
+              r = subprocess.run(
+                  ["gh", "api", f"repos/saya6k/ha-app-{app}/contents/{app}/{path}",
+                   "--jq", ".content"],
+                  capture_output=True, text=True,
+              )
+              if r.returncode != 0:
+                  return None
+              return base64.b64decode(r.stdout.strip())
+
+          for asset in ("icon.png", "logo.png", "apparmor.txt"):
+              data = gh_file_optional(asset)
+              if data is None:
+                  print(f"  {asset}: not in source repo, skipping")
+                  continue
+              with open(f"{app}/{asset}", "wb") as f:
+                  f.write(data)
+              print(f"  synced {asset}")
+
           # ── config.yaml: sync from source, inject version + image ─────────
           cfg = gh_file("config.yaml")
           cfg = re.sub(r"^version:.*$", f"version: {version}", cfg, flags=re.MULTILINE)
