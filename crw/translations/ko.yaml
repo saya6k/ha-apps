@@ -1,5 +1,15 @@
 ---
 configuration:
+  brave_api_key:
+    name: Brave Search API 키
+    description: >-
+      선택 사항. Brave Search API를 web_search의 추가 소스로 더합니다.
+      brave.com/search/api에서 발급. 비우면 사용하지 않습니다.
+  flickr_api_key:
+    name: Flickr API 키
+    description: >-
+      선택 사항. Flickr(API)를 image_search의 추가 제공자로 더합니다.
+      flickr.com/services/api에서 발급. 비우면 사용하지 않습니다.
   image_search_providers:
     name: 이미지 검색 제공자
     description: >-
@@ -9,12 +19,6 @@ configuration:
     name: 뉴스 검색 제공자
     description: >-
       news_search tool이 사용할 제공자. 비우면 tool이 비활성화됩니다.
-  provider_api_keys:
-    name: 제공자 API 키
-    description: >-
-      키가 필요한 SearXNG 엔진을 활성화하는 "엔진이름: 키" 항목들
-      (예: "youtube_api: <YouTube Data API v3 키>", "flickr_api: <키>").
-      대부분의 제공자는 키가 필요 없습니다.
   video_search_providers:
     name: 동영상 검색 제공자
     description: >-
@@ -40,11 +44,9 @@ configuration:
     name: 세이프 서치
     description: >-
       SearXNG 세이프 서치 수준 — 0 끔, 1 보통, 2 엄격.
-  search_engines:
-    name: 검색 엔진
+  youtube_api_key:
+    name: YouTube Data API 키
     description: >-
-      검색에 사용할 엔진을 선택하세요 — 선택한 엔진들이 전체 활성 셋이
-      되며, 엔진 간 의존성은 자동으로 추가됩니다. 비우면 SearXNG 기본값에서
-      문제 있는 엔진 몇 개를 뺀 셋을 사용합니다 — wikidata(시작 시 403),
-      ahmia/torch(Tor 프록시 필요), startpage(응답 파서 고장), qwant(즉시
-      rate limit). 해당 엔진을 선택하면 다시 켤 수 있습니다.
+      선택 사항. 공식 YouTube Data API v3를 video_search의 추가 제공자로
+      더합니다(기본 스크레이퍼보다 품질 우수). Google Cloud 콘솔에서 발급.
+      비우면 사용하지 않습니다.
