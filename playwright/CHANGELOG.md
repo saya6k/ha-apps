@@ -3,6 +3,16 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.2.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.2.0)
+
+## What's Changed
+
+## New Features
+
+* feat(playwright): secrets v2 — Vaultwarden/1P Connect providers, env-wins config, passkey client (#3) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.1.2...v0.2.0
+
 ## [0.2.0-rc.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.2.0-rc.0)
 
 ## What's Changed
