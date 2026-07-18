@@ -98,6 +98,14 @@ so switching providers never changes how conversations work.
   certificate, paste the PEM into `bitwarden_ca_cert`.
 - `<item>/totp` resolves the item's current TOTP code — two-factor
   logins can be automated end to end.
+- **Performance:** the Bitwarden CLI re-decrypts the whole vault on every
+  read (~3.5s), which does not fit Home Assistant's fixed 10-second tool
+  timeout. The add-on therefore unlocks and reads the vault once at
+  startup and keeps the decrypted items in the secret daemon's memory
+  (refreshed every 5 minutes, never written to disk, never sent to the
+  browser process except one resolved value per request). TOTP codes are
+  always fetched fresh. If the add-on has just started, give it a few
+  seconds before the first request.
 
 ### Embedded 1Password Connect (`onepassword_connect_embedded`)
 
