@@ -1,5 +1,15 @@
 ---
 configuration:
+  brave_api_key:
+    name: Brave Search API key
+    description: >-
+      Optional. Adds the Brave Search API as an extra web_search source.
+      Get a key at brave.com/search/api. Leave empty to skip.
+  flickr_api_key:
+    name: Flickr API key
+    description: >-
+      Optional. Adds Flickr (API) as an extra image_search provider.
+      Get a key at flickr.com/services/api. Leave empty to skip.
   image_search_providers:
     name: Image search providers
     description: >-
@@ -10,12 +20,6 @@ configuration:
     description: >-
       Providers for the news_search tool. Leave empty to disable the
       tool entirely.
-  provider_api_keys:
-    name: Provider API keys
-    description: >-
-      Optional "engine_name: key" entries that activate key-gated SearXNG
-      engines (for example "youtube_api: <YouTube Data API v3 key>" or
-      "flickr_api: <key>"). Most providers need no key.
   video_search_providers:
     name: Video search providers
     description: >-
@@ -43,12 +47,9 @@ configuration:
     name: Safe search
     description: >-
       SearXNG safe search level — 0 off, 1 moderate, 2 strict.
-  search_engines:
-    name: Search engines
+  youtube_api_key:
+    name: YouTube Data API key
     description: >-
-      Pick the engines to search — selected engines become the whole
-      active set, and engine dependencies are added automatically. Leave
-      empty to use the SearXNG defaults minus a few engines that fail or
-      spam errors in typical deployments — wikidata (startup 403),
-      ahmia/torch (need a Tor proxy), startpage (broken parser), qwant
-      (instant rate limiting). Select one of those to opt back in.
+      Optional. Adds the official YouTube Data API v3 as an extra
+      video_search provider (higher quality than the default scraper).
+      Get a key in the Google Cloud console. Leave empty to skip.

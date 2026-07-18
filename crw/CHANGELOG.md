@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0-rc.2](https://github.com/saya6k/ha-app-crw/releases/tag/v0.3.0-rc.2)
+
+## What's Changed
+
+## New Features
+
+* feat(crw)!: fixed web engine set + named API key options (#5) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.3.0-rc.1...v0.3.0-rc.2
+
 ## [0.3.0-rc.1](https://github.com/saya6k/ha-app-crw/releases/tag/v0.3.0-rc.1)
 
 ## What's Changed

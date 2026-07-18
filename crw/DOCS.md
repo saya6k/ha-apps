@@ -35,21 +35,23 @@ needs access.
 
 | Option | Default | Description |
 |---|---|---|
+| `brave_api_key` | empty | Optional [Brave Search API](https://brave.com/search/api/) key — adds the Brave API as an extra `web_search` source |
+| `flickr_api_key` | empty | Optional [Flickr API](https://www.flickr.com/services/api/) key — adds Flickr as an extra `image_search` provider |
 | `image_search_providers` | empty | Providers for `image_search` (google, bing, naver, baidu, flickr, unsplash, …). Empty = tool disabled |
 | `max_search_results` | `3` | Upper bound on results any search tool returns (1-6) |
 | `news_search_providers` | empty | Providers for `news_search` (google, naver, reuters, yahoo, …). Empty = tool disabled |
 | `outgoing_proxy` | empty | HTTP/SOCKS proxy URL for all outgoing search and scrape traffic — useful when engines or sites block your network's address (anti-bot). Empty = direct |
-| `provider_api_keys` | empty | `engine_name: key` entries that activate key-gated SearXNG engines (e.g. `youtube_api: <YouTube Data API v3 key>`). Most providers need no key |
 | `safe_search` | `1` | SearXNG safe search: 0 off, 1 moderate, 2 strict |
-| `search_engines` | empty | Multi-select of every SearXNG engine in the bundled version — selected engines become the whole active set for `web_search` (`keep_only`, force-enabled) and required engine dependencies are added automatically. Empty = SearXNG defaults minus a few engines that fail or spam errors in typical deployments: `wikidata` (startup 403), `ahmia`/`torch` (need a Tor proxy), `startpage` (broken response parser), `qwant` (instant rate limiting). Provider selections below are loaded independently of this list |
 | `video_search_providers` | empty | Providers for `video_search` (youtube, naver, vimeo, bilibili, …) — picking `naver` searches Naver Video, etc. Empty = tool disabled |
 | `wiki_search_providers` | empty | Wikis for `wiki_search` (wikipedia, wiktionary, …). Empty = tool disabled |
+| `youtube_api_key` | empty | Optional [YouTube Data API v3](https://developers.google.com/youtube/v3) key — adds the official API as an extra `video_search` provider |
 
 ## Privacy
 
 Search queries go through the bundled SearXNG instance directly to the search
-engines it aggregates — no third-party search API, no API keys, and nothing
-is logged outside the container.
+engines it aggregates — no third-party search API is required, and nothing
+is logged outside the container. The optional `*_api_key` options send
+queries to that provider's official API when set.
 
 ## Licenses
 
@@ -68,5 +70,4 @@ assets from the [us/crw](https://github.com/us/crw) repository (AGPL-3.0).
   lower `max_search_results`.
 - **`Too many request (suspended_time=180)` in the log** — an engine
   rate-limited your address; SearXNG suspends it for 180 s and recovers on
-  its own. If it happens constantly, set `outgoing_proxy` or trim
-  `search_engines` to engines that tolerate your network.
+  its own. If it happens constantly, set `outgoing_proxy`.
