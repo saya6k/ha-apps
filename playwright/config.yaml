@@ -1,6 +1,6 @@
 ---
 name: Playwright Browser
-version: 0.2.0
+version: 0.3.0
 image: ghcr.io/saya6k/app-playwright
 slug: playwright
 description: >-
@@ -41,8 +41,11 @@ options:
     - site: "https://the-internet.herokuapp.com"
       id: "tomsmith"
       pw: "SuperSecretPassword!"
+  onepassword_connect_embedded: false
   onepassword_connect_host: ""
   onepassword_connect_token: ""
+  onepassword_connect_version: "1.8.0"
+  onepassword_credentials: ""
   onepassword_token: ""
   passkeys: false
   persist_session: false
@@ -63,8 +66,11 @@ schema:
     - site: url
       id: str
       pw: password
+  onepassword_connect_embedded: bool
   onepassword_connect_host: str?
   onepassword_connect_token: password
+  onepassword_connect_version: str
+  onepassword_credentials: password
   onepassword_token: password
   passkeys: bool
   persist_session: bool
