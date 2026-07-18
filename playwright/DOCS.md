@@ -68,6 +68,11 @@ placeholder. Login items expose the same canonical fields everywhere —
 `/username`, `/password`, and `/totp` where the backend supports it —
 so switching providers never changes how conversations work.
 
+**`secret_names` answers for one site at a time.** With a page open it
+returns that page's entries; the agent can also ask for a specific site
+before navigating. It never lists your whole vault — a large vault would
+both flood the model's context and hand it your full list of accounts.
+
 **References never contain your account name.** Vault entries are
 commonly titled with the login itself ("nid.naver.com (myid)"), so
 references are built from the entry's **site** instead —
@@ -109,13 +114,15 @@ avoid putting anything private in the title of those.
 - `<item>/totp` resolves the item's current TOTP code — two-factor
   logins can be automated end to end.
 - **Performance:** the Bitwarden CLI re-decrypts the whole vault on every
-  read (~3.5s), which does not fit Home Assistant's fixed 10-second tool
-  timeout. The add-on therefore unlocks and reads the vault once at
-  startup and keeps the decrypted items in the secret daemon's memory
-  (refreshed every 5 minutes, never written to disk, never sent to the
-  browser process except one resolved value per request). TOTP codes are
-  always fetched fresh. If the add-on has just started, give it a few
-  seconds before the first request.
+  read, which on a large vault takes longer than Home Assistant's fixed
+  10-second tool timeout. The add-on therefore unlocks and reads the
+  vault once at startup and keeps the decrypted items in the secret
+  daemon's memory (never written to disk, never sent to the browser
+  process except one resolved value per request). Refreshes happen in
+  the background every 5 minutes, so no request ever waits for one —
+  only the very first read after a start does. TOTP codes are always
+  fetched fresh. A login added to your vault appears within a few
+  minutes, or immediately after an add-on restart.
 
 ### Embedded 1Password Connect (`onepassword_connect_embedded`)
 
