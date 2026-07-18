@@ -6,9 +6,9 @@ values are injected bridge-side from 1Password or Bitwarden and **never
 enter the conversation**. A live session viewer in the sidebar shows what
 the browser is doing at all times.
 
-> **Heads up: this is a big add-on (~1.7 GB installed).** It bundles a
-> full Chromium browser. Expect a long first install, especially on
-> SD-card based boards (Raspberry Pi class).
+> **Heads up: this is a big add-on (~1.9 GB installed).** It bundles a
+> full Chromium browser and the Bitwarden CLI. Expect a long first
+> install, especially on SD-card based boards (Raspberry Pi class).
 
 ## Connecting Home Assistant
 
@@ -54,26 +54,66 @@ playwright for interactive missions (logins, forms, clicks).
 
 ## Secret providers
 
-| Provider | Token | Reference format |
-|---|---|---|
-| `local` | – (reads `local_secrets`) | `<site>/id`, `<site>/pw` |
-| `1password` | Service Account token (`onepassword_token`) | `op://<vault>/<item>/<field>` |
-| `bitwarden` | Secrets Manager machine account token (`bitwarden_access_token`) | secret UUID |
+The agent-facing contract is provider-agnostic: `secret_names` returns
+opaque references, and the agent copies one into a `{{secret:...}}`
+placeholder. Login items expose the same canonical fields everywhere —
+`/username`, `/password`, and `/totp` where the backend supports it —
+so switching providers never changes how conversations work.
+
+| `secret_provider` | Backend | Credentials | Reference format |
+|---|---|---|---|
+| `local` | add-on config (testing only) | – (reads `local_secrets`) | `<site>/username`, `<site>/password` (also `/id`, `/pw`) |
+| `1password` | 1Password cloud | Service Account token (`onepassword_token`) | `op://<vault>/<item>/<field>` |
+| `1password-connect` | self-hosted 1Password Connect | `onepassword_connect_host` + `onepassword_connect_token` | `op://<vault>/<item>/<field>` |
+| `bitwarden` | Bitwarden Secrets Manager (cloud or self-hosted) | machine account token (`bitwarden_access_token`) | secret UUID |
+| `bitwarden-vault` | **personal vault** — bitwarden.com, self-hosted, **Vaultwarden** | personal API key (`bitwarden_client_id` + `bitwarden_client_secret`) + `bitwarden_master_password` | `<item>/username\|password\|totp\|uri\|custom:<field>` |
 
 > ⚠️ **`local` is for testing only.** Entries in `local_secrets` are
 > stored in plain text in the add-on configuration. The values are still
-> never shown to the conversation agent — it only sees the `<site>/id` /
-> `<site>/pw` references — but real credentials belong in 1Password or
-> Bitwarden. The default entry matches the public login demo at
-> `the-internet.herokuapp.com` so you can try user story 1 end to end
-> out of the box.
+> never shown to the conversation agent, but real credentials belong in
+> 1Password or Bitwarden. The default entry matches the public login
+> demo at `the-internet.herokuapp.com`.
 
-- 1Password: `secret_names` lists `op://vault/item` references — append
-  the field (`/username`, `/password`, …) in the placeholder.
-- Bitwarden: set `bitwarden_server_url` for self-hosted instances.
-  `secret_names` additionally needs `bitwarden_organization_id`
-  (resolving by UUID works without it). Personal vaults and Vaultwarden
-  are not supported — Secrets Manager only.
+### Bitwarden personal vault / Vaultwarden (`bitwarden-vault`)
+
+- Uses the official Bitwarden CLI bundled in the image. Its state
+  (an encrypted vault copy and auth tokens) lives **only in tmpfs
+  (memory)** — nothing is ever written to disk; the session key stays in
+  process memory and is masked from all output.
+- Get your personal API key from the web vault: **Settings → Security →
+  Keys → View API key** (`client_id` is `user.xxxxxxxx…`).
+- **SSO organizations:** interactive SSO login is not possible for a
+  headless add-on and is not needed — personal API keys work for SSO
+  accounts too, and unlocking always uses your master password.
+- **HTTPS is required.** The Bitwarden CLI refuses plain-http server
+  URLs. If your Vaultwarden uses a self-signed or private-CA
+  certificate, paste the PEM into `bitwarden_ca_cert`.
+- `<item>/totp` resolves the item's current TOTP code — two-factor
+  logins can be automated end to end.
+
+### Passkeys (WebAuthn) and Sign in with Apple
+
+With `passkeys: true` and the `bitwarden-vault` provider, passkeys
+stored in your vault are injected into an **in-memory virtual
+authenticator** when a browser session starts. Sites that ask for a
+passkey get an answer automatically — no new tools, the normal
+goto/click flow just works.
+
+- The add-on is a passkey **client only**: it can sign in with existing
+  vault passkeys but can never create, modify, or export one. Keys are
+  never written to disk.
+- **Sign in with Apple:** works when your Apple ID has a passkey (add
+  one from an Apple device first, stored in Bitwarden). Add
+  `appleid.apple.com` to `allowed_domains` — the sign-in popup is
+  allowlist-checked like every page. The password + trusted-device 2FA
+  flow can **not** be automated headlessly.
+- Other providers (1Password, Secrets Manager, local) cannot supply
+  passkey key material — `passkeys` has no effect with them.
+- **Limitation:** sites that open a browser "account picker" without
+  identifying the account first (an empty-allowCredentials /
+  discoverable-only flow) don't work in headless Chromium. Sites that
+  ask for your username/email first — including Apple — send an explicit
+  credential list and work fine.
 
 ## Options
 
@@ -81,14 +121,28 @@ playwright for interactive missions (logins, forms, clicks).
 |---|---|---|
 | `advanced_tools` | `false` | Adds `browser_evaluate` (arbitrary JS) and `browser_screenshot` |
 | `allowed_domains` | `[the-internet.herokuapp.com]` | **Required for any use.** HTTPS-only, subdomains included; the default entry is the public demo site |
-| `bitwarden_access_token` | – | Secrets Manager machine token |
-| `bitwarden_organization_id` | – | Only needed for `secret_names` listing |
-| `bitwarden_server_url` | `https://vault.bitwarden.com` | Self-hosted supported |
+| `bitwarden_access_token` | – | Secrets Manager machine token (`bitwarden` provider) |
+| `bitwarden_ca_cert` | – | PEM cert to trust for self-signed/private-CA HTTPS (`bitwarden-vault`) |
+| `bitwarden_client_id` | – | Personal API key client_id (`bitwarden-vault`) |
+| `bitwarden_client_secret` | – | Personal API key client_secret (`bitwarden-vault`) |
+| `bitwarden_master_password` | – | Vault unlock password (`bitwarden-vault`) — memory only, masked everywhere |
+| `bitwarden_organization_id` | – | Only needed for `secret_names` listing (`bitwarden`) |
+| `bitwarden_server_url` | `https://vault.bitwarden.com` | Shared by both Bitwarden providers; https only |
 | `local_secrets` | demo entry | ⚠️ Testing only — plain-text site/id/pw entries for the `local` provider |
-| `onepassword_token` | – | Service Account token |
+| `onepassword_connect_host` | – | Self-hosted Connect server URL (`1password-connect`) |
+| `onepassword_connect_token` | – | Connect access token (`1password-connect`) |
+| `onepassword_token` | – | Service Account token (`1password`) |
+| `passkeys` | `false` | Sign in with vault passkeys (`bitwarden-vault` only) |
 | `persist_session` | `false` | Keep cookies/storage between sessions (inside `/data` only) |
 | `secret_provider` | `local` | Where placeholders resolve; `local` is testing-only |
 | `session_idle_timeout` | `300` | Seconds before an idle browser session closes |
+
+All secret-bearing options can instead be supplied as environment
+variables (`ONEPASSWORD_TOKEN`, `OP_CONNECT_HOST`, `OP_CONNECT_TOKEN`,
+`BITWARDEN_ACCESS_TOKEN`, `BW_CLIENTID`, `BW_CLIENTSECRET`,
+`BW_MASTERPASSWORD`, …) when running the image outside Home Assistant —
+**environment variables always win over options**, so credentials never
+have to live in a file.
 
 ## Release checklist (HA end-to-end)
 
@@ -111,7 +165,15 @@ release — mirrors SPEC success criteria 3 and 4:
 - **Every `browser_goto` is denied** — `allowed_domains` is empty or the
   site is `http://`. Add the domain; only HTTPS is supported.
 - **`secret_names` is missing** — `secret_provider` is `none`, or (for
-  listing with Bitwarden) `bitwarden_organization_id` is unset.
+  listing with Bitwarden Secrets Manager) `bitwarden_organization_id`
+  is unset.
+- **`bitwarden-vault` fails to start** — the server URL must be
+  `https://` (the Bitwarden CLI refuses http). Self-signed cert? Put the
+  PEM in `bitwarden_ca_cert`. Also check all three of client_id,
+  client_secret, and master password are set.
+- **Passkey login does nothing** — `passkeys: true` requires the
+  `bitwarden-vault` provider, and the passkey's site (rpId) must be in
+  `allowed_domains` (for Apple: `appleid.apple.com`).
 - **Viewer shows "no session"** — sessions close after
   `session_idle_timeout` seconds of inactivity, when the agent calls
   `browser_close`, or when navigation leaves the allowlist.
