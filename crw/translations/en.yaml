@@ -1,5 +1,32 @@
 ---
 configuration:
+  image_search_providers:
+    name: Image search providers
+    description: >-
+      Providers for the image_search tool. Leave empty to disable the
+      tool entirely (it will not be offered to the conversation agent).
+  news_search_providers:
+    name: News search providers
+    description: >-
+      Providers for the news_search tool. Leave empty to disable the
+      tool entirely.
+  provider_api_keys:
+    name: Provider API keys
+    description: >-
+      Optional "engine_name: key" entries that activate key-gated SearXNG
+      engines (for example "youtube_api: <YouTube Data API v3 key>" or
+      "flickr_api: <key>"). Most providers need no key.
+  video_search_providers:
+    name: Video search providers
+    description: >-
+      Providers for the video_search tool (picking naver searches Naver
+      Video, youtube searches YouTube, and so on). Leave empty to disable
+      the tool entirely.
+  wiki_search_providers:
+    name: Wiki search providers
+    description: >-
+      Wikis for the wiki_search tool (Wikipedia and friends). Leave empty
+      to disable the tool entirely.
   max_search_results:
     name: Maximum search results
     description: >-

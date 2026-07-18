@@ -1,6 +1,6 @@
 ---
 name: CRW Web Tools
-version: 0.2.0
+version: 0.3.0-rc.1
 image: ghcr.io/saya6k/app-crw
 slug: crw
 description: >-
@@ -24,13 +24,28 @@ ports_description:
     reaches it over the internal network; map it only for external MCP
     clients.
 options:
+  image_search_providers: []
   max_search_results: 3
+  news_search_providers: []
   outgoing_proxy: ''
+  provider_api_keys: []
   safe_search: 1
   search_engines: []
+  video_search_providers: []
+  wiki_search_providers: []
 schema:
+  image_search_providers:
+    - list(baidu|bing|brave|deviantart|duckduckgo|flickr|google|imgur|mojeek|naver|openverse|pexels|pixabay|presearch|qwant|sogou|unsplash|wallhaven|yandex)?
   max_search_results: int(1,6)
+  news_search_providers:
+    - list(ansa|bing|brave|chinaso|duckduckgo|google|ilpost|karmasearch|mojeek|naver|presearch|qwant|reuters|tagesschau|yahoo)?
   outgoing_proxy: str?
+  provider_api_keys:
+    - str?
   safe_search: int(0,2)
   search_engines:
     - list(1337x|1x|360search|360search videos|9gag|Torznab EZTV|acfun|adobe stock|adobe stock audio|adobe stock video|ahmia|alpine linux packages|anaconda|annas archive|ansa|aol|aol images|aol videos|apk mirror|apple app store|apple maps|arch linux wiki|artic|artstation|arxiv|ask|askubuntu|astrophysics data system|azure|baidu|baidu images|baidu kaifa|bandcamp|bilibili|bing|bing images|bing news|bing videos|bitbucket|bitchute|boardreader|bpb|brave|brave.images|brave.news|brave.videos|braveapi|bt4g|btdigg|cachy os packages|caddy.community|chefkoch|chinaso images|chinaso news|chinaso videos|cloudflareai|codeberg|core.ac.uk|crates.io|crossref|crowdview|currency|dailymotion|ddg definitions|deepl|deezer|destatis|deviantart|devicons|dictzone|discuss.python|docker hub|duckduckgo|duckduckgo images|duckduckgo news|duckduckgo videos|duckduckgo weather|duden|ebay|elasticsearch|emojipedia|encyclosearch|erowid|etymonline|fdroid|findthatmeme|flickr|flickr_api|free software directory|freesound|frinkiac|fynd|fyyd|geizhals|genius|gentoo|gitea.com|github|github code|gitlab|gmx|goodreads|google|google images|google news|google play apps|google play movies|google scholar|google videos|grokipedia|habrahabr|hackernews|hex|hoogle|huggingface|huggingface datasets|huggingface spaces|il post|imdb|imgur|ina|ipernity|iqiyi|jisho|karmasearch|karmasearch images|karmasearch news|karmasearch videos|kickass|lemmy comments|lemmy communities|lemmy posts|lemmy users|lib.rs|library genesis|library of congress|libretranslate|lingva|lobste.rs|lucide|mankier|marginalia|mastodon hashtags|mastodon users|material icons|mdn|media.ccc.de|mediathekviewweb|metacpan|microsoft learn|minecraft wiki|mixcloud|mojeek|mojeek images|mojeek news|moviepilot|mozhi|mwmbl|mymemory translated|national vulnerability database|naver|naver images|naver news|naver videos|niconico|nixos wiki|npm|nyaa|odysee|ollama|openairedatasets|openairepublications|openalex|openclipart|openlibrary|openmeteo|openrepos|openstreetmap|openverse|packagist|pdbe|peertube|pexels|photon|pi-hole.community|pinterest|piped|piped.music|piratebay|pixabay images|pixabay videos|pixiv|pkg.go.dev|podcastindex|presearch|presearch images|presearch news|presearch videos|pub.dev|public domain image archive|pubmed|pypi|quark|quark images|qwant|qwant images|qwant news|qwant videos|radio browser|reddit|repology|reuters|rottentomatoes|rubygems|rumble|searchmysite|selfhst icons|semantic scholar|senscritique|sepiasearch|seznam|sogou|sogou images|sogou videos|sogou wechat|solidtorrents|soundcloud|sourcehut|springer nature|stackoverflow|startpage|startpage images|startpage news|steam|superuser|svgrepo|tagesschau|tineye|tmdb|tokyotoshokan|tootfinder|torch|unsplash|uxwing|vimeo|voidlinux|wallhaven|wiby|wikibooks|wikicommons.audio|wikicommons.files|wikicommons.images|wikicommons.videos|wikidata|wikimini|wikinews|wikipedia|wikiquote|wikisource|wikispecies|wikiversity|wikivoyage|wiktionary|wolframalpha|wolframalpha_api|wordnik|woxikon.de synonyme|wttr.in|yacy|yacy images|yahoo|yahoo news|yandex|yandex images|yandex music|yep|youtube|youtube_api|z-library)?
+  video_search_providers:
+    - list(360search|bilibili|bing|brave|dailymotion|duckduckgo|google|naver|niconico|odysee|peertube|pixabay|presearch|qwant|rumble|sepiasearch|sogou|vimeo|youtube)?
+  wiki_search_providers:
+    - list(encyclosearch|wikibooks|wikidata|wikinews|wikipedia|wikiquote|wikisource|wikispecies|wikivoyage|wiktionary)?
