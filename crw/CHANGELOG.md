@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0-rc.3](https://github.com/saya6k/ha-app-crw/releases/tag/v0.3.0-rc.3)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(crw): key-gated engines need legal names (no underscores) (#6) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-crw/compare/v0.3.0-rc.2...v0.3.0-rc.3
+
 ## [0.3.0-rc.2](https://github.com/saya6k/ha-app-crw/releases/tag/v0.3.0-rc.2)
 
 ## What's Changed

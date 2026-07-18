@@ -71,3 +71,6 @@ assets from the [us/crw](https://github.com/us/crw) repository (AGPL-3.0).
 - **`Too many request (suspended_time=180)` in the log** — an engine
   rate-limited your address; SearXNG suspends it for 180 s and recovers on
   its own. If it happens constantly, set `outgoing_proxy`.
+- **One `X-Forwarded-For nor X-Real-IP header is set!` line at startup** —
+  harmless: crw's initial health probe to the loopback SearXNG carries no
+  proxy headers. It appears once per boot and never for actual searches.
