@@ -3,6 +3,16 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.4.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.4.0)
+
+## What's Changed
+
+## New Features
+
+* feat(playwright): teach the placeholder workflow, stop leaking account ids (#9) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.3.2...v0.4.0
+
 ## [0.4.0-rc.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.4.0-rc.0)
 
 ## What's Changed
