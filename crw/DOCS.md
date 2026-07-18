@@ -12,7 +12,9 @@ One container runs three services, mirroring crw's own docker-compose stack:
 - **crw-server** — fast Rust scraper; search traffic flows exclusively
   through its `/v1/search`, backed by the bundled SearXNG
 - **mcp-bridge** — MCP server (streamable HTTP at `/mcp`, port 8099) exposing
-  two tools: `web_search` and `web_scrape`
+  `web_search` and `web_scrape`, plus `video_search` / `image_search` /
+  `news_search` / `wiki_search` when their providers are configured
+  (a tool with no providers is not offered to the agent at all)
 
 Home Assistant's official **Model Context Protocol** integration connects to
 the bridge and makes both tools available to conversation agents.
@@ -33,10 +35,15 @@ needs access.
 
 | Option | Default | Description |
 |---|---|---|
-| `max_search_results` | `3` | Upper bound on results `web_search` returns (1-6) |
+| `image_search_providers` | empty | Providers for `image_search` (google, bing, naver, baidu, flickr, unsplash, …). Empty = tool disabled |
+| `max_search_results` | `3` | Upper bound on results any search tool returns (1-6) |
+| `news_search_providers` | empty | Providers for `news_search` (google, naver, reuters, yahoo, …). Empty = tool disabled |
 | `outgoing_proxy` | empty | HTTP/SOCKS proxy URL for all outgoing search and scrape traffic — useful when engines or sites block your network's address (anti-bot). Empty = direct |
+| `provider_api_keys` | empty | `engine_name: key` entries that activate key-gated SearXNG engines (e.g. `youtube_api: <YouTube Data API v3 key>`). Most providers need no key |
 | `safe_search` | `1` | SearXNG safe search: 0 off, 1 moderate, 2 strict |
-| `search_engines` | empty | Multi-select of every SearXNG engine in the bundled version — selected engines become the whole active set (`keep_only`, force-enabled) and required engine dependencies are added automatically. Empty = SearXNG defaults minus a few engines that fail or spam errors in typical deployments: `wikidata` (startup 403), `ahmia`/`torch` (need a Tor proxy), `startpage` (broken response parser), `qwant` (instant rate limiting) |
+| `search_engines` | empty | Multi-select of every SearXNG engine in the bundled version — selected engines become the whole active set for `web_search` (`keep_only`, force-enabled) and required engine dependencies are added automatically. Empty = SearXNG defaults minus a few engines that fail or spam errors in typical deployments: `wikidata` (startup 403), `ahmia`/`torch` (need a Tor proxy), `startpage` (broken response parser), `qwant` (instant rate limiting). Provider selections below are loaded independently of this list |
+| `video_search_providers` | empty | Providers for `video_search` (youtube, naver, vimeo, bilibili, …) — picking `naver` searches Naver Video, etc. Empty = tool disabled |
+| `wiki_search_providers` | empty | Wikis for `wiki_search` (wikipedia, wiktionary, …). Empty = tool disabled |
 
 ## Privacy
 
