@@ -3,6 +3,16 @@
 Releases are tracked in
 [ha-app-playwright releases](https://github.com/saya6k/ha-app-playwright/releases).
 
+## [0.5.1](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.5.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix(playwright): fit waits in the client budget, settle clicks before the allowlist check (#11) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-playwright/compare/v0.5.0...v0.5.1
+
 ## [0.5.0](https://github.com/saya6k/ha-app-playwright/releases/tag/v0.5.0)
 
 ## What's Changed
