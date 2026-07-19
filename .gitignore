@@ -84,7 +84,6 @@ super-linter-output/
 !/zensical/
 !/otelcol/
 !/transcribe-cpp/
-!/playwright/
 !/crw/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
