@@ -20,7 +20,6 @@ body:
         - zensical
         - otelcol
         - transcribe-cpp
-        - playwright
         - crw
         - repository tooling (CI / docs / labels)
     validations:
