@@ -6,6 +6,14 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.3.12](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.12)
+
+## What's Changed
+
+* chore: bump zensical 0.0.50 → 0.0.51 (#8) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+**Full Changelog**: https://github.com/saya6k/ha-app-zensical/compare/v0.3.11...v0.3.12
+
 ## [0.3.11](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.11)
 
 ## What's Changed
