@@ -3,6 +3,16 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.2.4](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.4)
+
+## What's Changed
+
+## Maintenance
+
+* chore: bump wardrowbe to v1.6.0 (#11) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.2.3...v4.2.4
+
 ## [4.2.3](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.3)
 
 ## What's Changed
