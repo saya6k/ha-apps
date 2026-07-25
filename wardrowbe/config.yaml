@@ -1,6 +1,6 @@
 ---
 name: Wardrowbe
-version: 4.2.3
+version: 4.2.4
 image: ghcr.io/saya6k/app-wardrowbe
 slug: wardrowbe
 description: >-
