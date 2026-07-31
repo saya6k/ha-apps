@@ -27,6 +27,7 @@ body:
         - otelcol
         - transcribe-cpp
         - crw
+        - memory
         - repository tooling (CI / docs / labels)
     validations:
       required: true
