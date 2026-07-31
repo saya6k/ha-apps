@@ -1,0 +1,39 @@
+---
+name: Memory
+version: 0.1.0
+image: ghcr.io/saya6k/app-memory
+slug: memory
+description: >-
+  Personal fact memory for Assist conversation agents over MCP. Stores facts
+  with vector embeddings and retrieves them by meaning, using a local
+  llama.cpp embedding model — no external API and no internet at query time.
+url: https://github.com/saya6k/ha-app-memory
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+discovery:
+  - mcp
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: >-
+    MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
+    reaches it over the internal network; map it only for external MCP
+    clients. The embedding sidecar is never exposed (127.0.0.1 only).
+# model_sha256 and log_level are intentionally absent here: options listed under
+# `options:` are always shown, while `?`-suffixed schema entries stay hidden
+# until the user opts in. Both have sensible built-in behaviour when unset.
+options:
+  model_repo: Qwen/Qwen3-Embedding-0.6B-GGUF
+  model_file: Qwen3-Embedding-0.6B-Q8_0.gguf
+  embedding_dimensions: 1024
+  threads: 4
+schema:
+  model_repo: str
+  model_file: str
+  model_sha256: match(^[0-9a-f]{64}$)?
+  embedding_dimensions: int(64,4096)
+  threads: int(1,16)
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?

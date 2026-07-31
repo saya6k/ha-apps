@@ -1,0 +1,39 @@
+---
+configuration:
+  model_repo:
+    name: Model repository
+    description: >-
+      Hugging Face repository the embedding model is downloaded from. Change
+      this together with `model_file` — and with `embedding_dimensions` if the
+      new model has a different output size. Stored facts are re-embedded
+      automatically when the model changes, so nothing is lost.
+  model_file:
+    name: Model file
+    description: >-
+      GGUF file within that repository. The default (Q8_0, ~609 MiB) is close
+      to lossless. Step down to a smaller quantization only if memory forces
+      it — Q4 is measurably less precise at finding the right memory.
+  model_sha256:
+    name: Model checksum
+    description: >-
+      Optional. When set, the downloaded file must match it or the add-on
+      stops. When left empty the download is not verified, and the actual
+      checksum is printed in the log so you can paste it here afterwards.
+  embedding_dimensions:
+    name: Embedding dimensions
+    description: >-
+      Vector width the model produces — 1024 for the default model. It must
+      match the model, otherwise search returns nothing useful. Changing it
+      rebuilds the vector store and re-embeds every stored fact.
+  threads:
+    name: CPU threads
+    description: >-
+      Threads the embedding sidecar uses. Match your device's core count;
+      more threads than cores does not help. Embedding happens only when a
+      fact is saved or searched, so this is not a constant load.
+  log_level:
+    name: Log level
+    description: >-
+      Verbosity for both the MCP server and the embedding sidecar. `info` is
+      the default and keeps startup to about thirty lines. Raise to `debug`
+      or `trace` to see llama.cpp's per-tensor detail, which is very verbose.
