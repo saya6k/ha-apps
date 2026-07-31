@@ -85,6 +85,7 @@ super-linter-output/
 !/otelcol/
 !/transcribe-cpp/
 !/crw/
+!/memory/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/
