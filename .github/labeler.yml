@@ -38,6 +38,10 @@
   - changed-files:
       - any-glob-to-any-file: "crw/**"
 
+"addon:memory":
+  - changed-files:
+      - any-glob-to-any-file: "memory/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"
