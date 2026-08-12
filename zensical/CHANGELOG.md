@@ -6,6 +6,17 @@ Releases from the next version onward are tracked in
 
 
 
+## [0.3.13](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.13)
+
+## What's Changed
+
+## Maintenance
+
+* docs: record how to review an upstream bump PR (#12) @saya6k
+* chore: bump zensical 0.0.51 → 0.0.53 (#10) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+**Full Changelog**: https://github.com/saya6k/ha-app-zensical/compare/v0.3.12...v0.3.13
+
 ## [0.3.12](https://github.com/saya6k/ha-app-zensical/releases/tag/v0.3.12)
 
 ## What's Changed
