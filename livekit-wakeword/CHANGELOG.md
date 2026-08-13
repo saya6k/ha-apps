@@ -4,6 +4,25 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-livekit-wakeword/releases).
 
 
+## [0.10.3](https://github.com/saya6k/ha-app-livekit-wakeword/releases/tag/v0.10.3)
+
+## What's Changed
+
+* chore: bump livekit-wakeword 60b5d755ee08 → 95448a7559c4 (#5) @[github-actions[bot]](https://github.com/apps/github-actions)
+* chore: bump livekit-wakeword 431c7e4376bd → 60b5d755ee08 (#3) @[github-actions[bot]](https://github.com/apps/github-actions)
+* ci: derive release version from change type (version-resolver) (#1) @saya6k
+
+## Bug Fixes
+
+* fix(ci): dedupe upstream bump PRs and re-verify the pinned model hash (#6) @saya6k
+
+## Maintenance
+
+* docs: record how to review an upstream bump PR (#7) @saya6k
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-livekit-wakeword/compare/v0.10.2...v0.10.3
+
 ## [0.10.2](https://github.com/saya6k/ha-app-livekit-wakeword/releases/tag/v0.10.2)
 
 Re-dispatch after notify job fix.
