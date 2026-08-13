@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.3.0)
+
+## What's Changed
+
+## New Features
+
+* fix: make the Supervisor watchdog able to recover the app, and stop dying silently (#8) @saya6k
+
+## Bug Fixes
+
+* fix(docker): label images io.hass.type=app instead of inheriting base (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-transcribe-cpp/compare/v0.2.0...v0.3.0
+
 ## [0.2.0](https://github.com/saya6k/ha-app-transcribe-cpp/releases/tag/v0.2.0)
 
 ## What's Changed
