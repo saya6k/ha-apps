@@ -2,6 +2,7 @@ version: 0.11.2
 image: ghcr.io/saya6k/app-nemo-asr-cpp
 slug: nemo-asr-cpp
 name: NeMo ASR (cpp)
+stage: deprecated
 description: >-
   Streaming speech-to-text with hotword boosting over Wyoming — NVIDIA Nemotron
   ASR on ggml (parakeet.cpp)
