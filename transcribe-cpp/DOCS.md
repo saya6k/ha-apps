@@ -139,6 +139,37 @@ For *named* speaker attribution on Assist voice commands, chain the
 HA Assist ──► Voiceprint (:10350) ──► Transcribe.cpp (:10380)
 ```
 
+## When it stops (Watchdog)
+
+The container healthcheck sends a real Wyoming `describe` to :10380 and checks
+the reply, so a wedged server (process alive, port not answering) is caught as
+well as a crashed one. **The Watchdog toggle on the app page is off by
+default** — turn it on for Home Assistant to act on that verdict and restart
+the app automatically.
+
+Not every stop should be retried, so the app tells the Supervisor which kind it
+was through its exit code:
+
+| What happened | App state | Watchdog |
+|---|---|---|
+| Stopped by you / clean shutdown | stopped | leaves it alone |
+| Startup failure — unknown or ungated `custom_model`, failed conversion, download error, unloadable weights | stopped, with an `ERROR` line naming the cause | leaves it alone: the same config fails identically on every retry, so fix it and start the app again |
+| Crash after startup, or a kill signal (`SIGSEGV`, OOM kill) | error | restarts it |
+
+Reading the log after a stop:
+
+- The service log always ends with `Service exited with code N (by signal M)`.
+- A crash inside the native ggml library prints a C-level traceback
+  (`Fatal Python error: Segmentation fault`) instead of dying silently.
+- `killed with SIGKILL` (signal 9) with nothing before it is the kernel OOM
+  killer, not a bug — the model didn't fit in RAM. Drop to a smaller
+  `quantization` or a smaller `model`. Large models on a 4 GB host are the
+  usual cause.
+
+A first start that downloads a multi-GB GGUF, or converts a `custom_model`,
+can take a long time; the healthcheck allows 60 minutes for it before the
+watchdog is allowed to consider the app unhealthy.
+
 ## Model catalog
 
 Generated from the pinned upstream release cards — every entry is
@@ -243,6 +274,9 @@ catalog table above.
       a visible `INFO` line saying it doesn't apply — none of these crash
       the add-on
 - [ ] One `custom_model` Whisper fine-tune converts and serves (amd64)
+- [ ] Watchdog toggle on: `kill -9` the server process inside the container →
+      HA restarts the app; an unknown `custom_model` stops it with an `ERROR`
+      line and it *stays* stopped instead of restart-looping
 - [ ] One NeMo-family conversion (e.g. a parakeet checkpoint) completes
       on amd64 (slow; needs several GB free in `/data`)
 - [ ] AppArmor: app starts and serves STT with the profile enforced on
