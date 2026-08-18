@@ -3,6 +3,22 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.0](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.0)
+
+## What's Changed
+
+* chore: bump wardrowbe to wardrowbe-v1.8.0 (#14) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+## New Features
+
+* feat(config): expose AI tagging concurrency and retry cooldown (#15) @saya6k
+
+## Bug Fixes
+
+* fix(docker): label images io.hass.type=app instead of inheriting base (#13) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.2.5...v4.3.0
+
 ## [4.2.5](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.2.5)
 
 ## What's Changed

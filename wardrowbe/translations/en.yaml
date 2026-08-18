@@ -55,6 +55,20 @@ configuration:
     description: >-
       Text model used for outfit recommendations. Can be the same as the
       vision model.
+  ai_tagging_concurrency:
+    name: AI tagging concurrency
+    description: >-
+      How many background jobs the worker runs at once — tagging jobs and the
+      light periodic jobs share this pool, so it is the practical ceiling on
+      concurrent AI calls. Lower it if bulk uploads overwhelm your AI backend
+      (2–3 suits a single local Ollama); raising it far above 15 also grows the
+      worker's DB connection pool usage.
+  ai_retry_cooldown_seconds:
+    name: Retry cooldown (seconds)
+    description: >-
+      Minimum wait before a failed item's analysis can be retried manually.
+      Matches the worker's own maximum retry backoff, so a manual retry never
+      lands inside a window automatic retries already proved too short.
   ai_internal_enabled:
     name: Internal AI
     description: >-
