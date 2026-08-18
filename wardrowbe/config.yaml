@@ -1,6 +1,6 @@
 ---
 name: Wardrowbe
-version: 4.2.5
+version: 4.3.0
 image: ghcr.io/saya6k/app-wardrowbe
 slug: wardrowbe
 description: >-
@@ -38,6 +38,8 @@ options:
   ai_api_key: ''
   ai_vision_model: gemma3:latest
   ai_text_model: gemma3:latest
+  ai_tagging_concurrency: 5
+  ai_retry_cooldown_seconds: 120
   oidc_issuer_url: ''
   oidc_client_id: ''
   oidc_client_secret: ''
@@ -60,6 +62,8 @@ schema:
   ai_api_key: str?
   ai_vision_model: str
   ai_text_model: str
+  ai_tagging_concurrency: int(1,20)
+  ai_retry_cooldown_seconds: int(0,3600)
   ai_internal_enabled: bool?
   ai_vision_enabled: bool?
   ai_text_enabled: bool?
