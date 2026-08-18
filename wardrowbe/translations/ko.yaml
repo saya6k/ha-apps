@@ -52,6 +52,19 @@ configuration:
     name: 텍스트 모델
     description: >-
       의상 추천에 쓰이는 텍스트 모델. 비전 모델과 같아도 됩니다.
+  ai_tagging_concurrency:
+    name: AI 태깅 동시 실행 수
+    description: >-
+      워커가 동시에 처리하는 백그라운드 작업 수. 태깅 작업과 주기적 경량
+      작업이 이 풀을 함께 쓰므로 사실상 동시 AI 호출 상한입니다. 대량
+      업로드가 AI 백엔드에 부담이면 낮추세요(로컬 Ollama 1대는 2~3이
+      적당). 15을 크게 넘기면 워커 DB 커넥션 풀 사용량도 늘어납니다.
+  ai_retry_cooldown_seconds:
+    name: 재시도 대기 시간 (초)
+    description: >-
+      분석에 실패한 항목을 수동으로 재시도하기까지의 최소 대기 시간.
+      워커의 자동 재시도 최대 백오프와 같은 값이라, 자동 재시도가 이미
+      부족하다고 판명된 간격 안에서 수동 재시도가 일어나지 않습니다.
   ai_internal_enabled:
     name: 내장 AI
     description: >-
