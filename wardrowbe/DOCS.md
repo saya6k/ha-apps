@@ -47,6 +47,8 @@ ai_text_model: "gpt-4o"
 | `ai_api_key` | *(empty)* | API key (not needed for Ollama) |
 | `ai_vision_model` | `gemma3:latest` | Vision model for image analysis |
 | `ai_text_model` | `gemma3:latest` | Text model for recommendations |
+| `ai_tagging_concurrency` | `5` | Concurrent worker jobs — the practical cap on simultaneous AI calls (2–3 suits one local Ollama) |
+| `ai_retry_cooldown_seconds` | `120` | Minimum wait before a failed item can be re-analysed manually |
 | `dev_login` | `true` | Dev login toggle (see Authentication) |
 | `external_url` | *(empty)* | Public URL for OIDC (e.g. `https://wardrowbe.example.com`) |
 | `oidc_issuer_url` | *(empty)* | OIDC provider URL |
