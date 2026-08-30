@@ -4,6 +4,28 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-supertonic/releases).
 
 
+## [2.7.0](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.7.0)
+
+## What's Changed
+
+* ci: derive release version from change type (version-resolver) (#1) @saya6k
+
+## New Features
+
+* feat: degrade SSML to plain text; quiet mid-event disconnects (#5) @saya6k
+
+## Bug Fixes
+
+* fix: upgrade wyoming 1.9.0 → 1.10.2 (voice language parsing, graceful SIGTERM) (#4) @saya6k
+* fix(docker): label images io.hass.type=app instead of inheriting base (#3) @saya6k
+
+## Maintenance
+
+* ci: watch wyoming releases in upstream-check (#6) @saya6k
+* ci: fix release-drafter autolabeler (PR trigger + labels) so feat bumps minor (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-supertonic/compare/v2.6.2...v2.7.0
+
 ## [2.6.2](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.6.2)
 
 Re-dispatch after notify job fix.

@@ -1,9 +1,10 @@
-version: 2.6.2
+---
+version: 2.7.0
 image: ghcr.io/saya6k/app-supertonic
 slug: supertonic
 name: Supertonic
 description: Lightweight multilingual text-to-speech (Supertonic, MNN backend)
-url: https://github.com/vra/supertonic-mnn
+url: https://github.com/saya6k/ha-app-supertonic
 arch:
   - amd64
   - aarch64
