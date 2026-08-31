@@ -28,8 +28,7 @@ metadata (`config.yaml`, docs, changelogs) that Home Assistant reads.
 | [`zensical/`](zensical/) | Renders `/config/docs/` as a [Zensical](https://zensical.org/) site served through the Home Assistant ingress side panel. | [![Show add-on](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?addon=03f32180_zensical&repository_url=https%3A%2F%2Fgithub.com%2Fsaya6k%2Fha-apps) |
 
 Each directory's `DOCS.md` is rendered as the Documentation tab inside
-Home Assistant; `CHANGELOG.md` is rendered in the add-on UI; `AGENTS.md`
-is for humans and AI agents working on the code.
+Home Assistant, and `CHANGELOG.md` is rendered in the add-on UI.
 
 ## Installing
 

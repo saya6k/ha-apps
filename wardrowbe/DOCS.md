@@ -135,7 +135,7 @@ symlink under `/media/` manually.
 > ⚠️ Heads-up — photos sit under `/data/`, so they're included in every
 > HA add-on snapshot. A wardrobe with a few hundred items can push snapshot
 > size into the hundreds of MB. If that matters to you, either snapshot
-> less often or move the photo dir manually (see `.agents/storage-layout.md`).
+> less often or move the photo dir manually.
 
 ### Backup size & DB dumps
 

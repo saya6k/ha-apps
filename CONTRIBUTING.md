@@ -7,20 +7,22 @@ feature request) instead, and it will be triaged there. The rest of this
 document is the workflow for collaborators.
 
 Several independent add-ons live under sibling directories, sharing CI,
-release automation, and labels at the root. Per-add-on engineering details
-live in each subdirectory's `AGENTS.md`.
+release automation, and labels at the root. Most add-ons keep only their
+catalog metadata here; source, Dockerfile and per-app CI live in that
+app's own `ha-app-*` repository, linked from its `README.md`.
 
 ## Before you open a PR
 
-1. **Pick the right add-on directory** and read its `AGENTS.md`. It carries
-   the real invariants ("don't reintroduce X", "this constant is load-bearing
-   because Y") — those are the most common review failures.
+1. **Pick the right repository.** Source, Dockerfile and per-app CI changes
+   belong in the app's `ha-app-*` repository. This repo takes catalog
+   metadata: `config.yaml`, `DOCS.md`, `README.md`, `translations/`, icons.
 2. **One add-on per PR** when possible. Releases are scoped per add-on, and
-   release-please routes commits by the scope in the title. A PR that touches
-   two add-ons becomes two release PRs and is harder to revert.
-3. **Run the per-add-on sanity checks** listed in that add-on's `AGENTS.md`
-   (yamllint, shellcheck, `docker build .`, smoke test, etc.) **before**
-   pushing. The root CI runs the cross-cutting lints, not the smoke tests.
+   release automation routes commits by the scope in the title. A PR that
+   touches two add-ons becomes two release PRs and is harder to revert.
+3. **Run the lints before pushing** — `yamllint` on the add-on's
+   `config.yaml` and `translations/*.yaml`, and markdownlint on its docs
+   (config: `.markdownlint.yaml` at the root). The root CI runs the
+   cross-cutting lints; it does not build or smoke-test images.
 
 ## Commit and PR title format (enforced)
 
