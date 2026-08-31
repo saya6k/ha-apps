@@ -4,7 +4,7 @@ default: true
 # Long lines are normal in CHANGELOG/DOCS prose.
 MD013: false
 
-# Inline HTML is used in AGENTS.md (badges, anchors) and shipped DOCS.md.
+# Inline HTML is used in README.md (badges, anchors) and shipped DOCS.md.
 MD033: false
 
 # Multiple H1s appear naturally in HA-rendered CHANGELOG.md (one per version).

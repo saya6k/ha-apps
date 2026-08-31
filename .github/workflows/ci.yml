@@ -184,8 +184,8 @@ jobs:
 
   # ---------------------------------------------------------------------
   # markdownlint — checks user-facing *.md files (README, DOCS, etc.) in
-  # the changed add-on. AI agent docs (AGENTS.md, CLAUDE.md, .agents/,
-  # specs/) and CHANGELOG.md (release-please generated) are excluded.
+  # the changed add-on. Local-only design docs (specs/, tasks/) and
+  # CHANGELOG.md (release-please generated) are excluded.
   # ---------------------------------------------------------------------
   lint-markdown:
     name: markdownlint (${{ matrix.addon }})
@@ -218,8 +218,6 @@ jobs:
           globs: |
             ${{ matrix.addon }}/**/*.md
             !${{ matrix.addon }}/CHANGELOG.md
-            !${{ matrix.addon }}/AGENTS.md
-            !${{ matrix.addon }}/.agents/**
             !${{ matrix.addon }}/specs/**
             !${{ matrix.addon }}/tasks/**
           config: .markdownlint.yaml
