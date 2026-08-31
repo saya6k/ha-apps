@@ -29,9 +29,9 @@ permissions:
 
 env:
   SHARED_PATHS: >-
-    .agents .claude .editorconfig .gitattributes .github .gitignore
+    .editorconfig .gitattributes .github .gitignore
     .hadolint.yaml .markdownlint.yaml .shellcheckrc .yamllint
-    AGENTS.md CODE_OF_CONDUCT.md CONTRIBUTING.md LICENSE README.md
+    CODE_OF_CONDUCT.md CONTRIBUTING.md LICENSE README.md
     SECURITY.md
 
 jobs:
