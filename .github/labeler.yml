@@ -51,6 +51,4 @@
       - any-glob-to-any-file:
           - ".github/**"
           - "README.md"
-          - "AGENTS.md"
-          - "CLAUDE.md"
           - "repository.yaml"
