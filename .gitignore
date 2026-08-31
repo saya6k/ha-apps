@@ -39,18 +39,15 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
-# AI tooling dirs — tracked in full; only local-override files are excluded.
-**/.agents/settings.local.json
-# .agents/memory — cross-session notes, gitignored (contains internal
-# reasoning/decisions not meant for the public repo tree).
-/.agents/memory/
-# .claude is a real dir (not a symlink) with individual symlinks inside.
-# settings.local.json inside is gitignored (local overrides only).
-.claude
-!/.claude
-/.claude/settings.local.json
-.gemini
-!/.gemini
+# Agent scaffolding (AGENTS.md, .agents/, .claude/, .gemini/, and the
+# CLAUDE.md / GEMINI.md symlinks) is per-developer tooling, not repo content.
+# It stays on disk locally and is never tracked.
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.claude/
+.gemini/
 
 # Build / cache
 *.log
@@ -66,7 +63,7 @@ super-linter-output/
 # App stage gating — WHITELIST (default-deny). Every non-hidden top-level dir
 # (i.e. every app) is gitignored unless explicitly un-ignored below. `/[!.]*/`
 # ignores all top-level dirs that don't start with a dot; infra dirs (.github,
-# .agents, .devcontainer, .vscode) are hidden and unaffected.
+# .devcontainer, .vscode) are hidden and unaffected.
 #
 # To register a new app: add `!/<slug>/` here. Stage is controlled by
 # config.yaml's `stage:` key (experimental or absent for stable), not by
@@ -90,13 +87,7 @@ super-linter-output/
 **/SPEC.md
 **/specs/
 **/tasks/
-# AI-system-specific facades — AGENTS.md is the canonical AI doc; the
-# per-system symlinks (CLAUDE.md, GEMINI.md) are created locally as needed.
-CLAUDE.md
-GEMINI.md
 # voiceprint's 14 MB CAM++ model is fetched to /data at runtime (models.py),
 # hosted as a pinned release asset — never commit a local dev copy. (Listed
 # after the re-include above so this narrower exclusion wins.)
 /voiceprint/models/
-# livekit-wakeword training data — local only, never committed
-/livekit-wakeword/.agents/training/
