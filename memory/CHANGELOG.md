@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.1](https://github.com/saya6k/ha-app-memory/releases/tag/v0.1.1)
+
+Fix OpenAI function schema compatibility for memory search limits.
+
 ## [0.1.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.1.0)
 
 First stable release.
