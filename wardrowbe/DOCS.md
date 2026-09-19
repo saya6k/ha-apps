@@ -10,6 +10,7 @@ All services run in a single container under s6-overlay v3:
 | Redis      | Job queue + cache                             | 6379 |
 | Backend    | FastAPI API server                            | 8000 |
 | Worker     | arq background worker (AI tagging, cron)      | —    |
+| Image worker | arq image queue (rotation, background removal) | — |
 | Frontend   | Next.js web UI                                | 3000 |
 | Nginx      | Reverse proxy (single entry point)            | 8099 |
 
@@ -135,7 +136,7 @@ symlink under `/media/` manually.
 > ⚠️ Heads-up — photos sit under `/data/`, so they're included in every
 > HA add-on snapshot. A wardrobe with a few hundred items can push snapshot
 > size into the hundreds of MB. If that matters to you, either snapshot
-> less often or move the photo dir manually.
+> less often or move the photo dir manually (see `.agents/storage-layout.md`).
 
 ### Backup size & DB dumps
 
@@ -189,6 +190,7 @@ README for install and configuration.
 [backend]  starting uvicorn on port 8000 …
 [frontend] starting Next.js on port 3000 …
 [worker]   starting arq worker …
+[image-worker] starting arq image worker …
 ```
 
 **AI features not working:**
