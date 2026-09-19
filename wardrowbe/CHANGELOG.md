@@ -3,6 +3,18 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.2](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.2)
+
+## Bug Fixes
+
+- Fix `TooManyConnectionsError` and API failures after login by raising the managed PostgreSQL connection limit from 10 to 50, covering the backend and both worker pools with room for maintenance.
+- Existing installations receive the setting automatically when the updated app starts; no manual database edits are needed.
+- Add PostgreSQL regression checks on amd64 and aarch64: reproduce exhaustion at the previous limit and verify concurrent queries succeed at the new limit.
+
+[Fix PR #19](https://github.com/saya6k/ha-app-wardrowbe/pull/19)
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.1...v4.3.2
+
 ## [4.3.1](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.1)
 
 ## What's Changed
