@@ -3,6 +3,20 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.4](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.4)
+
+## What's Changed
+
+- Update upstream Wardrowbe from v1.10.1 to v1.10.2: fix wardrobe composition analytics and item edit form refresh, expose rejected AI item types, make subtypes editable, and correct translations.
+- Replace the legacy `addon_config` map type with `app_config` to remove the Home Assistant Supervisor validation warning.
+
+Validation: all PR CI checks passed, including amd64 and aarch64 image builds and PostgreSQL connection-capacity regression checks.
+
+PR: https://github.com/saya6k/ha-app-wardrowbe/pull/21
+Upstream release: https://github.com/Anyesh/wardrowbe/releases/tag/wardrowbe-v1.10.2
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.3...v4.3.4
+
 ## [4.3.3](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.3)
 
 ## What's Changed
