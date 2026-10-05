@@ -42,6 +42,10 @@
   - changed-files:
       - any-glob-to-any-file: "memory/**"
 
+"addon:codemirror":
+  - changed-files:
+      - any-glob-to-any-file: "codemirror/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"

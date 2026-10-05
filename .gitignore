@@ -83,6 +83,7 @@ super-linter-output/
 !/transcribe-cpp/
 !/crw/
 !/memory/
+!/codemirror/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/

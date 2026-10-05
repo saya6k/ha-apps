@@ -22,6 +22,7 @@ body:
         - transcribe-cpp
         - crw
         - memory
+        - codemirror
         - repository tooling (CI / docs / labels)
     validations:
       required: true
