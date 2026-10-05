@@ -1,0 +1,52 @@
+---
+name: CodeMirror
+version: 0.5.1
+image: ghcr.io/saya6k/app-codemirror
+slug: codemirror
+description: CodeMirror editor with Markdown preview, opt-in workspace access and drag-and-drop uploads
+url: https://github.com/saya6k/ha-app-codemirror
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+ingress: true
+ingress_stream: true
+panel_icon: mdi:code-braces
+panel_title: CodeMirror
+homeassistant_api: true
+hassio_api: true
+hassio_role: homeassistant
+map:
+  - type: homeassistant_config
+    path: /config
+    read_only: false
+  - type: local_apps
+    path: /addons
+    read_only: false
+  - type: media
+    path: /media
+    read_only: false
+  - type: all_app_configs
+    path: /addon_configs
+    read_only: false
+  - type: ssl
+    path: /ssl
+    read_only: false
+  - type: share
+    path: /share
+    read_only: false
+options:
+  allow_local_apps: false
+  allow_media: false
+  allow_addon_configs: false
+  allow_ssl: false
+  allow_share: false
+  max_upload_mb: 32
+schema:
+  allow_local_apps: bool
+  allow_media: bool
+  allow_addon_configs: bool
+  allow_ssl: bool
+  allow_share: bool
+  max_upload_mb: int(1,512)
