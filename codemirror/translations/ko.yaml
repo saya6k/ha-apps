@@ -1,0 +1,20 @@
+---
+configuration:
+  allow_local_apps:
+    name: 로컬 앱 접근 허용
+    description: /addons의 로컬 앱 파일 조회, 편집, 업로드를 허용합니다.
+  allow_media:
+    name: 미디어 접근 허용
+    description: /media 파일 조회, 편집, 업로드를 허용합니다.
+  allow_addon_configs:
+    name: 전체 앱 설정 접근 허용
+    description: /addon_configs에 있는 다른 앱의 설정 조회, 편집, 업로드를 허용합니다.
+  allow_ssl:
+    name: SSL 인증서 접근 허용
+    description: /ssl의 인증서와 키 파일 조회, 편집, 업로드를 허용합니다.
+  allow_share:
+    name: 공유 폴더 접근 허용
+    description: /share 파일 조회, 편집, 업로드를 허용합니다.
+  max_upload_mb:
+    name: 업로드 파일 크기 제한
+    description: 파일당 최대 크기(MiB). 1–512 범위이며 기본값은 32입니다.
