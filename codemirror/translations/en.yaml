@@ -1,0 +1,20 @@
+---
+configuration:
+  allow_local_apps:
+    name: Allow local apps
+    description: Allow browsing, editing and uploading files in /addons.
+  allow_media:
+    name: Allow media
+    description: Allow browsing, editing and uploading files in /media.
+  allow_addon_configs:
+    name: Allow all app configurations
+    description: Allow browsing, editing and uploading other apps' files in /addon_configs.
+  allow_ssl:
+    name: Allow SSL files
+    description: Allow browsing, editing and uploading certificates and keys in /ssl.
+  allow_share:
+    name: Allow shared files
+    description: Allow browsing, editing and uploading files in /share.
+  max_upload_mb:
+    name: Maximum upload size
+    description: Maximum size per file in MiB (1–512, default 32).
