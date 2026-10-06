@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.0](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.6.0)
+
+## What's Changed
+
+## New Features
+
+* feat: preview upload destination while dragging and uploading (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-codemirror/compare/v0.5.2...v0.6.0
+
 ## [0.5.2](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.5.2)
 
 ## What's Changed
