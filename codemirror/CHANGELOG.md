@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.2](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.5.2)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: support musl renameat2 and speed up folder ZIP uploads (#1) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-codemirror/compare/v0.5.1...v0.5.2
+
 ## [0.5.1](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.5.1)
 
 First release through the ha-apps catalog. The image is now built on the Home Assistant base image with an s6-overlay service and published to `ghcr.io/saya6k/app-codemirror`.
