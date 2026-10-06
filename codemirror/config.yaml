@@ -1,6 +1,6 @@
 ---
 name: CodeMirror
-version: 0.5.1
+version: 0.5.2
 image: ghcr.io/saya6k/app-codemirror
 slug: codemirror
 description: CodeMirror editor with Markdown preview, opt-in workspace access and drag-and-drop uploads
