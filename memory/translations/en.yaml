@@ -10,7 +10,7 @@ configuration:
   model_file:
     name: Model file
     description: >-
-      GGUF file within that repository. The default (Q8_0, ~609 MiB) is close
+      GGUF file within that repository. The default (Q8_0, ~296 MiB) is close
       to lossless. Step down to a smaller quantization only if memory forces
       it — Q4 is measurably less precise at finding the right memory.
   model_sha256:
@@ -22,9 +22,23 @@ configuration:
   embedding_dimensions:
     name: Embedding dimensions
     description: >-
-      Vector width the model produces — 1024 for the default model. It must
+      Vector width the model produces — 768 for the default model. It must
       match the model, otherwise search returns nothing useful. Changing it
       rebuilds the vector store and re-embeds every stored fact.
+  query_prefix:
+    name: Query prefix
+    description: >-
+      Text put in front of every search query before it is embedded. The
+      default model, EmbeddingGemma 2, expects `task: search result | query: `
+      (note the trailing space). Clear it for a model without task prefixes.
+      Changing it takes effect immediately and does not re-embed anything.
+  document_prefix:
+    name: Document prefix
+    description: >-
+      Text put in front of every fact before it is embedded. The default
+      model, EmbeddingGemma 2, expects `title: none | text: `. Clear it for a
+      model without task prefixes. Changing it re-embeds every stored fact on
+      the next start, just like changing the model.
   threads:
     name: CPU threads
     description: >-

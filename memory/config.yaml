@@ -1,6 +1,6 @@
 ---
 name: Memory
-version: 0.1.1
+version: 0.2.0
 image: ghcr.io/saya6k/app-memory
 slug: memory
 description: >-
@@ -22,18 +22,24 @@ ports_description:
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
     reaches it over the internal network; map it only for external MCP
     clients. The embedding sidecar is never exposed (127.0.0.1 only).
-# model_sha256 and log_level are intentionally absent here: options listed under
-# `options:` are always shown, while `?`-suffixed schema entries stay hidden
-# until the user opts in. Both have sensible built-in behaviour when unset.
+# model_sha256 and log_level are intentionally absent here: options listed
+# under `options:` are always shown, while `?`-suffixed schema entries stay
+# hidden until the user opts in. Both have sensible built-in behaviour when
+# unset. The prefixes are listed because EmbeddingGemma 2 needs them; the
+# trailing spaces are part of the value, hence the quotes.
 options:
-  model_repo: Qwen/Qwen3-Embedding-0.6B-GGUF
-  model_file: Qwen3-Embedding-0.6B-Q8_0.gguf
-  embedding_dimensions: 1024
+  model_repo: ggml-org/embeddinggemma-2-GGUF
+  model_file: embeddinggemma-2-Q8_0.gguf
+  embedding_dimensions: 768
+  query_prefix: "task: search result | query: "
+  document_prefix: "title: none | text: "
   threads: 4
 schema:
   model_repo: str
   model_file: str
   model_sha256: match(^[0-9a-f]{64}$)?
   embedding_dimensions: int(64,4096)
+  query_prefix: str?
+  document_prefix: str?
   threads: int(1,16)
   log_level: list(trace|debug|info|notice|warning|error|fatal)?

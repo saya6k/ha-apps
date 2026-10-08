@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.2.0)
+
+## What's Changed
+
+## New Features
+
+* feat: switch the default embedding model to EmbeddingGemma 2 (#11) @saya6k
+* feat: optional query/document prefixes for asymmetric embedding models (#10) @saya6k
+
+## Maintenance
+
+* chore: bump llama.cpp b10199 → b11496 (#9) @saya6k
+
+## Upgrade notes
+
+The default embedding model is now **EmbeddingGemma 2** (768 dimensions, ~296 MiB download, ~460 MiB sidecar memory — about half of before). It finds facts stored in Korean much more reliably.
+
+- **Never changed the add-on configuration?** Nothing to do. On the first start every stored fact is re-embedded with the new model automatically.
+- **Saved the configuration before?** Your saved settings still point at Qwen3, but the new `query_prefix` / `document_prefix` options take EmbeddingGemma 2's values. Either use **⋮ → Reset to defaults** in the Configuration tab to switch, or clear both prefixes to stay on Qwen3.
+- The old model file `/data/models/Qwen3-Embedding-0.6B-Q8_0.gguf` (~609 MiB) is not removed automatically.
+
+See DOCS → *Upgrading from Qwen3-Embedding* for details.
+
+**Full Changelog**: https://github.com/saya6k/ha-app-memory/compare/v0.1.1...v0.2.0
+
 ## [0.1.1](https://github.com/saya6k/ha-app-memory/releases/tag/v0.1.1)
 
 Fix OpenAI function schema compatibility for memory search limits.
