@@ -10,7 +10,7 @@ configuration:
   model_file:
     name: 모델 파일
     description: >-
-      해당 저장소 안의 GGUF 파일. 기본값(Q8_0, 약 609 MiB)은 거의 무손실이다.
+      해당 저장소 안의 GGUF 파일. 기본값(Q8_0, 약 296 MiB)은 거의 무손실이다.
       메모리가 부족할 때만 더 작은 양자화로 내리는 게 좋다 — Q4는 원하는 기억을
       찾아내는 정확도가 눈에 띄게 떨어진다.
   model_sha256:
@@ -22,9 +22,23 @@ configuration:
   embedding_dimensions:
     name: 임베딩 차원
     description: >-
-      모델이 만들어내는 벡터의 길이 — 기본 모델은 1024. 모델과 일치해야 하며,
+      모델이 만들어내는 벡터의 길이 — 기본 모델은 768. 모델과 일치해야 하며,
       다르면 검색이 쓸모없는 결과를 낸다. 값을 바꾸면 벡터 저장소를 다시 만들고
       저장된 사실을 전부 다시 임베딩한다.
+  query_prefix:
+    name: 검색어 접두어
+    description: >-
+      검색어를 임베딩하기 전에 앞에 붙이는 문자열. 기본 모델인 EmbeddingGemma 2는
+      `task: search result | query: `를 기대한다(끝의 공백 포함). 작업 접두어가
+      없는 모델을 쓸 때는 비운다. 바꾸면 바로 적용되고 아무것도 다시 임베딩하지
+      않는다.
+  document_prefix:
+    name: 문서 접두어
+    description: >-
+      사실을 임베딩하기 전에 앞에 붙이는 문자열. 기본 모델인 EmbeddingGemma 2는
+      `title: none | text: `를 기대한다. 작업 접두어가 없는 모델을 쓸 때는
+      비운다. 바꾸면 모델을 바꿀 때와 마찬가지로 다음 시작 시 저장된 사실을
+      전부 다시 임베딩한다.
   threads:
     name: CPU 스레드
     description: >-
