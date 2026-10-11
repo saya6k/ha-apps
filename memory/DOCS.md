@@ -142,7 +142,8 @@ Two kinds of files are indexed, **PDF** (`.pdf`) and **Markdown** (`.md`,
 `.markdown`):
 
 - **Shared manuals** in `/share/manuals/` — upload them from the panel, or copy
-  them there with the Samba or File editor add-on.
+  them there with the Samba or File editor add-on. The add-on creates the
+  folder when it starts.
 - **Personal documents** — uploaded from the panel with **Upload to my
   documents**. They are kept inside the add-on (`/data/users/<user id>/documents/`),
   not in `/share`, and only their owner can find, read or delete them.
