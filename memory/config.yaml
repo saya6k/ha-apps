@@ -1,14 +1,15 @@
 ---
 name: Memory
-version: 0.3.0
+version: 0.4.0
 image: ghcr.io/saya6k/app-memory
 slug: memory
 description: >-
   Personal fact memory for Assist conversation agents over MCP. Stores facts
   with vector embeddings and retrieves them by meaning, using a local
   llama.cpp embedding model — no external API and no internet at query time.
-  Also makes the PDF and Markdown appliance manuals in /share/manuals
-  searchable, with a panel to read them.
+  Each household member gets memories and documents of their own, and one
+  search covers them together with the shared appliance manuals in
+  /share/manuals. A panel lets everyone read and manage what they may see.
 url: https://github.com/saya6k/ha-app-memory
 arch:
   - aarch64
@@ -21,13 +22,18 @@ discovery:
 # endpoint, and the panel is restricted to the ingress proxy while MCP is not.
 ingress: true
 ingress_port: 8100
-panel_icon: mdi:book-open-variant
-panel_title: Manuals
+panel_icon: mdi:brain
+panel_title: Memory
+# Every household member manages their own memories and documents here, so
+# the panel is not admin-only; it shows each person only what they may see.
 panel_admin: false
-# Manuals are only ever read; the add-on never writes to /share.
+# Reads the household's person entities to match names to Home Assistant users.
+homeassistant_api: true
+# Writable for the panel's upload and delete. The server only ever writes
+# inside /share/manuals; the rest of /share is left alone.
 map:
   - type: share
-    read_only: true
+    read_only: false
 ports:
   8099/tcp: null
 ports_description:
@@ -35,19 +41,27 @@ ports_description:
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
     reaches it over the internal network; map it only for external MCP
     clients. The embedding sidecar is never exposed (127.0.0.1 only).
-# model_sha256 and log_level are intentionally absent here: options listed
-# under `options:` are always shown, while `?`-suffixed schema entries stay
-# hidden until the user opts in. Both have sensible built-in behaviour when
-# unset. The prefixes are listed because EmbeddingGemma 2 needs them; the
+# model_sha256, log_level and the remote embedding settings (embedding_url,
+# embedding_api_key, embedding_model) are intentionally absent here: options
+# listed under `options:` are always shown, while `?`-suffixed schema entries
+# stay hidden until the user opts in. Each has sensible built-in behaviour
+# when unset, or is only needed for a remote provider. The prefixes are listed because EmbeddingGemma 2 needs them; the
 # trailing spaces are part of the value, hence the quotes.
 options:
+  embedding_provider: local
   model_repo: ggml-org/embeddinggemma-2-GGUF
   model_file: embeddinggemma-2-Q8_0.gguf
   embedding_dimensions: 768
   query_prefix: "task: search result | query: "
   document_prefix: "title: none | text: "
   threads: 4
+  context_size: 512
+  chunk_size: 400
 schema:
+  embedding_provider: list(local|openai|huggingface|ollama)
+  embedding_url: url?
+  embedding_api_key: password?
+  embedding_model: str?
   model_repo: str
   model_file: str
   model_sha256: match(^[0-9a-f]{64}$)?
@@ -55,4 +69,6 @@ schema:
   query_prefix: str?
   document_prefix: str?
   threads: int(1,16)
+  context_size: int(128,8192)
+  chunk_size: int(100,8000)
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
