@@ -1,6 +1,6 @@
 ---
 name: CodeMirror
-version: 0.6.0
+version: 0.7.0
 image: ghcr.io/saya6k/app-codemirror
 slug: codemirror
 description: CodeMirror editor with Markdown preview, opt-in workspace access and drag-and-drop uploads
@@ -37,16 +37,6 @@ map:
     path: /share
     read_only: false
 options:
-  allow_local_apps: false
-  allow_media: false
-  allow_addon_configs: false
-  allow_ssl: false
-  allow_share: false
   max_upload_mb: 32
 schema:
-  allow_local_apps: bool
-  allow_media: bool
-  allow_addon_configs: bool
-  allow_ssl: bool
-  allow_share: bool
   max_upload_mb: int(1,512)
