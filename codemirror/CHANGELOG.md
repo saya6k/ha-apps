@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.0](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.7.0)
+
+## What's Changed
+
+## New Features
+
+* feat: toggle directories from the sidebar without restarting (#3) @saya6k
+
+## ⚠️ Breaking change
+
+The `allow_local_apps`, `allow_media`, `allow_addon_configs`, `allow_ssl` and `allow_share` options have been removed. Directories (including `/config`) are now switched on and off from the **Directories** panel in the sidebar, without restarting the app. After updating, only `/config` is enabled — tick any other directories you need once.
+
+**Full Changelog**: https://github.com/saya6k/ha-app-codemirror/compare/v0.6.0...v0.7.0
+
 ## [0.6.0](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.6.0)
 
 ## What's Changed

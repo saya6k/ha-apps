@@ -6,8 +6,8 @@ CodeMirror 6 editor for Home Assistant, served through the Ingress side panel.
 Edits YAML, JSON, Python, shell and Markdown with live Markdown preview, entity
 and `mdi:` icon completion, Jinja template rendering, configuration checks,
 backups, document tabs and folder-aware drag-and-drop uploads. Only `/config`
-is accessible by default; each additional workspace is enabled with its
-`allow_*` option.
+is enabled by default; every directory, `/config` included, is switched on and
+off from the sidebar without restarting the app.
 
 Based on [roman-pinchuk/conf-edit-ha](https://github.com/roman-pinchuk/conf-edit-ha).
 Official CodeMirror branding is preserved with its source and license.
