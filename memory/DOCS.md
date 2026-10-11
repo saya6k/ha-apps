@@ -1,9 +1,13 @@
 # Memory
 
-Personal fact memory for Home Assistant Assist, exposed over MCP with vector
-semantic search. It also indexes your appliance manuals (PDF and Markdown) so Assist can
-answer from them, and adds a **Manuals** panel to read them. Embeddings are produced by a local llama.cpp sidecar — there is
-no external API and no internet access at query time.
+The household's memory for Home Assistant Assist, exposed over MCP. It keeps
+remembered facts — each person's own and shared ones — personal documents, and
+the shared appliance manuals (PDF and Markdown), and finds any of them by
+meaning with one `search`. A **Memory** panel lets everyone read and manage what
+is theirs. By default, embeddings are produced by a local llama.cpp sidecar —
+there is no external API and no internet access at query time. An OpenAI,
+Hugging Face or Ollama embedding service can be used instead; see
+[Using a remote embedding service](#using-a-remote-embedding-service).
 
 ## Install (local add-on)
 
@@ -66,7 +70,9 @@ the vectors; stored facts are re-embedded automatically on the next start.
 
 Avoid the **F16** files some repositories publish: EmbeddingGemma 2's
 activations overflow float16 and produce broken vectors. Q8_0, Q4 and BF16 are
-fine.
+fine. For the same reason the sidecar runs with flash attention off, which
+keeps attention in float32 (with it on, llama.cpp handles keys and values as
+float16).
 
 ## Connecting it to Assist
 
@@ -78,39 +84,79 @@ manually with the URL printed in the log:
 http://<add-on hostname>:8099/mcp
 ```
 
-Then attach it to your conversation agent as an MCP server, and the eight tools
-become available to the LLM.
+Then attach it to your conversation agent as an MCP server, and the six tools
+become available to the LLM. To keep memories per person, also add the line
+in [Each person's own memory](#each-persons-own-memory) to the agent's prompt.
 
 ## Tools
 
 | Tool | Purpose |
 |---|---|
-| `save` | Store a fact (`content`, optional `tags`); embeds and returns an id |
+| `search` | One lookup over remembered facts, the shared manuals and the user's own documents, by meaning; optional `tags` filter (facts only), `limit` (default 5, max 20) |
+| `save` | Remember a fact (`content`, optional `tags`); the user's own unless `shared` |
 | `get` | Fetch a single fact by id |
-| `search` | Semantic search by meaning, optional `tags` filter, `limit` (default 5, max 20) |
 | `similar` | Facts similar to a given id, excluding itself |
 | `update` | Change `content` and/or `tags`; re-embeds only when content changed |
 | `delete` | Hard-delete one fact by id |
-| `search_manuals` | Semantic search over the appliance manuals; returns passages with manual name and page |
-| `list_manuals` | The manuals available, with page counts and whether each is searchable |
+
+Every tool takes an optional `user` — the name of the person asking. Each
+`search` result has a `type`: `memory` (a fact, with `personal` saying whether
+it is the user's own), `manual` or `document` (a passage, with its `page` for a
+PDF or `section` for Markdown).
 
 Search works across languages: a fact stored in Korean is retrieved by an
 English question about the same thing, and vice versa.
 
-## Appliance manuals
+## Each person's own memory
 
-Copy manuals into `/share/manuals/` — with the Samba or File editor add-on, for
-example. **PDF** (`.pdf`) and **Markdown** (`.md`, `.markdown`) are supported.
+Facts and documents belong either to the household (shared) or to one person.
+A person sees the shared ones and their own, never anyone else's.
+
+Home Assistant does not tell an MCP server who is speaking, so the model passes
+it along. Add this line to your conversation agent's prompt (**Settings → Voice
+assistants → your assistant → conversation agent → Instructions**):
+
+```text
+The current user is {{ user_name }}. Pass this name as `user` to every Memory tool.
+```
+
+`{{ user_name }}` is filled in by Home Assistant with the signed-in user's name.
+The add-on matches it to a **person** (by name or by the person's id, e.g.
+`dad` for `person.dad`) that is linked to that user, so each household member
+needs a person with their login selected under **Settings → People**.
+
+Things to know:
+
+- This separates people for convenience, not for security: the model is
+  trusted to pass the right name, and anyone who can talk to Assist could ask
+  it for someone else's memories by name.
+- When nobody is signed in — typically a voice satellite — `{{ user_name }}` is
+  empty and only shared memories and manuals are used; anything saved is shared.
+- An unknown name is refused with the list of known people, so the model can
+  correct itself rather than silently losing memories.
+- Facts saved before this version are shared.
+
+## Manuals and documents
+
+Two kinds of files are indexed, **PDF** (`.pdf`) and **Markdown** (`.md`,
+`.markdown`):
+
+- **Shared manuals** in `/share/manuals/` — upload them from the panel, or copy
+  them there with the Samba or File editor add-on.
+- **Personal documents** — uploaded from the panel with **Upload to my
+  documents**. They are kept inside the add-on (`/data/users/<user id>/documents/`),
+  not in `/share`, and only their owner can find, read or delete them.
+
 Subfolders are fine, and the file name without its extension becomes the
 manual's name, so name them after the device: `Drum washer.pdf`,
 `kitchen/Oven.md`.
 
-The add-on reads the folder on every start, and again when you press the rescan
-button in the panel. Indexing runs in the background and does not hold up the
+The add-on reads the folders on every start, after every upload or delete in the
+panel, and when you press the rescan button. Indexing runs in the background and does not hold up the
 rest of the add-on; the panel shows its progress.
 
-A manual is identified by its content (a SHA-256 hash), so only content the
-index has never seen is embedded:
+Within one owner, a file is identified by its content (a SHA-256 hash), so only
+content the index has never seen is embedded:
 
 - A file whose size and modification time are unchanged is skipped without
   being read.
@@ -123,12 +169,13 @@ index has never seen is embedded:
 
 Then:
 
-- **Assist** can answer from them through `search_manuals` — "what does E3 mean
-  on the washer?" finds the PDF page or Markdown section about error E3, in any
-  language.
-- The **Manuals** panel in the sidebar lists them, searches them, and shows the
-  manual itself, opened at the page or section a search hit came from. It is
-  visible to all users, not just administrators.
+- **Assist** finds them through `search` — "what does E3 mean on the washer?"
+  finds the PDF page or Markdown section about error E3, in any language.
+- The **Memory** panel in the sidebar has a **Documents** tab that lists them,
+  and its search box covers everything. A search hit opens the file at its page
+  or section. Its **Memories** tab lists your own facts and the shared ones to
+  add, edit or delete. Every Home Assistant user can open the panel and sees
+  only the shared things and their own.
 
 PDFs need a text layer to be searchable. Manufacturers' own PDFs nearly always
 have one; a scan of a paper manual does not, and is listed as
@@ -136,20 +183,35 @@ have one; a scan of a paper manual does not, and is listed as
 is not included. Markdown is shown with its formatting, but images and links to
 other files in the folder do not resolve: use web addresses for those.
 
+### Uploading and deleting
+
+- **Upload** (the arrow at the top of the panel) takes one or more `.pdf`,
+  `.md` or `.markdown` files of up to 100 MiB each, into your documents or the
+  shared manuals. If a file of the same name is already there, the panel asks
+  before replacing it. A `.pdf` that is not actually a PDF is refused.
+- **Delete** (the bin above an open file) deletes it **permanently** after a
+  confirmation; there is no trash to restore it from. If another file with the
+  same content exists, it takes the deleted one's place in the list.
+
+Anyone can upload or delete shared manuals; personal documents only their owner.
+
+New files are indexed straight away, and deleted ones dropped from search.
+
 ### Rebuilding or clearing the index
 
 The panel's **⋮** menu has two more actions, each confirmed first:
 
-- **Reindex everything** clears the manual index and reads and embeds every
-  file again. Use it if search results look wrong.
-- **Clear the index** removes every manual from search and from the panel. The
-  index is rebuilt on the next rescan or add-on start, since the files are
-  still there.
+- **Reindex everything** clears the document index and reads and embeds every
+  manual and personal document again. Use it if search results look wrong.
+- **Clear the index** removes every manual and document from search and from the
+  panel. The index is rebuilt on the next rescan or add-on start, since the
+  files are still there.
 
-Both touch only the manual index. Your files in `/share/manuals/` and the facts
-saved with `save` are never affected.
+Both touch only the document index, for everyone. The files themselves and the
+remembered facts are never affected.
 
-The add-on maps `/share` read-only and never changes the files. If the model or
+The add-on maps `/share` writable for the panel's upload and delete, and only
+ever writes inside `/share/manuals/`; nothing else changes the files. If the model or
 document prefix changes, the manual index is rebuilt in the background after
 the next start.
 
@@ -157,6 +219,10 @@ the next start.
 
 | Option | Default | Notes |
 |---|---|---|
+| `embedding_provider` | `local` | `local`, `openai`, `huggingface` or `ollama`. See below. |
+| `embedding_url` | *(unset)* | Optional. A remote provider's address; see below. |
+| `embedding_api_key` | *(unset)* | Optional. Sent as a Bearer token to a remote provider. |
+| `embedding_model` | *(unset)* | Optional. The model to ask a remote provider for; required for one. |
 | `model_repo` | `ggml-org/embeddinggemma-2-GGUF` | Hugging Face repo |
 | `model_file` | `embeddinggemma-2-Q8_0.gguf` | File within that repo |
 | `model_sha256` | *(unset)* | Optional. When set, the download must match it or startup fails. When unset, the download is not verified and the actual hash is printed so you can pin it. |
@@ -164,11 +230,68 @@ the next start.
 | `query_prefix` | `"task: search result \| query: "` | Prepended to every search query before embedding. See below. |
 | `document_prefix` | `"title: none \| text: "` | Prepended to every fact before embedding. See below. |
 | `threads` | `4` | CPU threads for the embedding sidecar |
+| `context_size` | `512` | The longest input the local sidecar takes, in tokens. More costs memory. |
+| `chunk_size` | `400` | Characters per piece a manual or document is split into. Changing it re-indexes the documents. |
 | `log_level` | *(unset → `info`)* | Optional. `trace` / `debug` / `info` / `notice` / `warning` / `error` / `fatal`. Applies to both the MCP server and the embedding sidecar. |
 
-`model_sha256` and `log_level` are optional and stay hidden until you add them
-(use **Show unused optional configuration options** in the add-on's
-Configuration tab).
+`model_sha256`, `log_level` and the three remote settings are optional and
+stay hidden until you add them (use **Show unused optional configuration
+options** in the add-on's Configuration tab). `model_repo`, `model_file`,
+`model_sha256`, `threads` and `context_size` only matter for the `local`
+provider.
+
+### Using a remote embedding service
+
+Instead of the bundled model, the add-on can ask an embedding service. The
+local sidecar is then not started and no model is downloaded, which saves the
+~460 MiB it uses — but **the text of every fact, document and question is sent
+to that service**.
+
+| `embedding_provider` | `embedding_url` | `embedding_api_key` |
+|---|---|---|
+| `openai` | API base including `/v1`. Default `https://api.openai.com/v1`; any OpenAI-compatible server works (LocalAI, vLLM, LM Studio, …). | Your API key |
+| `huggingface` | The feature-extraction endpoint. Default: the Inference Providers router for the model (`https://router.huggingface.co/hf-inference/models/<model>/pipeline/feature-extraction`). For a Text Embeddings Inference server, `http://host:port/embed`. | A token with Inference Providers permission (not needed for your own TEI server) |
+| `ollama` | The server, e.g. `http://192.168.1.10:11434`. Required. | Not needed |
+
+Set `embedding_model` to the model name (`text-embedding-3-small`,
+`BAAI/bge-m3`, `embeddinggemma`, …) and `embedding_dimensions` to its vector
+size: 1536 for `text-embedding-3-small`, 1024 for `bge-m3`, 768 for
+EmbeddingGemma. If they do not match, the add-on stops at startup and logs the
+size the model actually returned. Clear `query_prefix` and `document_prefix`
+unless the model expects task prefixes (EmbeddingGemma in Ollama does).
+
+On every start the add-on embeds one short text to check the service. If the
+service is unreachable or busy (HTTP 429 or 5xx — Ollama or Hugging Face
+loading the model, say), it waits up to five minutes; a rejected key, an
+unknown model or a wrong `embedding_dimensions` stops the add-on at once, with
+the reason in the log.
+
+Switching provider or model is handled like any model change: every fact is
+re-embedded on the next start, and the documents are re-indexed in the
+background. If the service fails part-way, the add-on stops with the error
+instead of starting on half-converted memories.
+
+For Hugging Face, the model has to produce one sentence embedding per text —
+a model listed for feature extraction, typically a sentence-transformers model.
+One that returns a vector per token is refused with a message saying so.
+
+### Chunk and context size
+
+Manuals and documents are split into pieces of at most `chunk_size` characters
+before embedding, and a search finds the matching piece. Each piece, together
+with the document's title and `document_prefix`, has to fit the model's
+context: with the local sidecar that is `context_size` tokens. Korean can take
+about one token per character, so keep `chunk_size` comfortably below
+`context_size` — the defaults, 400 and 512, leave room for the title and
+prefix. To raise both, for example to 1500 and 2048, expect the sidecar to use
+noticeably more memory. EmbeddingGemma 2 takes at most 2048 tokens.
+
+A remote service has its own limit (8191 tokens for OpenAI's models). Ollama is
+asked not to cut a long piece short, so one that does not fit fails with an
+error rather than being indexed incompletely.
+
+Changing `chunk_size` re-indexes the documents on the next start; facts are
+always embedded whole and are not affected.
 
 ### Query and document prefixes
 
@@ -239,12 +362,14 @@ a partly-rewritten memory.
 ## Where data lives
 
 - `/data/facts.sqlite` — the facts and their vectors (SQLite + sqlite-vec),
-  plus the index of the manuals
+  plus the index of the manuals and documents
+- `/data/users/<user id>/documents/` — personal documents
 - `/data/models/` — the downloaded GGUF model
-- `/share/manuals/` — your manuals, which stay yours: the add-on only reads
-  them
+- `/share/manuals/` — your manuals. The add-on only changes them when you
+  upload or delete from the panel
 
-The first two survive add-on updates and are not exposed over the network.
+Everything under `/data` survives add-on updates, is included in the add-on's
+backups, and is not exposed over the network.
 
 ## Security notes
 
@@ -253,6 +378,14 @@ The first two survive add-on updates and are not exposed over the network.
 - The embedding sidecar listens on a **unix domain socket**
   (`/run/llama/embed.sock`, in a `0700` root-owned directory) rather than a TCP
   port, so it has no network address at all.
-- The Manuals panel (port 8100) only answers Home Assistant's ingress proxy,
-  so it is reached through Home Assistant's own login and nothing else.
+- The Memory panel (port 8100) only answers Home Assistant's ingress proxy, so
+  it is reached through Home Assistant's own login and nothing else. It knows
+  who is using it from the proxy, and shows each person only the shared things
+  and their own. It writes only inside `/share/manuals/` and `/data/users/`.
+- In Assist, who is asking comes from the model (see
+  [Each person's own memory](#each-persons-own-memory)), so separating people
+  there is a convenience, not a security boundary.
+- With a remote `embedding_provider`, the text of every fact, document and
+  question is sent to that service. The API key is passed to the server
+  process only and never logged.
 - Fact contents are never written to the log — only lengths and counts.

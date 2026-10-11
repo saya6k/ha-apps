@@ -1,5 +1,31 @@
 ---
 configuration:
+  embedding_provider:
+    name: Embedding provider
+    description: >-
+      Where embeddings come from. `local` runs a model on this device and
+      sends nothing anywhere. `openai`, `huggingface` and `ollama` use that
+      service instead — every fact, document and question is then sent to it.
+      Changing it re-embeds every stored fact on the next start.
+  embedding_url:
+    name: Embedding service URL
+    description: >-
+      For a remote provider. `openai`: the API base including `/v1` (default
+      https://api.openai.com/v1; any OpenAI-compatible server works).
+      `huggingface`: the full endpoint (default: the Inference Providers
+      router for the model; for Text Embeddings Inference, http://host/embed).
+      `ollama`: the server, e.g. http://192.168.1.10:11434 (required).
+  embedding_api_key:
+    name: Embedding service API key
+    description: >-
+      Sent as a Bearer token to a remote provider. Needed for OpenAI and
+      Hugging Face; not for a local Ollama.
+  embedding_model:
+    name: Embedding service model
+    description: >-
+      The model to ask a remote provider for, e.g. `text-embedding-3-small`,
+      `BAAI/bge-m3` or `embeddinggemma`. Required for a remote provider. Set
+      `embedding_dimensions` to its vector size.
   model_repo:
     name: Model repository
     description: >-
@@ -45,6 +71,19 @@ configuration:
       Threads the embedding sidecar uses. Match your device's core count;
       more threads than cores does not help. Embedding happens only when a
       fact is saved or searched, so this is not a constant load.
+  context_size:
+    name: Context size
+    description: >-
+      The longest input the local model takes, in tokens. A larger context
+      allows a larger `chunk_size` but costs memory. Only used with the
+      `local` provider.
+  chunk_size:
+    name: Chunk size
+    description: >-
+      Characters per piece a manual or document is split into for search.
+      It must fit the model's context with room to spare — Korean can take
+      about one token per character. Changing it re-indexes the documents
+      on the next start; facts are not affected.
   log_level:
     name: Log level
     description: >-
