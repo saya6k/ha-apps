@@ -1,12 +1,14 @@
 ---
 name: Memory
-version: 0.2.0
+version: 0.3.0
 image: ghcr.io/saya6k/app-memory
 slug: memory
 description: >-
   Personal fact memory for Assist conversation agents over MCP. Stores facts
   with vector embeddings and retrieves them by meaning, using a local
   llama.cpp embedding model — no external API and no internet at query time.
+  Also makes the PDF and Markdown appliance manuals in /share/manuals
+  searchable, with a panel to read them.
 url: https://github.com/saya6k/ha-app-memory
 arch:
   - aarch64
@@ -15,6 +17,17 @@ init: false
 startup: services
 discovery:
   - mcp
+# The panel gets its own port: ingress_port defaults to 8099, which is the MCP
+# endpoint, and the panel is restricted to the ingress proxy while MCP is not.
+ingress: true
+ingress_port: 8100
+panel_icon: mdi:book-open-variant
+panel_title: Manuals
+panel_admin: false
+# Manuals are only ever read; the add-on never writes to /share.
+map:
+  - type: share
+    read_only: true
 ports:
   8099/tcp: null
 ports_description:
