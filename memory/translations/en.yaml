@@ -48,9 +48,11 @@ configuration:
   embedding_dimensions:
     name: Embedding dimensions
     description: >-
-      Vector width the model produces — 768 for the default model. It must
-      match the model, otherwise search returns nothing useful. Changing it
-      rebuilds the vector store and re-embeds every stored fact.
+      Vector width the model produces — 768 for the default model. A smaller
+      value shortens every vector to that many values (Matryoshka; the default
+      model supports 512, 256 and 128), trading some accuracy for size. Only
+      for models trained for it. Changing it rebuilds the vector store and
+      re-embeds every stored fact.
   query_prefix:
     name: Query prefix
     description: >-
