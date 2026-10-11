@@ -227,7 +227,7 @@ the next start.
 | `model_repo` | `ggml-org/embeddinggemma-2-GGUF` | Hugging Face repo |
 | `model_file` | `embeddinggemma-2-Q8_0.gguf` | File within that repo |
 | `model_sha256` | *(unset)* | Optional. When set, the download must match it or startup fails. When unset, the download is not verified and the actual hash is printed so you can pin it. |
-| `embedding_dimensions` | `768` | Must match the model's native output size |
+| `embedding_dimensions` | `768` | The model's output size, or less to shorten vectors (see [Smaller vectors](#smaller-vectors)) |
 | `query_prefix` | `"task: search result \| query: "` | Prepended to every search query before embedding. See below. |
 | `document_prefix` | `"title: none \| text: "` | Prepended to every fact before embedding. See below. |
 | `threads` | `4` | CPU threads for the embedding sidecar |
@@ -257,14 +257,15 @@ to that service**.
 Set `embedding_model` to the model name (`text-embedding-3-small`,
 `BAAI/bge-m3`, `embeddinggemma`, …) and `embedding_dimensions` to its vector
 size: 1536 for `text-embedding-3-small`, 1024 for `bge-m3`, 768 for
-EmbeddingGemma. If they do not match, the add-on stops at startup and logs the
-size the model actually returned. Clear `query_prefix` and `document_prefix`
-unless the model expects task prefixes (EmbeddingGemma in Ollama does).
+EmbeddingGemma. If the model returns fewer, the add-on stops at startup and
+logs the size it actually returned; if it returns more, the vectors are
+shortened (see [Smaller vectors](#smaller-vectors)). Clear `query_prefix` and
+`document_prefix` unless the model expects task prefixes (EmbeddingGemma in Ollama does).
 
 On every start the add-on embeds one short text to check the service. If the
 service is unreachable or busy (HTTP 429 or 5xx — Ollama or Hugging Face
 loading the model, say), it waits up to five minutes; a rejected key, an
-unknown model or a wrong `embedding_dimensions` stops the add-on at once, with
+unknown model or an `embedding_dimensions` larger than the model's stops the add-on at once, with
 the reason in the log.
 
 Switching provider or model is handled like any model change: every fact is
@@ -329,6 +330,23 @@ Changing `embedding_dimensions` is handled the same way — the vector table is
 rebuilt at the new width. Nothing is lost, because the fact text itself is what
 gets re-embedded. Note this also applies to changing quantization (Q8_0 → Q4),
 since that produces different vectors too.
+
+### Smaller vectors
+
+Set `embedding_dimensions` below the model's output size and every vector is
+cut to its first that many values. This is Matryoshka truncation: models
+trained for it — EmbeddingGemma (512, 256 or 128 instead of 768), OpenAI's
+`text-embedding-3` models and others — keep most of their accuracy, while the
+database and each search get smaller and faster. Expect search to get somewhat
+worse the further you go down. The log says so once on start:
+
+```text
+[embedding] shortening 768-dimension vectors to 512 (Matryoshka); this only works for models trained for it
+```
+
+Do not do this with a model that was not trained for it (check its model
+card): its shortened vectors find little. Like any width change, it re-embeds
+every fact and re-indexes the documents on the next start.
 
 ### Upgrading from Qwen3-Embedding
 
