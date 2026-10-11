@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.4.0)
+
+## What's Changed
+
+## New Features
+
+* feat: remote embedding providers, configurable chunk and context size (#14) @saya6k
+* feat!: per-person memory, personal documents and one search (#13) @saya6k
+
+## Upgrading from 0.3
+
+- **Reload the MCP integration** in Home Assistant (Settings → Devices & services → Model Context Protocol → ⋮ → Reload). `search_manuals` and `list_manuals` are gone; one `search` now covers memories, manuals and personal documents.
+- **To keep memories per person**, add this line to your conversation agent's instructions, and make sure each household member has a person linked to their login:
+  ``The current user is {{ user_name }}. Pass this name as `user` to every Memory tool.``
+- Existing memories become shared. The document index is rebuilt once in the background from the files.
+- The panel is now called **Memory** and is open to every user; each person sees only shared things and their own.
+
+**Full Changelog**: https://github.com/saya6k/ha-app-memory/compare/v0.3.0...v0.4.0
+
 ## [0.3.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.3.0)
 
 ## What's Changed

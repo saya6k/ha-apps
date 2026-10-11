@@ -1,5 +1,31 @@
 ---
 configuration:
+  embedding_provider:
+    name: 임베딩 제공자
+    description: >-
+      임베딩을 어디서 만들지. `local`은 이 기기에서 모델을 돌리며 아무것도 밖으로
+      보내지 않는다. `openai`, `huggingface`, `ollama`는 그 서비스를 쓰며, 모든
+      기억과 문서, 질문이 그 서비스로 전송된다. 바꾸면 다음 시작 때 저장된 사실을
+      전부 다시 임베딩한다.
+  embedding_url:
+    name: 임베딩 서비스 주소
+    description: >-
+      원격 제공자용. `openai`는 `/v1`까지 포함한 API 주소(기본값
+      https://api.openai.com/v1, OpenAI 호환 서버면 무엇이든 된다).
+      `huggingface`는 전체 엔드포인트(기본값은 해당 모델의 Inference Providers
+      라우터, Text Embeddings Inference라면 http://host/embed). `ollama`는 서버
+      주소로 예: http://192.168.1.10:11434 (필수).
+  embedding_api_key:
+    name: 임베딩 서비스 API 키
+    description: >-
+      원격 제공자에 Bearer 토큰으로 보낸다. OpenAI와 Hugging Face에는 필요하고,
+      로컬 Ollama에는 필요 없다.
+  embedding_model:
+    name: 임베딩 서비스 모델
+    description: >-
+      원격 제공자에 요청할 모델. 예: `text-embedding-3-small`, `BAAI/bge-m3`,
+      `embeddinggemma`. 원격 제공자에는 필수다. `embedding_dimensions`를 그
+      모델의 벡터 크기로 맞춰야 한다.
   model_repo:
     name: 모델 저장소
     description: >-
@@ -45,6 +71,17 @@ configuration:
       임베딩 사이드카가 사용할 스레드 수. 기기의 코어 수에 맞추면 되고, 코어보다
       많이 줘도 빨라지지 않는다. 임베딩은 사실을 저장하거나 검색할 때만 일어나므로
       상시 부하는 아니다.
+  context_size:
+    name: 컨텍스트 크기
+    description: >-
+      로컬 모델이 한 번에 받는 최대 입력 길이(토큰). 크게 하면 `chunk_size`를
+      키울 수 있지만 메모리를 더 쓴다. `local` 제공자에서만 쓰인다.
+  chunk_size:
+    name: 청크 크기
+    description: >-
+      설명서와 문서를 검색용으로 나누는 한 조각의 글자 수. 모델 컨텍스트에 여유
+      있게 들어가야 한다 — 한국어는 글자당 토큰이 거의 하나일 수 있다. 바꾸면
+      다음 시작 때 문서를 다시 인덱싱하며, 기억에는 영향이 없다.
   log_level:
     name: 로그 레벨
     description: >-
