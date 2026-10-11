@@ -1,7 +1,8 @@
 # Memory
 
 Personal fact memory for Home Assistant Assist, exposed over MCP with vector
-semantic search. Embeddings are produced by a local llama.cpp sidecar — there is
+semantic search. It also indexes your appliance manuals (PDF and Markdown) so Assist can
+answer from them, and adds a **Manuals** panel to read them. Embeddings are produced by a local llama.cpp sidecar — there is
 no external API and no internet access at query time.
 
 ## Install (local add-on)
@@ -77,7 +78,7 @@ manually with the URL printed in the log:
 http://<add-on hostname>:8099/mcp
 ```
 
-Then attach it to your conversation agent as an MCP server, and the six tools
+Then attach it to your conversation agent as an MCP server, and the eight tools
 become available to the LLM.
 
 ## Tools
@@ -90,9 +91,67 @@ become available to the LLM.
 | `similar` | Facts similar to a given id, excluding itself |
 | `update` | Change `content` and/or `tags`; re-embeds only when content changed |
 | `delete` | Hard-delete one fact by id |
+| `search_manuals` | Semantic search over the appliance manuals; returns passages with manual name and page |
+| `list_manuals` | The manuals available, with page counts and whether each is searchable |
 
 Search works across languages: a fact stored in Korean is retrieved by an
 English question about the same thing, and vice versa.
+
+## Appliance manuals
+
+Copy manuals into `/share/manuals/` — with the Samba or File editor add-on, for
+example. **PDF** (`.pdf`) and **Markdown** (`.md`, `.markdown`) are supported.
+Subfolders are fine, and the file name without its extension becomes the
+manual's name, so name them after the device: `Drum washer.pdf`,
+`kitchen/Oven.md`.
+
+The add-on reads the folder on every start, and again when you press the rescan
+button in the panel. Indexing runs in the background and does not hold up the
+rest of the add-on; the panel shows its progress.
+
+A manual is identified by its content (a SHA-256 hash), so only content the
+index has never seen is embedded:
+
+- A file whose size and modification time are unchanged is skipped without
+  being read.
+- Otherwise it is hashed. Renaming or moving a file, or copying it over with
+  the same content, only updates its path — nothing is re-embedded.
+- Two files with identical content are indexed once, under the first path in
+  alphabetical order; the panel reports the other as a duplicate. If that first
+  file is deleted, the copy takes over without being re-embedded.
+- A changed file is re-embedded, and a deleted one is dropped.
+
+Then:
+
+- **Assist** can answer from them through `search_manuals` — "what does E3 mean
+  on the washer?" finds the PDF page or Markdown section about error E3, in any
+  language.
+- The **Manuals** panel in the sidebar lists them, searches them, and shows the
+  manual itself, opened at the page or section a search hit came from. It is
+  visible to all users, not just administrators.
+
+PDFs need a text layer to be searchable. Manufacturers' own PDFs nearly always
+have one; a scan of a paper manual does not, and is listed as
+**not searchable** — it can still be read in the panel. Text recognition (OCR)
+is not included. Markdown is shown with its formatting, but images and links to
+other files in the folder do not resolve: use web addresses for those.
+
+### Rebuilding or clearing the index
+
+The panel's **⋮** menu has two more actions, each confirmed first:
+
+- **Reindex everything** clears the manual index and reads and embeds every
+  file again. Use it if search results look wrong.
+- **Clear the index** removes every manual from search and from the panel. The
+  index is rebuilt on the next rescan or add-on start, since the files are
+  still there.
+
+Both touch only the manual index. Your files in `/share/manuals/` and the facts
+saved with `save` are never affected.
+
+The add-on maps `/share` read-only and never changes the files. If the model or
+document prefix changes, the manual index is rebuilt in the background after
+the next start.
 
 ## Options
 
@@ -179,10 +238,13 @@ a partly-rewritten memory.
 
 ## Where data lives
 
-- `/data/facts.sqlite` — the facts and their vectors (SQLite + sqlite-vec)
+- `/data/facts.sqlite` — the facts and their vectors (SQLite + sqlite-vec),
+  plus the index of the manuals
 - `/data/models/` — the downloaded GGUF model
+- `/share/manuals/` — your manuals, which stay yours: the add-on only reads
+  them
 
-Both survive add-on updates. Neither is exposed over the network.
+The first two survive add-on updates and are not exposed over the network.
 
 ## Security notes
 
@@ -191,4 +253,6 @@ Both survive add-on updates. Neither is exposed over the network.
 - The embedding sidecar listens on a **unix domain socket**
   (`/run/llama/embed.sock`, in a `0700` root-owned directory) rather than a TCP
   port, so it has no network address at all.
+- The Manuals panel (port 8100) only answers Home Assistant's ingress proxy,
+  so it is reached through Home Assistant's own login and nothing else.
 - Fact contents are never written to the log — only lengths and counts.
