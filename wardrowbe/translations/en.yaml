@@ -1,19 +1,5 @@
 ---
 configuration:
-  postgres_user:
-    name: PostgreSQL user
-    description: >-
-      Role name for the wardrowbe database. Created on first run if missing.
-      Change requires resetting the cluster — easier to leave at default.
-  postgres_password:
-    name: PostgreSQL password
-    description: >-
-      Password for the role above. Internal-only (loopback connection), but
-      do not paste production credentials here.
-  postgres_db:
-    name: PostgreSQL database name
-    description: >-
-      Database name created on first run. Default "wardrobe" is fine.
   secret_key:
     name: Backend secret key
     description: >-
@@ -114,13 +100,6 @@ configuration:
       Public URL where wardrowbe is reachable through your reverse proxy
       (e.g. `https://wardrowbe.example.com`). Required for OIDC callbacks
       to work — HA ingress URLs can't be used as OIDC redirect targets.
-  migrate_postgres_ownership:
-    name: Migrate PostgreSQL file ownership
-    description: >-
-      Enable once when upgrading from wardrowbe &lt; v4.1.x. Changes the
-      PostgreSQL data directory owner from the old postgres system user to
-      root so the database can start. Disable after a successful start —
-      it's a one-time step. New installs should leave this disabled.
   ntfy_server:
     name: ntfy.sh server URL
     description: >-
@@ -130,11 +109,6 @@ configuration:
     name: ntfy.sh token
     description: >-
       Bearer token for the ntfy.sh server above if required.
-  mattermost_webhook_url:
-    name: Mattermost webhook URL
-    description: >-
-      Optional Mattermost incoming webhook for notifications. Leave blank
-      to disable.
   backup_enabled:
     name: Daily DB backup
     description: >-

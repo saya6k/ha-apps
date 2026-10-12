@@ -56,14 +56,10 @@ ai_text_model: "gpt-4o"
 | `oidc_client_id` | *(empty)* | OIDC client ID |
 | `oidc_client_secret` | *(empty)* | OIDC client secret |
 | `oidc_mobile_client_id` | *(empty)* | OIDC public client ID for mobile app |
-| `postgres_user` | `wardrobe` | PostgreSQL user |
-| `postgres_password` | `wardrobe` | PostgreSQL password |
-| `postgres_db` | `wardrobe` | Database name |
 | `secret_key` | *(auto)* | Backend JWT secret |
 | `nextauth_secret` | *(auto)* | NextAuth session secret |
 | `ntfy_server` | *(empty)* | ntfy.sh push notification server |
 | `ntfy_token` | *(empty)* | ntfy.sh token |
-| `mattermost_webhook_url` | *(empty)* | Mattermost webhook |
 | `backup_enabled` | `true` | Daily `pg_dump` into `/share/wardrowbe/backups/` |
 | `backup_retention_days` | `7` | Delete dumps older than this (0 = keep forever) |
 | `backup_hour` | `3` | Hour of day (0–23, container TZ) when the dump runs |
@@ -153,7 +149,7 @@ To restore: copy a `.sql.gz` back, then from the addon shell:
 
 ```bash
 gunzip -c /share/wardrowbe/backups/wardrowbe-YYYYMMDDTHHMMSS.sql.gz \
-  | su-exec postgres psql -d wardrobe
+  | su-exec postgres psql -d wardrowbe
 ```
 
 ### Migrating to a new HA instance

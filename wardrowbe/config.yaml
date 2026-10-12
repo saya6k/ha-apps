@@ -1,6 +1,6 @@
 ---
 name: Wardrowbe
-version: 4.3.4
+version: 4.3.5
 image: ghcr.io/saya6k/app-wardrowbe
 slug: wardrowbe
 description: >-
@@ -28,9 +28,6 @@ ports:
 ports_description:
   8099/tcp: Wardrowbe web UI
 options:
-  postgres_user: wardrobe
-  postgres_password: wardrobe
-  postgres_db: wardrobe
   secret_key: ''
   nextauth_secret: ''
   dev_login: true
@@ -47,14 +44,10 @@ options:
   external_url: ''
   ntfy_server: ''
   ntfy_token: ''
-  mattermost_webhook_url: ''
   backup_enabled: true
   backup_retention_days: 7
   backup_hour: 3
 schema:
-  postgres_user: str
-  postgres_password: password
-  postgres_db: str
   secret_key: password?
   nextauth_secret: password?
   dev_login: bool
@@ -72,10 +65,8 @@ schema:
   oidc_client_secret: str?
   oidc_mobile_client_id: str?
   external_url: str?
-  migrate_postgres_ownership: bool?
   ntfy_server: str?
   ntfy_token: str?
-  mattermost_webhook_url: str?
   backup_enabled: bool
   backup_retention_days: int(0,365)
   backup_hour: int(0,23)
