@@ -3,6 +3,23 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.5](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.5)
+
+## What's Changed
+
+- Update upstream Wardrowbe from v1.10.2 to v1.11.0: forward auth, per-provider sign-in identities, colour vocabulary normalisation, and many sign-in, email, and notification fixes.
+- Remove the `postgres_user`, `postgres_password`, and `postgres_db` options. The internal database now always uses `wardrowbe`; the existing database and its owner role are renamed on first start, whatever they were called.
+- Remove the `migrate_postgres_ownership` option; a cluster still owned by the old postgres OS user is handed to root automatically on start.
+- Remove the `mattermost_webhook_url` option, which upstream no longer reads; set up Mattermost per user in the app instead.
+- Set `APP_URL` from `external_url` so notification and invite links point at the public address, and count the bundled nginx as a trusted proxy so rate limits stay per client.
+
+Validation: all PR CI checks passed, including amd64 and aarch64 image builds and PostgreSQL connection-capacity regression checks. The database rename migration was tested against PostgreSQL 16 with default and custom names.
+
+PR: https://github.com/saya6k/ha-app-wardrowbe/pull/23
+Upstream release: https://github.com/Anyesh/wardrowbe/releases/tag/wardrowbe-v1.11.0
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.4...v4.3.5
+
 ## [4.3.4](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.4)
 
 ## What's Changed
