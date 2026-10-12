@@ -3,6 +3,18 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.6](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.6)
+
+## What's Changed
+
+- Treat `ai_api_key`, `oidc_client_secret`, and `ntfy_token` as password fields, so Home Assistant masks them in the UI. Existing values carry over unchanged.
+
+Validation: all PR CI checks passed, including amd64 and aarch64 image builds.
+
+PR: https://github.com/saya6k/ha-app-wardrowbe/pull/24
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.5...v4.3.6
+
 ## [4.3.5](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.5)
 
 ## What's Changed
