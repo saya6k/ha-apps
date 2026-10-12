@@ -1,19 +1,5 @@
 ---
 configuration:
-  postgres_user:
-    name: PostgreSQL 사용자
-    description: >-
-      wardrowbe 데이터베이스의 롤 이름. 첫 실행 시 없으면 자동 생성됩니다.
-      변경하려면 클러스터를 초기화해야 하므로 기본값 사용을 권장합니다.
-  postgres_password:
-    name: PostgreSQL 비밀번호
-    description: >-
-      위 롤의 비밀번호. 컨테이너 내부 루프백 연결에만 사용되지만, 운영
-      자격증명을 그대로 붙여넣지 마세요.
-  postgres_db:
-    name: PostgreSQL 데이터베이스 이름
-    description: >-
-      첫 실행 시 생성될 데이터베이스 이름. 기본값 "wardrobe"가 무난합니다.
   secret_key:
     name: 백엔드 시크릿 키
     description: >-
@@ -110,13 +96,6 @@ configuration:
       리버스 프록시를 통해 wardrowbe에 접근하는 공개 URL (예:
       `https://wardrowbe.example.com`). OIDC 콜백이 동작하려면 필수입니다 —
       HA ingress URL은 OIDC 리다이렉트 대상으로 사용할 수 없습니다.
-  migrate_postgres_ownership:
-    name: PostgreSQL 파일 소유권 마이그레이션
-    description: >-
-      wardrowbe v4.1.x 미만에서 업그레이드할 때 한 번 활성화하세요.
-      PostgreSQL 데이터 디렉토리 소유자를 구 postgres 시스템 사용자에서
-      root로 변경하여 데이터베이스가 시작될 수 있도록 합니다. 성공 후에는
-      비활성화하세요 — 일회성 작업입니다. 신규 설치에서는 비활성 상태로 두세요.
   ntfy_server:
     name: ntfy.sh 서버 URL
     description: >-
@@ -125,10 +104,6 @@ configuration:
     name: ntfy.sh 토큰
     description: >-
       위 ntfy.sh 서버 인증 토큰(필요한 경우).
-  mattermost_webhook_url:
-    name: Mattermost 웹훅 URL
-    description: >-
-      Mattermost 인커밍 웹훅 URL(선택). 사용하지 않으면 비워두세요.
   backup_enabled:
     name: 일일 DB 백업
     description: >-
