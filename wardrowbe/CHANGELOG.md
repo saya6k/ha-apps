@@ -3,6 +3,17 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.7](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.7)
+
+## What's Changed
+
+## Maintenance
+
+* chore: update Wardrowbe to v1.12.0 and base image to Alpine 3.24 (#26) @saya6k
+* ci: list `!` PR titles as breaking changes in release notes (#25) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.6...v4.3.7
+
 ## [4.3.6](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.6)
 
 ## What's Changed
