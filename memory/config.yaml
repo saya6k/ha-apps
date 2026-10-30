@@ -1,6 +1,6 @@
 ---
 name: Memory
-version: 0.6.0
+version: 0.7.0
 image: ghcr.io/saya6k/app-memory
 slug: memory
 description: >-
@@ -41,6 +41,12 @@ ports_description:
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
     reaches it over the internal network; map it only for external MCP
     clients. The embedding sidecar is never exposed (127.0.0.1 only).
+# The model can always be downloaded again, and it dwarfs everything else in
+# /data. Match the file type, not "models/*": patterns match from the end of the
+# path, so that would also skip a personal document in a folder named models.
+backup_exclude:
+  - "*.gguf"
+  - "*.gguf.part"
 # model_sha256, log_level and the remote embedding settings (embedding_url,
 # embedding_api_key, embedding_model) are intentionally absent here: options
 # listed under `options:` are always shown, while `?`-suffixed schema entries
