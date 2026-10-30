@@ -387,8 +387,12 @@ a partly-rewritten memory.
 - `/share/manuals/` — your manuals. The add-on only changes them when you
   upload or delete from the panel
 
-Everything under `/data` survives add-on updates, is included in the add-on's
-backups, and is not exposed over the network.
+Everything under `/data` survives add-on updates and is not exposed over the
+network. It is included in the add-on's backups, except the model: restoring a
+backup downloads it again on the next start, so that start needs internet
+access. If the download fails, the add-on stops until you start it again. Set
+`model_sha256` so that a file that has changed since is refused rather than
+silently producing vectors that no longer match the stored ones.
 
 ## Security notes
 
