@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.1](https://github.com/saya6k/ha-app-memory/releases/tag/v0.7.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: keep the panel server up when a served file can't be read (#20) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-memory/compare/v0.7.0...v0.7.1
+
 ## [0.7.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.7.0)
 
 ## What's Changed
