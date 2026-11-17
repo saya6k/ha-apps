@@ -4,6 +4,26 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-supertonic/releases).
 
 
+## [2.8.0](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.8.0)
+
+## What's Changed
+
+## New Features
+
+* feat: switch number spellout from unicode-rbnf to icu-rbnf 0.2.0 (#8) @saya6k
+
+## Bug Fixes
+
+* fix: synthesize Hangul text with lang=ko (#11) @saya6k
+
+## Maintenance
+
+* chore: bump wyoming 1.10.2 → 1.11.0 (#10) @[github-actions[bot]](https://github.com/apps/github-actions)
+* ci: list `!` PR titles as breaking changes in release notes (#9) @saya6k
+* chore(supertonic): untrack the agent scaffolding so no AI meta ships (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-supertonic/compare/v2.7.0...v2.8.0
+
 ## [2.7.0](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.7.0)
 
 ## What's Changed
