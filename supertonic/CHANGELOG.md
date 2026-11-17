@@ -4,6 +4,16 @@ Releases from the next version onward are tracked in
 [ha-app-* releases](https://github.com/saya6k/ha-app-supertonic/releases).
 
 
+## [2.9.0](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.9.0)
+
+## What's Changed
+
+## New Features
+
+* feat: preload normalization grammars via warmup_languages option (#12) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-supertonic/compare/v2.8.0...v2.9.0
+
 ## [2.8.0](https://github.com/saya6k/ha-app-supertonic/releases/tag/v2.8.0)
 
 ## What's Changed
