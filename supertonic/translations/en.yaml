@@ -26,6 +26,13 @@ configuration:
       a few seconds of startup time but makes the first synth request for
       that voice instant. Leave with just M1 if you only use one voice.
       An empty list disables warm-up entirely (slow first request).
+  warmup_languages:
+    name: Warm-up languages
+    description: >-
+      Languages whose number-normalization grammar is loaded at container
+      start. Each adds about a second of startup time and some RAM, but
+      removes a ~1.5 s delay from the first request in that language after
+      a restart. Leave empty to load on first use.
   threads:
     name: CPU threads
     description: >-

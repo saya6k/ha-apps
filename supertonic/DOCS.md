@@ -28,6 +28,7 @@ Voice pipeline is set to (sent per request, like an STT engine). `model_version`
 | `steps`         | 4       | Denoising steps. 2–3 fastest, 4 balanced, 6+ slightly smoother. |
 | `model_version` | v3      | `v3` = all 31 languages; `v2` = en/ko/es/pt/fr only. |
 | `warmup_voices` | `[M1]`  | Voices pre-loaded at startup so their first request is instant. |
+| `warmup_languages` | `[]` | `en` / `ko`: number-normalization grammars pre-loaded at startup. Removes a ~1.5 s delay on the first request in that language after a restart. This does not choose the speaking language. |
 
 ### Advanced (optional, leave unset for sane defaults)
 
