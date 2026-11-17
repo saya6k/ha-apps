@@ -1,5 +1,5 @@
 ---
-version: 2.8.0
+version: 2.9.0
 image: ghcr.io/saya6k/app-supertonic
 slug: supertonic
 name: Supertonic
@@ -19,12 +19,15 @@ options:
   model_version: v3
   warmup_voices:
     - M1
+  warmup_languages: []
 schema:
   speed: float(0.5,2.0)
   steps: int(1,30)
   model_version: list(v2|v3)
   warmup_voices:
     - list(M1|M2|M3|M4|M5|F1|F2|F3|F4|F5)
+  warmup_languages:
+    - list(en|ko)
   threads: int(0,16)?
   precision: list(auto|fp16|fp32|int8)?
   mnn_memory: list(low|normal|high)?
