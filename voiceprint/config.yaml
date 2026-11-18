@@ -2,6 +2,7 @@ version: 0.10.2
 image: ghcr.io/saya6k/app-voiceprint
 slug: voiceprint
 name: Voiceprint
+stage: deprecated
 description: >-
   Speaker-verifying Wyoming STT proxy — only enrolled voices reach your
   speech-to-text
