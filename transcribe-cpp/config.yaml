@@ -3,6 +3,7 @@ version: 0.3.0
 image: ghcr.io/saya6k/app-transcribe-cpp
 slug: transcribe-cpp
 name: Transcribe.cpp
+stage: deprecated
 description: >-
   transcribe.cpp as a Home Assistant STT app — the full GGUF model catalog
   (Whisper, Parakeet, Qwen3-ASR, Moonshine, …) on ggml over Wyoming
