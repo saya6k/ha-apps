@@ -29,6 +29,7 @@ body:
         - crw
         - memory
         - codemirror
+        - claude-code
         - repository tooling (CI / docs / labels)
     validations:
       required: true
