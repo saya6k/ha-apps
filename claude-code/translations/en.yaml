@@ -21,3 +21,38 @@ configuration:
       Set a version (e.g. `2.1.300`) to pin it. Falls back to the last
       working build, then to the one bundled in the image, if the download
       fails.
+  experimental_code_mode:
+    name: Code Mode (experimental)
+    description: >-
+      Start Claude Code with CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1. An
+      explicit "0" in settings.json's env still turns it off.
+  statusline:
+    name: Statusline
+    description: >-
+      Show the claudebar statusline under the Claude Code prompt: 5-hour and
+      weekly usage limits, context, cost and more. Skipped if settings.json
+      already has its own statusLine.
+  statusline_theme:
+    name: Statusline theme
+    description: Colour theme of the statusline.
+  statusline_style:
+    name: Statusline style
+    description: >-
+      `unicode`, `plain`, `minimal` and `ascii` work with any font;
+      `powerline`, `lean` and `rounded` need a Nerd Font in your browser.
+  statusline_segments:
+    name: Statusline segments
+    description: >-
+      Segments to show, in order. `rate-limits` is the 5-hour and weekly
+      usage of a Claude subscription.
+  statusline_warn:
+    name: Warning threshold (%)
+    description: Bars turn yellow at this usage.
+  statusline_crit:
+    name: Critical threshold (%)
+    description: Bars turn red at this usage.
+  statusline_weekly_show_at:
+    name: Show weekly limit from (%)
+    description: >-
+      The weekly limit appears once its usage reaches this percent. 0 shows
+      it always.

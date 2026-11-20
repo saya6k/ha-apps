@@ -1,0 +1,76 @@
+#include <tunables/global>
+
+# Supervisor rewrites the profile name to the installed slug on load.
+profile hassio_claude-code flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # Files: Claude Code is a general-purpose agent working in /config and
+  # its own folders, so file access stays broad. The profile's job is to
+  # deny what reaches beyond the container (capabilities, mount, raw
+  # sockets, ptrace of other processes), which is not granted below.
+  file,
+
+  # Capabilities
+  # setuid/setgid: nginx master → worker. chown/fowner/fsetid/dac_override:
+  # s6-overlay /run setup, nginx temp dirs, git and editors as root.
+  capability chown,
+  capability dac_override,
+  capability fowner,
+  capability fsetid,
+  capability kill,
+  capability setgid,
+  capability setuid,
+
+  # tmux/ttyd/Claude signal their own children; ps/pgrep read /proc.
+  signal,
+  ptrace (read),
+
+  # S6-Overlay (official HA example pattern)
+  /init ix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /run/ rwk,
+  /run/** rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** ix,
+  /tmp/ rwk,
+  /tmp/** rwkix,
+
+  # nginx (/usr/sbin), git helpers (/usr/libexec/git-core), app scripts
+  /usr/sbin/** ix,
+  /usr/libexec/** ix,
+  /usr/local/bin/** ix,
+
+  # Claude Code: bundled build and the per-version builds claude-select
+  # downloads into /data/claude-code/
+  /opt/claude-code/claude ix,
+  /data/claude-code/*/claude ix,
+
+  # HA app data and mounts. ix on /config and HOME: Claude runs the
+  # user's own scripts and tools from there.
+  /data/ rwk,
+  /data/** rwk,
+  /data/home/** rwkix,
+  /config/ rwk,
+  /config/** rwkix,
+  /addon_config/ rwk,
+  /addon_config/** rwk,
+
+  # Network: ingress (nginx), ttyd loopback, Supervisor/HA API, npm,
+  # Anthropic API. netlink: libwebsockets (ttyd) watches routes.
+  network inet  stream,
+  network inet  dgram,
+  network inet6 stream,
+  network inet6 dgram,
+  network unix  stream,
+  network unix  dgram,
+  network netlink raw,
+}
