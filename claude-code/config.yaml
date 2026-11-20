@@ -1,5 +1,5 @@
 ---
-version: 0.1.0
+version: 0.2.0
 image: ghcr.io/saya6k/app-claude-code
 slug: claude-code
 name: Claude Code
@@ -27,11 +27,38 @@ hassio_role: manager
 options:
   claude_code_oauth_token: ""
   enable_remote_control: false
+  experimental_code_mode: false
+  statusline: true
+  statusline_theme: tokyo-night
+  statusline_style: unicode
+  statusline_segments:
+    - directory
+    - git
+    - model
+    - context
+    - lines
+    - rate-limits
+    - cost
+    - duration
+  statusline_warn: 50
+  statusline_crit: 80
+  statusline_weekly_show_at: 75
 schema:
   claude_code_oauth_token: password?
   enable_remote_control: bool
+  experimental_code_mode: bool
   # Unset: install the latest release on every start. Set: pin that version.
   claude_code_version: match(^[0-9]+\.[0-9]+\.[0-9]+$)?
+  # claudebar statusline (written to its config.toml on every start).
+  # Names mirror claudebar 2026.8.27's built-in themes/styles/segments.
+  statusline: bool
+  statusline_theme: list(tokyo-night|ayu-mirage|catppuccin|cobalt2|dracula|everforest-dark|github-dark|gruvbox|kanagawa-wave|moonfly|night-owl|nord|one-dark|rose-pine|solarized-dark|sonokai)
+  statusline_style: list(powerline|lean|plain|rounded|minimal|unicode|ascii)
+  statusline_segments:
+    - list(directory|git|model|context|rate-limits|dev-context|cost|lines|duration|burn|clock)
+  statusline_warn: int(1,100)
+  statusline_crit: int(1,100)
+  statusline_weekly_show_at: int(0,100)
 # Downloaded Claude Code builds (~200 MB each) are re-fetched on demand.
 backup_exclude:
   - claude-code/**
