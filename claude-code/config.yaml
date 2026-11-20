@@ -1,5 +1,5 @@
 ---
-version: 0.2.0
+version: 0.3.0
 image: ghcr.io/saya6k/app-claude-code
 slug: claude-code
 name: Claude Code
@@ -30,7 +30,7 @@ options:
   experimental_code_mode: false
   statusline: true
   statusline_theme: tokyo-night
-  statusline_style: unicode
+  statusline_style: powerline
   statusline_segments:
     - directory
     - git
