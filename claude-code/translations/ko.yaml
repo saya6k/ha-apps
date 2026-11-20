@@ -19,3 +19,37 @@ configuration:
       비워 두면 시작할 때마다 최신 Claude Code를 설치합니다. 버전(예:
       `2.1.300`)을 입력하면 그 버전으로 고정합니다. 다운로드에 실패하면
       마지막으로 동작한 버전, 그다음 이미지에 포함된 버전을 사용합니다.
+  experimental_code_mode:
+    name: Code Mode (실험적)
+    description: >-
+      Claude Code를 CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1로 실행합니다.
+      settings.json의 env에 "0"이 있으면 그쪽이 우선해 꺼집니다.
+  statusline:
+    name: 상태줄
+    description: >-
+      Claude Code 입력창 아래에 claudebar 상태줄을 표시합니다. 5시간·주간
+      사용량, 컨텍스트, 비용 등을 보여줍니다. settings.json에 이미 다른
+      statusLine이 있으면 건드리지 않습니다.
+  statusline_theme:
+    name: 상태줄 테마
+    description: 상태줄 색상 테마.
+  statusline_style:
+    name: 상태줄 스타일
+    description: >-
+      `unicode`, `plain`, `minimal`, `ascii`는 어떤 글꼴에서도 보입니다.
+      `powerline`, `lean`, `rounded`는 브라우저에 Nerd Font가 필요합니다.
+  statusline_segments:
+    name: 상태줄 항목
+    description: >-
+      표시할 항목과 순서. `rate-limits`는 Claude 구독의 5시간·주간
+      사용량입니다.
+  statusline_warn:
+    name: 경고 기준(%)
+    description: 사용량이 이 값 이상이면 막대가 노란색이 됩니다.
+  statusline_crit:
+    name: 위험 기준(%)
+    description: 사용량이 이 값 이상이면 막대가 빨간색이 됩니다.
+  statusline_weekly_show_at:
+    name: 주간 한도 표시 시작(%)
+    description: >-
+      주간 사용량이 이 값에 도달하면 표시합니다. 0이면 항상 표시합니다.

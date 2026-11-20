@@ -73,6 +73,22 @@ Pick one:
 | `claude_code_oauth_token` | password | empty | Optional long-lived token; overrides the saved `/login` session. |
 | `claude_code_version` | version | unset | Unset: latest release on every start. `2.1.300`: pin that version. |
 | `enable_remote_control` | bool | `false` | Runs `claude --remote-control 'Home Assistant'` so the session can also be driven from the Claude app / claude.ai/code. The session starts at app boot, without opening the panel. Requires a `/login` session — a `claude setup-token` token cannot establish Remote Control. |
+| `experimental_code_mode` | bool | `false` | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. |
+| `statusline` | bool | `true` | Show the [claudebar][claudebar] statusline under the prompt (usage limits, context, cost). |
+| `statusline_theme` / `statusline_style` | list | `tokyo-night` / `unicode` | `powerline`, `lean` and `rounded` need a Nerd Font in the browser. |
+| `statusline_segments` | list | claudebar's defaults | Order matters. `rate-limits` = 5-hour and weekly subscription usage. |
+| `statusline_warn` / `statusline_crit` | % | `50` / `80` | Bar colour thresholds. |
+| `statusline_weekly_show_at` | % | `75` | Show the weekly limit from this usage; `0` = always. |
+
+## Statusline
+
+The app writes claudebar's `config.toml` from the options on every start
+(edits made with `claudebar config` do not survive a restart) and adds
+`"statusLine": {"type": "command", "command": "claudebar render"}` to
+`/addon_config/settings.json`. If that file already has a different
+`statusLine`, it is left alone; turning `statusline` off removes only
+claudebar's entry. The 5-hour and weekly bars appear once Claude Code
+reports them, which it does for Claude subscription logins.
 
 ## Updates
 
@@ -91,6 +107,9 @@ and start a new Claude session.
 - Only Home Assistant ingress can reach the terminal: nginx admits the
   Supervisor (`172.30.32.2`) and loopback, ttyd listens on loopback only.
   No host port is published. The panel is admin-only.
+- A custom AppArmor profile (`apparmor.txt`) confines the container: file
+  access inside it stays broad so Claude can work, but extra capabilities,
+  mounts, raw sockets and tracing other processes are denied.
 - The terminal is a root shell with read/write access to your HA config,
   the Home Assistant REST API, and the Supervisor API with the `manager`
   role (`$SUPERVISOR_TOKEN`): it can check the config, restart Home
@@ -107,3 +126,4 @@ tmux mouse mode is on (the wheel scrolls history). Hold **Shift** (macOS:
 
 [claude-code]: https://docs.claude.com/en/docs/claude-code/overview
 [settings]: https://docs.claude.com/en/docs/claude-code/settings
+[claudebar]: https://github.com/micschr0/claudebar
