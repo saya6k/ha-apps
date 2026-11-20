@@ -26,6 +26,12 @@ configuration:
     description: >-
       Start Claude Code with CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1. An
       explicit "0" in settings.json's env still turns it off.
+  restart_guard:
+    name: Restart guard
+    description: >-
+      Before Claude restarts Home Assistant (`ha core restart`, the
+      Supervisor or homeassistant.restart API), run `ha core check` and
+      block the restart if the configuration is invalid.
   statusline:
     name: Statusline
     description: >-
