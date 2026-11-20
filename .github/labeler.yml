@@ -46,6 +46,10 @@
   - changed-files:
       - any-glob-to-any-file: "codemirror/**"
 
+"addon:claude-code":
+  - changed-files:
+      - any-glob-to-any-file: "claude-code/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"
