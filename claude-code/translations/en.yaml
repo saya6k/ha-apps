@@ -38,8 +38,9 @@ configuration:
   statusline_style:
     name: Statusline style
     description: >-
-      `unicode`, `plain`, `minimal` and `ascii` work with any font;
-      `powerline`, `lean` and `rounded` need a Nerd Font in your browser.
+      Look of the statusline. The Nerd Font glyphs that `powerline`, `lean`
+      and `rounded` use are bundled with the app, so every style works in
+      any browser.
   statusline_segments:
     name: Statusline segments
     description: >-
