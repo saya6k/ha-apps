@@ -24,6 +24,12 @@ configuration:
     description: >-
       Claude Code를 CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1로 실행합니다.
       settings.json의 env에 "0"이 있으면 그쪽이 우선해 꺼집니다.
+  restart_guard:
+    name: 재시작 가드
+    description: >-
+      Claude가 Home Assistant를 재시작하기 전(`ha core restart`, Supervisor
+      또는 homeassistant.restart API)에 `ha core check`를 실행하고, 설정이
+      잘못됐으면 재시작을 막습니다.
   statusline:
     name: 상태줄
     description: >-
