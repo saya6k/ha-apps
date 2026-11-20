@@ -75,7 +75,7 @@ Pick one:
 | `enable_remote_control` | bool | `false` | Runs `claude --remote-control 'Home Assistant'` so the session can also be driven from the Claude app / claude.ai/code. The session starts at app boot, without opening the panel. Requires a `/login` session — a `claude setup-token` token cannot establish Remote Control. |
 | `experimental_code_mode` | bool | `false` | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. |
 | `statusline` | bool | `true` | Show the [claudebar][claudebar] statusline under the prompt (usage limits, context, cost). |
-| `statusline_theme` / `statusline_style` | list | `tokyo-night` / `unicode` | `powerline`, `lean` and `rounded` need a Nerd Font in the browser. |
+| `statusline_theme` / `statusline_style` | list | `tokyo-night` / `powerline` | The Nerd Font glyphs are bundled (see below), so every style works in any browser. |
 | `statusline_segments` | list | claudebar's defaults | Order matters. `rate-limits` = 5-hour and weekly subscription usage. |
 | `statusline_warn` / `statusline_crit` | % | `50` / `80` | Bar colour thresholds. |
 | `statusline_weekly_show_at` | % | `75` | Show the weekly limit from this usage; `0` = always. |
@@ -89,6 +89,13 @@ The app writes claudebar's `config.toml` from the options on every start
 `statusLine`, it is left alone; turning `statusline` off removes only
 claudebar's entry. The 5-hour and weekly bars appear once Claude Code
 reports them, which it does for Claude subscription logins.
+
+## Font
+
+The terminal page ships the [Symbols Nerd Font][nerd-fonts] (MIT), served
+by the app itself, so powerline and Nerd Font glyphs (claudebar's
+`powerline` style, git branch icons, …) render in any browser without
+installing a font. Normal text uses your system's monospace font.
 
 ## Updates
 
@@ -127,3 +134,4 @@ tmux mouse mode is on (the wheel scrolls history). Hold **Shift** (macOS:
 [claude-code]: https://docs.claude.com/en/docs/claude-code/overview
 [settings]: https://docs.claude.com/en/docs/claude-code/settings
 [claudebar]: https://github.com/micschr0/claudebar
+[nerd-fonts]: https://github.com/ryanoasis/nerd-fonts
