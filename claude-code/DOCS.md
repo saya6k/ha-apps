@@ -142,8 +142,14 @@ and start a new Claude session.
 
 ## Copy and paste
 
-tmux mouse mode is on (the wheel scrolls history). Hold **Shift** (macOS:
-**Option**) while dragging to select text for the browser clipboard.
+- **Drag** to select: tmux copies the selection and the page puts it on
+  the clipboard (a small "Copied" note appears). Claude Code's own "c to
+  copy" works the same way. The mouse wheel scrolls the history.
+- **Shift+drag** (macOS: **Option+drag**) makes a plain browser selection
+  instead; copy it with Ctrl+C / Cmd+C.
+- On Home Assistant over plain HTTP, browsers restrict clipboard access;
+  the page falls back to a legacy copy, and if the browser still refuses,
+  the note says so — use Shift/Option+drag then.
 
 [claude-code]: https://docs.claude.com/en/docs/claude-code/overview
 [settings]: https://docs.claude.com/en/docs/claude-code/settings
