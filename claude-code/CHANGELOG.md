@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.0)
+
+## What's Changed
+
+## New Features
+
+* feat: add ha CLI and restart guard; promote to stable (#5) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.3.0...v0.4.0
+
 ## [0.3.0](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.3.0)
 
 ## What's Changed
