@@ -1,0 +1,21 @@
+---
+configuration:
+  claude_code_oauth_token:
+    name: Claude Code OAuth 토큰
+    description: >-
+      선택 사항. 브라우저가 있는 아무 기기에서 `claude setup-token`으로
+      발급한 장기 토큰. 설정하면 앱 설정 폴더에 저장된 /login 세션 대신
+      이 토큰을 사용합니다. 비워 두면 터미널에서 /login으로 로그인합니다.
+  enable_remote_control:
+    name: Remote Control
+    description: >-
+      Claude를 `--remote-control`로 실행해 Claude 앱과 claude.ai/code에서도
+      "Home Assistant" 세션으로 이어서 쓸 수 있게 합니다. 앱 시작 시
+      세션을 바로 띄우므로 패널을 열지 않아도 접속됩니다. /login 로그인이
+      필요합니다(`claude setup-token` 토큰으로는 안 됩니다).
+  claude_code_version:
+    name: Claude Code 버전
+    description: >-
+      비워 두면 시작할 때마다 최신 Claude Code를 설치합니다. 버전(예:
+      `2.1.300`)을 입력하면 그 버전으로 고정합니다. 다운로드에 실패하면
+      마지막으로 동작한 버전, 그다음 이미지에 포함된 버전을 사용합니다.

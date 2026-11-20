@@ -1,0 +1,47 @@
+---
+version: 0.1.0
+image: ghcr.io/saya6k/app-claude-code
+slug: claude-code
+name: Claude Code
+stage: experimental
+description: >-
+  Anthropic's Claude Code CLI in a web terminal, served via the ingress
+  panel. Login and ~/.claude.json persist in the app config folder.
+url: https://github.com/saya6k/ha-app-claude-code
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+ingress: true
+panel_icon: mdi:asterisk
+panel_title: Claude Code
+# homeassistant_api: HA REST API via http://supervisor/core/api — the default
+#   `ha` MCP server (/core/api/mcp) and login-url-watcher's notification.
+# hassio_api + manager: Supervisor API for Claude — config check, core
+#   restart, other apps' info/logs. No docker_api: it requires protection
+#   mode off and is effectively host root.
+homeassistant_api: true
+hassio_api: true
+hassio_role: manager
+options:
+  claude_code_oauth_token: ""
+  enable_remote_control: false
+schema:
+  claude_code_oauth_token: password?
+  enable_remote_control: bool
+  # Unset: install the latest release on every start. Set: pin that version.
+  claude_code_version: match(^[0-9]+\.[0-9]+\.[0-9]+$)?
+# Downloaded Claude Code builds (~200 MB each) are re-fetched on demand.
+backup_exclude:
+  - claude-code/**
+# homeassistant_config + app_config with explicit paths: the legacy `config`
+# type would make the Supervisor ignore app_config entirely, and app_config's
+# default target (/config) would collide with the HA config mount.
+map:
+  - type: homeassistant_config
+    read_only: false
+    path: /config
+  - type: app_config
+    read_only: false
+    path: /addon_config

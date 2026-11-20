@@ -1,0 +1,23 @@
+---
+configuration:
+  claude_code_oauth_token:
+    name: Claude Code OAuth token
+    description: >-
+      Optional. A long-lived token from `claude setup-token` (run on any
+      machine with a browser). When set it is used instead of the /login
+      session saved in the app config folder. Leave empty to log in from
+      the terminal with /login.
+  enable_remote_control:
+    name: Remote Control
+    description: >-
+      Start Claude with `--remote-control` so the session also appears as
+      "Home Assistant" in the Claude app and claude.ai/code. The session is
+      started at app boot, so it is reachable without opening the panel.
+      Needs a full /login (a `claude setup-token` token is not enough).
+  claude_code_version:
+    name: Claude Code version
+    description: >-
+      Leave empty to install the latest Claude Code release on every start.
+      Set a version (e.g. `2.1.300`) to pin it. Falls back to the last
+      working build, then to the one bundled in the image, if the download
+      fails.
