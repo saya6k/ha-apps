@@ -50,6 +50,10 @@
   - changed-files:
       - any-glob-to-any-file: "claude-code/**"
 
+"addon:code-interpreter":
+  - changed-files:
+      - any-glob-to-any-file: "code-interpreter/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"

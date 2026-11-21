@@ -30,6 +30,7 @@ body:
         - memory
         - codemirror
         - claude-code
+        - code-interpreter
         - repository tooling (CI / docs / labels)
     validations:
       required: true
