@@ -132,6 +132,22 @@ Inside a sandbox, code:
 If the sandbox cannot be set up as described, the app refuses to run code
 (fail closed) and logs why at startup.
 
+## Sessions & audit panel
+
+Opening the app from the sidebar (**Code Interpreter**, admins only) shows a
+panel served through Home Assistant Ingress:
+
+- **Live sessions** with their idle expiry and the current settings. **Close**
+  ends a session at once; who closed it is written to the audit log as
+  `ui.close_session`.
+- **Audit log** by day: one row per session with its code runs, commands,
+  file transfers, network connections (allowed / denied), errors and policy
+  violations. Click a session for its event timeline, including the code and
+  commands that ran. `#day=YYYYMMDD&session=<id>` links straight to a session.
+
+The panel listens on port 8098 and accepts requests only from Home
+Assistant's Ingress proxy.
+
 ## Audit log
 
 Every session, code run, command, file transfer, network connection and
