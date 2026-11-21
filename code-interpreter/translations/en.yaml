@@ -1,0 +1,43 @@
+---
+configuration:
+  idle_timeout_minutes:
+    name: Idle timeout (minutes)
+    description: >-
+      Close a session after this many minutes without a call. Its
+      variables and files are discarded.
+  max_sessions:
+    name: Maximum sessions
+    description: >-
+      Sessions at once. When full, the least recently used idle session is
+      closed to make room.
+  memory_limit_mb:
+    name: Memory limit (MB)
+    description: >-
+      Address-space limit per sandbox (minimum 768). It counts reserved
+      memory, so real use is lower. Code that goes beyond it gets a
+      MemoryError.
+  network_allowlist:
+    name: Network allowlist
+    description: >-
+      Hosts sandboxed code may reach over HTTPS, as host or host:port
+      (*.domain for subdomains), e.g. pypi.org and *.pythonhosted.org for
+      pip install. Empty = no network at all.
+  max_file_mb:
+    name: Maximum file size (MB)
+    description: >-
+      Largest file for import from /share, export to /share and
+      write_file.
+  export_dir:
+    name: Export directory
+    description: >-
+      Where export_to_share puts files, one subfolder per session. Must be
+      under /share.
+  audit_retention_days:
+    name: Audit log retention (days)
+    description: >-
+      Days of audit log (/data/audit) to keep.
+network:
+  8099/tcp: >-
+    MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
+    reaches it over the internal network; map it only for external MCP
+    clients.
