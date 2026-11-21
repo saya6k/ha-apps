@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.2.0)
+
+## What's Changed
+
+## New Features
+
+* feat: Ingress panel for live sessions and the audit log (#2) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.1.0...v0.2.0
+
 ## [0.1.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.1.0)
 
 ## What's Changed
