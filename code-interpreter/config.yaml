@@ -1,6 +1,6 @@
 ---
 name: Code Interpreter
-version: 0.1.0
+version: 0.2.0
 image: ghcr.io/saya6k/app-code-interpreter
 slug: code-interpreter
 description: >-
@@ -14,6 +14,10 @@ arch:
   - amd64
 init: false
 startup: services
+ingress: true
+ingress_port: 8098
+panel_icon: mdi:language-python
+panel_title: Code Interpreter
 map:
   - share:rw
 discovery:
