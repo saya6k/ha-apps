@@ -85,6 +85,7 @@ super-linter-output/
 !/memory/
 !/codemirror/
 !/claude-code/
+!/code-interpreter/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/
