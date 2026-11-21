@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.9.0)
+
+## What's Changed
+
+## New Features
+
+* feat: open folders when hovering them while dragging (#7) @saya6k
+* feat: move entries by dragging them in the file explorer (#6) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-codemirror/compare/v0.8.0...v0.9.0
+
 ## [0.8.0](https://github.com/saya6k/ha-app-codemirror/releases/tag/v0.8.0)
 
 ## What's Changed
