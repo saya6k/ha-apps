@@ -1,0 +1,44 @@
+---
+name: Code Interpreter
+version: 0.1.0
+image: ghcr.io/saya6k/app-code-interpreter
+slug: code-interpreter
+description: >-
+  Stateful Python code execution for Assist conversation agents over MCP.
+  Each session runs in a bubblewrap sandbox inside the app with no network
+  by default, files shared via /share, and a JSONL audit log.
+url: https://github.com/saya6k/ha-app-code-interpreter
+stage: experimental
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+map:
+  - share:rw
+discovery:
+  - mcp
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: >-
+    MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
+    reaches it over the internal network; map it only for external MCP
+    clients.
+options:
+  idle_timeout_minutes: 20
+  max_sessions: 3
+  memory_limit_mb: 2048
+  network_allowlist: []
+  max_file_mb: 20
+  export_dir: /share/code-interpreter
+  audit_retention_days: 30
+schema:
+  idle_timeout_minutes: int(1,1440)
+  max_sessions: int(1,10)
+  memory_limit_mb: int(768,8192)
+  network_allowlist:
+    - str?
+  max_file_mb: int(1,500)
+  export_dir: str
+  audit_retention_days: int(1,365)
