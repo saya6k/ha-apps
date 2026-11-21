@@ -1,0 +1,44 @@
+#include <tunables/global>
+
+# Code Interpreter app profile (SPEC §3.10). Baseline = Docker's docker-default
+# profile; the only additions are the mount operations bubblewrap needs to
+# build each session's namespaces. Those mounts happen inside unprivileged
+# user namespaces, so the kernel still refuses mounts outside the sandbox.
+# Supervisor renames the profile to the app slug on load.
+profile code-interpreter flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  network,
+  capability,
+  file,
+  unix,
+  umount,
+
+  # Send only within this profile: the app interrupts and kills its own
+  # sandboxes. Receive from anyone: the container runtime's stop signal may
+  # come from a named profile (Ubuntu confines runc/containerd), and a sender
+  # still needs send permission in its own profile.
+  signal (send, receive) peer=@{profile_name},
+  signal (receive),
+
+  # bubblewrap: bind/tmpfs mounts, read-only remounts, pivot_root.
+  mount,
+  remount,
+  pivot_root,
+
+  deny @{PROC}/* w,
+  deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9/]*}/** w,
+  deny @{PROC}/sys/[^k]** w,
+  deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,
+  deny @{PROC}/sysrq-trigger rwklx,
+  deny @{PROC}/kcore rwklx,
+
+  deny /sys/[^f]*/** wklx,
+  deny /sys/f[^s]*/** wklx,
+  deny /sys/fs/[^c]*/** wklx,
+  deny /sys/fs/c[^g]*/** wklx,
+  deny /sys/fs/cg[^r]*/** wklx,
+  deny /sys/firmware/** rwklx,
+  deny /sys/devices/virtual/powercap/** rwklx,
+  deny /sys/kernel/security/** rwklx,
+}
