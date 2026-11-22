@@ -176,6 +176,10 @@ deployment behind a reverse proxy, or a cloud-hosted Wardrowbe — over
 the REST API, with the same dev / OIDC auth modes. See that repo's
 README for install and configuration.
 
+If you turn off the built-in AI (`ai_internal_enabled: false`) so that an
+external agent does the work, the web app's AI pages are hidden too. Add
+`ai_ui_enabled: true` with the YAML editor to keep them visible.
+
 ## Troubleshooting
 
 **Startup log shows healthy boot sequence:**
