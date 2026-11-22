@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.3](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.3)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: Korean IME input in the HA app and Safari (#9) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.4.2...v0.4.3
+
 ## [0.4.2](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.2)
 
 ## What's Changed
