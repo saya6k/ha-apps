@@ -74,6 +74,13 @@ configuration:
       Hidden option (add via the YAML editor). Set to false to disable the
       built-in text model and defer outfit suggestions to an external agent
       (e.g. mcp-wardrowbe). Requires Internal AI to be on. Defaults to true.
+  ai_ui_enabled:
+    name: AI UI
+    description: >-
+      Hidden option (add via the YAML editor). Shows or hides the web app's AI
+      pages and controls. Leave unset to follow Internal AI (hidden when it is
+      off); set to true to keep them for an external agent (e.g.
+      mcp-wardrowbe), or false to hide them even with Internal AI on.
   oidc_issuer_url:
     name: OIDC issuer URL
     description: >-
