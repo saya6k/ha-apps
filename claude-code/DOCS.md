@@ -73,7 +73,7 @@ Pick one:
 | `claude_code_oauth_token` | password | unset | Optional long-lived token; overrides the saved `/login` session. |
 | `claude_code_version` | version | unset | Unset: latest release on every start. `2.1.300`: pin that version. |
 | `enable_remote_control` | bool | `false` | Runs `claude --remote-control 'Home Assistant'` so the session can also be driven from the Claude app / claude.ai/code. The session starts at app boot, without opening the panel. Requires a `/login` session — a `claude setup-token` token cannot establish Remote Control. |
-| `experimental_code_mode` | bool | unset (off) | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. |
+| `experimental_code_mode` | bool | unset (off) | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. Claude Code does not support Code Mode with Remote Control, so it has no effect while `enable_remote_control` is on (a warning is logged at startup). |
 | `restart_guard` | bool | `true` | Runs `ha core check` before Claude restarts Home Assistant and blocks the restart on an invalid config (a `PreToolUse` hook in `settings.json`). |
 | `statusline` | bool | `true` | Show the [claudebar][claudebar] statusline under the prompt (usage limits, context, cost). |
 | `statusline_theme` / `statusline_style` | list | `tokyo-night` / `powerline` | The Nerd Font glyphs are bundled (see below), so every style works in any browser. |

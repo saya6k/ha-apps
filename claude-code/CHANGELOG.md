@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.2](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.2)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: issues found in a full-codebase review (#8) @saya6k
+* fix: warn when Code Mode is on together with Remote Control (#7) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.4.1...v0.4.2
+
 ## [0.4.1](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.1)
 
 ## What's Changed
