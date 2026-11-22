@@ -98,6 +98,20 @@ only the listed hosts, and only when they resolve to public addresses.
 Plain HTTP, IP addresses and everything else are refused. Invalid entries
 are ignored with an error in the log.
 
+To allow the whole internet, use `"*"` (quoted, any host on port 443; add
+`"*:8080"` and so on for other ports):
+
+```yaml
+network_allowlist:
+  - "*"
+```
+
+Even then, only public addresses are reachable: Home Assistant, your LAN and
+IP addresses stay refused, and every connection is in the audit log. Code in
+the sandbox comes from the conversation, so `"*"` also lets it send your
+`/share` imports or anything else it reads to any server; prefer listing
+hosts.
+
 ## Options
 
 | Option | Default | Description |
@@ -105,7 +119,7 @@ are ignored with an error in the log.
 | `idle_timeout_minutes` | `20` | Close a session after this many minutes without a call |
 | `max_sessions` | `3` | Sessions at once; the least recently used idle session is closed to make room |
 | `memory_limit_mb` | `2048` | Address-space limit per sandbox (`RLIMIT_AS`, minimum 768). This counts reserved memory, so real use is lower. Allocations beyond it raise `MemoryError` |
-| `network_allowlist` | empty | Hosts the sandbox may reach over HTTPS (see above). Empty = no network |
+| `network_allowlist` | empty | Hosts the sandbox may reach over HTTPS (see above); `"*"` = any public host. Empty = no network |
 | `max_file_mb` | `20` | Largest file for import, export and `write_file` |
 | `export_dir` | `/share/code-interpreter` | Where exported files go; must be under `/share` |
 | `audit_retention_days` | `30` | Days of audit log to keep |

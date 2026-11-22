@@ -21,7 +21,8 @@ configuration:
     description: >-
       Hosts sandboxed code may reach over HTTPS, as host or host:port
       (*.domain for subdomains), e.g. pypi.org and *.pythonhosted.org for
-      pip install. Empty = no network at all.
+      pip install. * allows any public host on port 443 (*:port for others).
+      Empty = no network at all.
   max_file_mb:
     name: Maximum file size (MB)
     description: >-
