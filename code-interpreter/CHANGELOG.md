@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.4.0)
+
+## What's Changed
+
+## New Features
+
+* feat: add pypdf and pdfplumber; drop package test suites from the sandbox (#4) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.3.0...v0.4.0
+
 ## [0.3.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.3.0)
 
 ## What's Changed
