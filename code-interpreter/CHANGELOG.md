@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.3.0)
+
+## What's Changed
+
+## New Features
+
+* `network_allowlist: ["*"]` allows any public host on port 443 (`"*:port"` for others). IP literals and non-public addresses stay refused, so Home Assistant and the LAN remain unreachable. (#3)
+
+## Bug Fixes
+
+* fix: harden sandbox restarts, REPL errors and audit accuracy; allow "*" egress (#3) @saya6k
+  * A REPL restart survives a cancelled call, and the session and its files are kept.
+  * `run_command` reports fork/thread limits instead of killing the REPL.
+  * `/share` import/export and audit hashing no longer block other sessions.
+  * Audit log: violations are classified accurately, and failed upstream connects are no longer shown as allowed.
+  * The startup self-check fails closed instead of stopping the app.
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.2.0...v0.3.0
+
 ## [0.2.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.2.0)
 
 ## What's Changed

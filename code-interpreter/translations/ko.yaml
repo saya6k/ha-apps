@@ -20,7 +20,8 @@ configuration:
     description: >-
       샌드박스 코드가 HTTPS로 접속할 수 있는 호스트(host 또는 host:port,
       하위 도메인은 *.domain). pip install에는 pypi.org와
-      *.pythonhosted.org를 넣으세요. 비우면 네트워크를 전혀 쓸 수 없습니다.
+      *.pythonhosted.org를 넣으세요. *는 443 포트의 모든 공인 호스트를
+      허용합니다(다른 포트는 *:port). 비우면 네트워크를 전혀 쓸 수 없습니다.
   max_file_mb:
     name: 최대 파일 크기(MB)
     description: >-
