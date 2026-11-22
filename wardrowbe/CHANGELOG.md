@@ -3,6 +3,16 @@
 Releases from 4.1.20 onward are tracked in
 [ha-app-wardrowbe releases](https://github.com/saya6k/ha-app-wardrowbe/releases).
 
+## [4.3.9](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.9)
+
+## What's Changed
+
+## Maintenance
+
+* chore: bump wardrowbe to wardrowbe-v1.14.0, add ai_ui_enabled option (#29) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-wardrowbe/compare/v4.3.8...v4.3.9
+
 ## [4.3.8](https://github.com/saya6k/ha-app-wardrowbe/releases/tag/v4.3.8)
 
 ## What's Changed

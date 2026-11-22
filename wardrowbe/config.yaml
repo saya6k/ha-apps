@@ -1,6 +1,6 @@
 ---
 name: Wardrowbe
-version: 4.3.8
+version: 4.3.9
 image: ghcr.io/saya6k/app-wardrowbe
 slug: wardrowbe
 description: >-
@@ -60,6 +60,7 @@ schema:
   ai_internal_enabled: bool?
   ai_vision_enabled: bool?
   ai_text_enabled: bool?
+  ai_ui_enabled: bool?
   oidc_issuer_url: str?
   oidc_client_id: str?
   oidc_client_secret: password?
