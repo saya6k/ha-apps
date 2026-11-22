@@ -17,7 +17,8 @@ calls, work with files, and hand results (tables, plots) back to you through
 - **Preinstalled analysis stack:** numpy, pandas, scipy, statsmodels,
   scikit-learn, sympy, networkx, matplotlib (Korean labels work out of the
   box), seaborn, openpyxl, xlsxwriter, pyarrow, pillow, lxml, beautifulsoup4,
-  python-docx, fpdf2, pyyaml and tabulate.
+  python-docx, fpdf2, pypdf, pdfplumber (text and tables from PDFs), pyyaml
+  and tabulate.
 - **Sessions end on their own:** a session is closed after
   `idle_timeout_minutes` without a call, and its variables and files are
   discarded.
