@@ -24,6 +24,7 @@ configuration:
     description: >-
       Claude Code를 CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1로 실행합니다.
       settings.json의 env에 "0"이 있으면 그쪽이 우선해 꺼집니다.
+      Remote Control이 켜져 있으면 동작하지 않습니다.
   restart_guard:
     name: 재시작 가드
     description: >-
