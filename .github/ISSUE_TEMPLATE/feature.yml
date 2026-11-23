@@ -25,6 +25,7 @@ body:
         - codemirror
         - claude-code
         - code-interpreter
+        - playwright
         - repository tooling (CI / docs / labels)
     validations:
       required: true

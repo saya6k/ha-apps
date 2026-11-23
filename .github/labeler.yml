@@ -54,6 +54,10 @@
   - changed-files:
       - any-glob-to-any-file: "code-interpreter/**"
 
+"addon:playwright":
+  - changed-files:
+      - any-glob-to-any-file: "playwright/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"
