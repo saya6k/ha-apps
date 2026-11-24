@@ -1,0 +1,47 @@
+---
+name: Browser
+version: 0.1.0
+image: ghcr.io/saya6k/app-playwright
+slug: playwright
+description: >-
+  Browser control for Assist conversation agents over MCP. A Chromium
+  browser driven by Playwright MCP: navigate, click, fill forms, take
+  screenshots and upload files from /share.
+url: https://github.com/saya6k/ha-app-playwright
+stage: experimental
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+ingress: true
+ingress_port: 8098
+panel_icon: mdi:web
+panel_title: Browser
+map:
+  - share:rw
+discovery:
+  - mcp
+ports:
+  8099/tcp: null
+ports_description:
+  8099/tcp: >-
+    MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
+    reaches it over the internal network; map it only for external MCP
+    clients.
+options:
+  allowed_origins: []
+  blocked_origins: []
+  browser_language: en-US
+  font_languages: []
+  viewport: 1280x800
+schema:
+  allowed_origins:
+    - str?
+  blocked_origins:
+    - str?
+  browser_language: match(^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$)
+  font_languages:
+    - list(ja|ko|zh-hans|zh-hant)?
+  outgoing_proxy: str?
+  viewport: match(^[0-9]{3,4}x[0-9]{3,4}$)

@@ -1,0 +1,33 @@
+---
+configuration:
+  allowed_origins:
+    name: 허용 출처
+    description: >-
+      브라우저가 열 수 있는 출처입니다(예: https://example.com). 비우면 모든
+      사이트를 허용합니다. 편의용 필터이며 보안 경계가 아닙니다 — 리다이렉트에는
+      적용되지 않습니다.
+  blocked_origins:
+    name: 차단 출처
+    description: >-
+      브라우저가 열면 안 되는 출처입니다. 허용 목록보다 먼저 검사합니다. 보안
+      경계가 아니며 리다이렉트에는 적용되지 않습니다.
+  browser_language:
+    name: 브라우저 언어
+    description: >-
+      Chromium의 UI 언어이자 사이트에 Accept-Language로 보내는 언어입니다(예:
+      en-US, ko-KR).
+  font_languages:
+    name: 추가 폰트 언어
+    description: >-
+      선택한 언어의 Noto Sans CJK 폰트를 시작할 때 받습니다(언어당 약 9-17 MB, 앱 데이터에 보관).
+      없으면 해당 문자가 빈 네모로 보입니다. 언어를 빼면 그 폰트를 지웁니다.
+  outgoing_proxy:
+    name: 외부 프록시
+    description: >-
+      모든 브라우저 트래픽에 쓸 프록시입니다(예: http://10.0.0.2:3128,
+      socks5://10.0.0.2:1080). 비우면 직접 연결합니다.
+  viewport:
+    name: 창 크기
+    description: >-
+      브라우저 창 크기(픽셀, 가로x세로)입니다(예: 1280x800). 보이는 영역
+      스크린샷이 이 크기로 찍힙니다.
