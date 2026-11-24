@@ -1,0 +1,47 @@
+---
+name: Embedding
+version: 0.1.0
+image: ghcr.io/saya6k/app-embedding
+slug: embedding
+description: >-
+  Shared text embedding server for Home Assistant and other apps. Runs a local
+  llama.cpp embedding model and serves the OpenAI-compatible /v1/embeddings,
+  so every app that needs embeddings can use one model instead of loading its
+  own — no external API and no internet at query time.
+url: https://github.com/saya6k/ha-app-embedding
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+ports:
+  8080/tcp: null
+ports_description:
+  8080/tcp: >-
+    OpenAI-compatible embeddings API (/v1/embeddings). Leave unset — Home
+    Assistant and other apps reach it over the internal network; map it only
+    for clients outside Home Assistant, and set an API key when you do.
+# The model can always be downloaded again, and it dwarfs everything else in
+# /data. Match the file type, not "models/*": patterns match from the end of the
+# path, so that would also skip a personal document in a folder named models.
+backup_exclude:
+  - "*.gguf"
+  - "*.gguf.part"
+# model_sha256, api_key and log_level are intentionally absent here: options
+# listed under `options:` are always shown, while `?`-suffixed schema entries
+# stay hidden until the user opts in.
+options:
+  model_repo: ggml-org/embeddinggemma-2-GGUF
+  model_file: embeddinggemma-2-Q8_0.gguf
+  threads: 4
+  context_size: 1024
+  parallel: 1
+schema:
+  model_repo: str
+  model_file: str
+  model_sha256: match(^[0-9a-f]{64}$)?
+  threads: int(1,16)
+  context_size: int(128,8192)
+  parallel: int(1,8)
+  api_key: password?
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?

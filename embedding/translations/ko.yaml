@@ -1,0 +1,50 @@
+---
+configuration:
+  model_repo:
+    name: 모델 저장소
+    description: >-
+      임베딩 모델을 내려받을 Hugging Face 저장소. `model_file`과 함께 바꾼다.
+      바꾸면 이 서버를 쓰는 모든 앱이 저장한 내용을 다시 임베딩해야 한다. 다른
+      모델의 벡터끼리는 비교할 수 없기 때문이다.
+  model_file:
+    name: 모델 파일
+    description: >-
+      그 저장소 안의 GGUF 파일. 기본값(Q8_0, 약 296 MiB)은 거의 손실이 없다.
+      메모리가 부족할 때만 더 작은 양자화로 내린다. Q4는 맞는 항목을 찾는
+      정확도가 눈에 띄게 떨어진다.
+  model_sha256:
+    name: 모델 체크섬
+    description: >-
+      선택 사항. 설정하면 내려받은 파일이 이 값과 일치해야 하며, 다르면 앱이
+      멈춘다. 비워 두면 검증하지 않고, 실제 체크섬을 로그에 출력하니 나중에
+      여기 붙여 넣으면 된다.
+  threads:
+    name: CPU 스레드
+    description: >-
+      임베딩 서버가 쓰는 스레드 수. 기기의 코어 수에 맞춘다. 코어보다 많아도
+      빨라지지 않는다. 클라이언트가 요청할 때만 임베딩하므로 상시 부하는 아니다.
+  context_size:
+    name: 컨텍스트 크기
+    description: >-
+      한 번에 받는 가장 긴 입력(토큰). 이보다 긴 입력은 잘라내지 않고 거부한다.
+      메모리는 실제로 들어온 가장 긴 입력에 따라 늘어난다. 기본 모델 기준
+      1000토큰에 약 1.5 GiB, 1600토큰에 약 2.2 GiB. EmbeddingGemma 2는 최대
+      2048이다.
+  parallel:
+    name: 동시 요청 수
+    description: >-
+      동시에 임베딩하는 요청 수. 요청마다 컨텍스트 하나만큼 메모리를 쓴다. 여러
+      앱이 동시에 임베딩하는 경우가 아니면 1이면 충분하다.
+  api_key:
+    name: API 키
+    description: >-
+      선택 사항. 설정하면 클라이언트가 Bearer 토큰으로 보내야 한다. 포트를
+      호스트에 연결할 때 설정한다. Home Assistant 안의 앱은 어느 쪽이든 접근할
+      수 있다.
+  log_level:
+    name: 로그 수준
+    description: >-
+      임베딩 서버의 로그 상세도. 기본값은 `info`. `debug`나 `trace`로 올리면
+      llama.cpp의 텐서별 상세 정보가 나오며, 매우 길다.
+network:
+  8080/tcp: OpenAI 호환 임베딩 API (/v1/embeddings)
