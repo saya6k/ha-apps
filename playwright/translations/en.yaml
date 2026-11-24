@@ -1,0 +1,35 @@
+---
+configuration:
+  allowed_origins:
+    name: Allowed origins
+    description: >-
+      Origins the browser may load, e.g. https://example.com. Leave empty
+      to allow every site. This is a convenience filter, not a security
+      boundary — it does not apply to redirects.
+  blocked_origins:
+    name: Blocked origins
+    description: >-
+      Origins the browser must not load. Checked before the allowed list.
+      Not a security boundary — it does not apply to redirects.
+  browser_language:
+    name: Browser language
+    description: >-
+      Language Chromium uses for its UI and sends to sites in
+      Accept-Language, e.g. en-US or ko-KR.
+  font_languages:
+    name: Extra font languages
+    description: >-
+      Downloads Noto Sans CJK fonts for these languages at start (about
+      9-17 MB each, kept in the app's data). Without them, pages in
+      these scripts show empty boxes. Removing a language deletes its
+      fonts.
+  outgoing_proxy:
+    name: Outgoing proxy
+    description: >-
+      Optional proxy for all browser traffic, e.g. http://10.0.0.2:3128 or
+      socks5://10.0.0.2:1080. Leave empty for a direct connection.
+  viewport:
+    name: Window size
+    description: >-
+      Browser window size in pixels as WIDTHxHEIGHT, e.g. 1280x800.
+      Screenshots of the visible area use this size.
