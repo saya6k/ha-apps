@@ -58,6 +58,10 @@
   - changed-files:
       - any-glob-to-any-file: "playwright/**"
 
+"addon:embedding":
+  - changed-files:
+      - any-glob-to-any-file: "embedding/**"
+
 "addon:transcribe-cpp":
   - changed-files:
       - any-glob-to-any-file: "transcribe-cpp/**"
