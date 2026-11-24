@@ -87,6 +87,7 @@ super-linter-output/
 !/claude-code/
 !/code-interpreter/
 !/playwright/
+!/embedding/
 # Local pre-implementation design docs — not shipped, not tracked.
 **/SPEC.md
 **/specs/
