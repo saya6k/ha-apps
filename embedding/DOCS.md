@@ -85,8 +85,14 @@ embedding_url: http://<hostname>:8080/v1
 embedding_model: embeddinggemma-2-Q8_0.gguf
 ```
 
-Leave its `query_prefix` and `document_prefix` as they are. With the same model
-file the vectors are the same as before, so nothing needs to be re-embedded.
+`embedding_model` is required, though this server ignores it. Leave Memory's
+`query_prefix` and `document_prefix` as they are.
+
+The first start after switching re-embeds every stored fact once, and
+re-indexes the documents in the background: Memory records a remote model as
+`openai/<model>`, so it sees a different model than the `local` one it had. The
+vectors come out the same, and the database is not touched until every fact
+has been embedded, so this costs only time.
 
 ## Memory
 
