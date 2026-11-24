@@ -1,0 +1,53 @@
+---
+configuration:
+  model_repo:
+    name: Model repository
+    description: >-
+      Hugging Face repository the embedding model is downloaded from. Change
+      this together with `model_file`. Every app using this server must then
+      re-embed what it stored, because vectors from different models do not
+      compare.
+  model_file:
+    name: Model file
+    description: >-
+      GGUF file within that repository. The default (Q8_0, ~296 MiB) is close
+      to lossless. Step down to a smaller quantization only if memory forces
+      it — Q4 is measurably less precise at finding the right match.
+  model_sha256:
+    name: Model checksum
+    description: >-
+      Optional. When set, the downloaded file must match it or the app stops.
+      When left empty the download is not verified, and the actual checksum
+      is printed in the log so you can paste it here afterwards.
+  threads:
+    name: CPU threads
+    description: >-
+      Threads the embedding server uses. Match your device's core count; more
+      threads than cores does not help. Embedding happens only when a client
+      asks, so this is not a constant load.
+  context_size:
+    name: Context size
+    description: >-
+      The longest single input the server takes, in tokens. A longer input is
+      refused rather than cut short. Memory grows with the longest input
+      actually sent — about 1.5 GiB at 1000 tokens, 2.2 GiB at 1600 with the
+      default model. EmbeddingGemma 2 takes at most 2048.
+  parallel:
+    name: Parallel requests
+    description: >-
+      How many requests are embedded at the same time. Each one costs memory
+      for a full context; 1 is enough unless several apps embed at once.
+  api_key:
+    name: API key
+    description: >-
+      Optional. When set, clients must send it as a Bearer token. Set it if
+      you map the port to the host; apps inside Home Assistant can reach the
+      server either way.
+  log_level:
+    name: Log level
+    description: >-
+      Verbosity of the embedding server. `info` is the default. Raise to
+      `debug` or `trace` to see llama.cpp's per-tensor detail, which is very
+      verbose.
+network:
+  8080/tcp: OpenAI-compatible embeddings API (/v1/embeddings)
