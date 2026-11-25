@@ -7,6 +7,13 @@ configuration:
       machine with a browser). When set it is used instead of the /login
       session saved in the app config folder. Leave empty to log in from
       the terminal with /login.
+  config_access:
+    name: Home Assistant config folder access
+    description: >-
+      Let Claude work directly on the Home Assistant configuration files:
+      the folder is linked at `/config` and Claude starts there. Off,
+      Claude starts in its home folder and is told to make changes through
+      `hab` and the Home Assistant API instead of editing YAML files.
   enable_remote_control:
     name: Remote Control
     description: >-
