@@ -4,7 +4,7 @@
 profile hassio_claude-code flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
 
-  # Files: Claude Code is a general-purpose agent working in /config and
+  # Files: Claude Code is a general-purpose agent working in the HA config and
   # its own folders, so file access stays broad. The profile's job is to
   # deny what reaches beyond the container (capabilities, mount, raw
   # sockets, ptrace of other processes), which is not granted below.
@@ -54,13 +54,13 @@ profile hassio_claude-code flags=(attach_disconnected,mediate_deleted) {
   /opt/claude-code/claude ix,
   /data/claude-code/*/claude ix,
 
-  # HA app data and mounts. ix on /config and HOME: Claude runs the
+  # HA app data and mounts. ix on the HA config and HOME: Claude runs the
   # user's own scripts and tools from there.
   /data/ rwk,
   /data/** rwk,
   /data/home/** rwkix,
-  /config/ rwk,
-  /config/** rwkix,
+  /homeassistant/ rwk,
+  /homeassistant/** rwkix,
   /addon_config/ rwk,
   /addon_config/** rwk,
 
