@@ -6,6 +6,13 @@ configuration:
       선택 사항. 브라우저가 있는 아무 기기에서 `claude setup-token`으로
       발급한 장기 토큰. 설정하면 앱 설정 폴더에 저장된 /login 세션 대신
       이 토큰을 사용합니다. 비워 두면 터미널에서 /login으로 로그인합니다.
+  config_access:
+    name: Home Assistant 설정 폴더 접근
+    description: >-
+      Claude가 Home Assistant 설정 파일을 직접 다루게 합니다. 설정 폴더를
+      `/config`에 연결하고 Claude가 그곳에서 시작합니다. 끄면 Claude는 홈
+      폴더에서 시작하고, YAML 파일을 고치는 대신 `hab`과 Home Assistant
+      API로 변경하도록 안내받습니다.
   enable_remote_control:
     name: Remote Control
     description: >-

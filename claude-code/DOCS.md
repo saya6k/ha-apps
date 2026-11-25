@@ -9,21 +9,26 @@ across restarts and updates.
 
 | Path in the app | On the host | Contents |
 | --------------- | ----------- | -------- |
-| `/config` | HA config folder (Samba `config` share) | Working directory Claude starts in |
-| `/addon_config` | `/addon_configs/<repo>_claude-code/` | `CLAUDE_CONFIG_DIR`: `.claude.json`, `.credentials.json`, `settings.json`, `CLAUDE.md`, sessions |
-| `/data/home` | private | `HOME`: shell history, `~/.gitconfig`, `~/.ssh` |
+| `/homeassistant` | HA config folder (Samba `config` share) | Always mounted; also linked at `/config` when `config_access` is on |
+| `/addon_config` | `/addon_configs/<repo>_claude-code/` | `CLAUDE_CONFIG_DIR`: `.claude.json`, `.credentials.json`, `settings.json`, `CLAUDE.md`, sessions; `ssh/` (see [SSH](#ssh)) |
+| `/data/home` | private | `HOME`: shell history, `~/.gitconfig`, `~/.ssh`, `gh` login. Claude starts here unless `config_access` is on |
 
 `CLAUDE_CONFIG_DIR=/addon_config` moves both `~/.claude/` **and**
 `~/.claude.json` into the app config folder, so you can edit them with the
 File editor, Samba, or Studio Code Server. Restart the app (or the Claude
 session) after hand-editing `.claude.json`: a running Claude rewrites it.
 
-On every start the app creates any of `.claude.json`, `.credentials.json`,
-`settings.json` and `CLAUDE.md` that are missing from `/addon_config`
-(see below; the rest start as empty JSON objects or a three-line Home
-Assistant `CLAUDE.md`). Claude Code itself adds its own state to
+On every start the app creates any of `.claude.json`, `.credentials.json`
+and `settings.json` that are missing from `/addon_config` (see below; the
+rest start as empty JSON objects). Claude Code itself adds its own state to
 `.claude.json` as you use it. Existing files are never overwritten; delete
 one to get the default back.
+
+The app's own Home Assistant instructions (paths, `hab`, `ha`, the restart
+guard) are written to `/etc/claude-code/CLAUDE.md` on every start, so they
+follow the options; Claude Code loads them alongside your own
+`/addon_config/CLAUDE.md`. An unedited `CLAUDE.md` seeded by an earlier
+version of the app is removed once, so the two cannot contradict.
 
 ### Home Assistant MCP server
 
@@ -72,6 +77,7 @@ Pick one:
 | ------ | ---- | ------- | ----- |
 | `claude_code_oauth_token` | password | unset | Optional long-lived token; overrides the saved `/login` session. |
 | `claude_code_version` | version | unset | Unset: latest release on every start. `2.1.300`: pin that version. |
+| `config_access` | bool | `false` | Links the HA config folder at `/config` and starts Claude there, for editing YAML directly. Off: Claude starts in `HOME` and is told to use `hab` and the API instead (see below). |
 | `enable_remote_control` | bool | `false` | Runs `claude --remote-control 'Home Assistant'` so the session can also be driven from the Claude app / claude.ai/code. The session starts at app boot, without opening the panel. Requires a `/login` session — a `claude setup-token` token cannot establish Remote Control. |
 | `experimental_code_mode` | bool | unset (off) | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. Claude Code does not support Code Mode with Remote Control, so it has no effect while `enable_remote_control` is on (a warning is logged at startup). |
 | `restart_guard` | bool | `true` | Runs `ha core check` before Claude restarts Home Assistant and blocks the restart on an invalid config (a `PreToolUse` hook in `settings.json`). |
@@ -81,15 +87,56 @@ Pick one:
 | `statusline_warn` / `statusline_crit` | % | `50` / `80` | Bar colour thresholds. |
 | `statusline_weekly_show_at` | % | `75` | Show the weekly limit from this usage; `0` = always. |
 
-## Home Assistant CLI and restart guard
+## Home Assistant config folder
 
-The `ha` CLI is installed and already authenticated, so Claude can run
-`ha core check`, `ha core logs`, `ha apps restart …` and the like.
+By default Claude does not work on the configuration files. It manages
+Home Assistant through [`hab`][hab] and the APIs, the same way the UI
+does, and starts in its home folder. Turn on `config_access` to link the
+folder at `/config` and start Claude there instead, for YAML packages,
+`configuration.yaml`, custom components and so on.
+
+The folder stays mounted at `/homeassistant` either way: an app's mounts
+are fixed and cannot follow an option. With `config_access` off, the
+app's instructions tell Claude not to edit it, which steers Claude but
+does not lock the folder away.
+
+## Command-line tools
+
+All of these are installed in the image:
+
+- **`hab`** ([Home Assistant Builder][hab], Apache-2.0) — entities,
+  devices, areas, automations, scripts, dashboards, helpers and more,
+  through the HA API. Already authenticated with the app's
+  `$SUPERVISOR_TOKEN`. Pinned to the image version; its update check is
+  off.
+- **`ha`** — the Home Assistant CLI, already authenticated, for
+  `ha core check`, `ha core logs`, `ha apps restart …` and the like.
+- **`gh`** — the GitHub CLI. Run `gh auth login` once in the terminal;
+  the login is kept in `HOME`.
+- **`git`** and **`ssh`** — see [SSH](#ssh) for keys.
+
+## SSH
+
+Put SSH files into the `ssh` folder of the app config folder
+(`/addon_configs/<repo>_claude-code/ssh/` over Samba or the File editor),
+for example a private key `id_ed25519`, a `config` and a `known_hosts`.
+On every start they are copied into `~/.ssh` with owner-only permissions,
+replacing files of the same name, so git over SSH works without fixing
+permissions by hand. Files only in `~/.ssh` (such as a key made with
+`ssh-keygen` in the terminal) are kept. Restart the app after changing the
+folder.
+
+Claude runs commands without a terminal, so it cannot answer ssh's
+first-connection host key prompt: add the host to `known_hosts` (for
+example `ssh-keyscan github.com >> known_hosts`), or set
+`StrictHostKeyChecking accept-new` for it in `config`.
+
+## Restart guard
 
 With `restart_guard` on, the app adds a `PreToolUse` hook for Bash to
 `settings.json`. Before a command that restarts or rebuilds Home Assistant
-(`ha core restart`, `curl …/core/restart`, the `homeassistant.restart`
-service) it runs `ha core check`; if the check fails, the command is
+(`ha core restart`, `hab system restart`, `curl …/core/restart`, the
+`homeassistant.restart` service) it runs `ha core check`; if the check fails, the command is
 blocked and the errors go back to Claude to fix first. It matches the
 command text, so it prevents mistakes rather than enforcing a policy.
 Turning the option off removes only this hook.
@@ -131,14 +178,16 @@ and start a new Claude session.
 - A custom AppArmor profile (`apparmor.txt`) confines the container: file
   access inside it stays broad so Claude can work, but extra capabilities,
   mounts, raw sockets and tracing other processes are denied.
-- The terminal is a root shell with read/write access to your HA config,
+- The terminal is a root shell with read/write access to your HA config
+  (at `/homeassistant`, whatever `config_access` is set to),
   the Home Assistant REST API, and the Supervisor API with the `manager`
   role (`$SUPERVISOR_TOKEN`): it can check the config, restart Home
   Assistant, and read or control other apps. The Docker API is not
   available.
 - `/addon_config/.credentials.json` holds your Claude login. The app
   config folder is visible over Samba and to apps that map
-  `all_app_configs`; treat it like a password file.
+  `all_app_configs`; treat it, and the keys in its `ssh` folder, like
+  password files.
 
 ## Copy and paste
 
@@ -155,3 +204,4 @@ and start a new Claude session.
 [settings]: https://docs.claude.com/en/docs/claude-code/settings
 [claudebar]: https://github.com/micschr0/claudebar
 [nerd-fonts]: https://github.com/ryanoasis/nerd-fonts
+[hab]: https://github.com/balloob/home-assistant-build-cli
