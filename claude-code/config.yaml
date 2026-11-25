@@ -1,5 +1,5 @@
 ---
-version: 0.4.3
+version: 0.5.0
 image: ghcr.io/saya6k/app-claude-code
 slug: claude-code
 name: Claude Code
@@ -24,6 +24,7 @@ homeassistant_api: true
 hassio_api: true
 hassio_role: manager
 options:
+  config_access: false
   enable_remote_control: false
   restart_guard: true
   statusline: true
@@ -43,6 +44,7 @@ options:
   statusline_weekly_show_at: 75
 schema:
   claude_code_oauth_token: password?
+  config_access: bool
   enable_remote_control: bool
   experimental_code_mode: bool?
   restart_guard: bool
@@ -62,12 +64,13 @@ schema:
 backup_exclude:
   - claude-code/**
 # homeassistant_config + app_config with explicit paths: the legacy `config`
-# type would make the Supervisor ignore app_config entirely, and app_config's
-# default target (/config) would collide with the HA config mount.
+# type would make the Supervisor ignore app_config entirely. The HA config
+# is mounted at /homeassistant; init-claude links it to /config only when
+# the config_access option is on (a mount itself cannot depend on options).
 map:
   - type: homeassistant_config
     read_only: false
-    path: /config
+    path: /homeassistant
   - type: app_config
     read_only: false
     path: /addon_config

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.0)
+
+## What's Changed
+
+* chore: bump claude-code 2.1.329 → 2.1.330 (#10) @[github-actions[bot]](https://github.com/apps/github-actions)
+
+## ⚠️ Breaking changes
+
+* feat!: add gh, hab and SSH keys; make /config access an option (#11) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.4.3...v0.5.0
+
 ## [0.4.3](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.4.3)
 
 ## What's Changed
