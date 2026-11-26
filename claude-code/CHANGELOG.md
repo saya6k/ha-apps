@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.2](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.2)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: trust the folder Claude starts in (#13) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.5.1...v0.5.2
+
 ## [0.5.1](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.1)
 
 ## What's Changed
