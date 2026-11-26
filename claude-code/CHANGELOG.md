@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.4](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.4)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: Shift+Enter inserts a newline in the web terminal (#15) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.5.3...v0.5.4
+
 ## [0.5.3](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.3)
 
 ## What's Changed
