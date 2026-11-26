@@ -1,5 +1,5 @@
 ---
-version: 0.5.3
+version: 0.5.4
 image: ghcr.io/saya6k/app-claude-code
 slug: claude-code
 name: Claude Code
