@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.3](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.3)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: Backspace inside a Hangul syllable on iOS (#14) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-claude-code/compare/v0.5.2...v0.5.3
+
 ## [0.5.2](https://github.com/saya6k/ha-app-claude-code/releases/tag/v0.5.2)
 
 ## What's Changed
