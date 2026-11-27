@@ -89,6 +89,7 @@ session. When a session has expired, a call with its `session_id` returns
 | `share.list(dir)`, `share.import(path, dest)`, `share.export(path)` | Home Assistant's `/share` (see [Files and /share](#files-and-share)) |
 | `plugins.<server>.<tool>(args)` | MCP servers Home Assistant connects to, if the app allows this person any (see [Plugins](#plugins)); `plugins.tools()` lists them, `plugins.call(name, args)` takes a full name. Undefined otherwise |
 | `skills.list()`, `skills.<name>(args)` | The speaker's saved skills (see [Skills](#skills)); only approved ones run |
+| `skills.request(text)` | Ask for a new skill for the speaker; it waits for an administrator's approval |
 | `sleep(ms)`, `log(...)`, `require(name)` | Waiting, logging, Node's built-in modules |
 
 There is no npm: only Node's built-ins and the preinstalled Python packages
@@ -208,7 +209,13 @@ sessions:
 
 ### Asking for a skill
 
-An administrator can also ask for a skill directly, from an automation, a
+Anyone can ask the agent for a skill ("make a skill that suggests today's
+outfit"). The agent's script calls `skills.request(text)`; the skill is
+written for that person, from what they asked and the tools they can call,
+and is stored pending like any other proposal. It cannot run before an
+administrator approves it. One request per person is written at a time.
+
+An administrator can also ask for a skill for anyone, from an automation, a
 script or **Developer tools → Actions**:
 
 ```yaml
@@ -255,6 +262,17 @@ offers each one's tools to the app. List the ones scripts may use in
 plugins:
   - name: Memory          # the integration entry's title in Settings → Devices & services
     access: all           # all = every Home Assistant user, admin = administrators only
+```
+
+Other integrations can offer an LLM API too (Wardrowbe, for example).
+Home Assistant's MCP Server serves those the same way; give the API's id as
+`api` (the integration's documentation or code names it):
+
+```yaml
+plugins:
+  - name: Wardrowbe
+    api: wardrowbe__01KXR8H9T6QN4SRQCEQWRFBQ7W
+    access: admin
 ```
 
 Scripts then call `plugins.memory.search({query: "…"})` (the tool
@@ -343,7 +361,7 @@ hosts.
 | `hab_deny` | empty | `hab` commands refused even if `hab_allow` matches |
 | `skill_workflow` | `false` | Propose skills from finished sessions through an AI Task (see [Skills](#skills)) |
 | `skill_ai_task_entity` | empty | AI Task entity for the review; empty = Home Assistant's preferred one |
-| `plugins` | empty | MCP servers scripts may call, each with `access: all` or `admin` (see [Plugins](#plugins)) |
+| `plugins` | empty | MCP servers and LLM APIs scripts may call, each with `access: all` or `admin` (see [Plugins](#plugins)) |
 
 ## Security model
 
