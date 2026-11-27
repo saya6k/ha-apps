@@ -1,6 +1,6 @@
 ---
 name: Code Interpreter
-version: 0.8.0
+version: 0.9.0
 image: ghcr.io/saya6k/app-code-interpreter
 slug: code-interpreter
 description: >-
@@ -21,6 +21,8 @@ panel_title: Code Interpreter
 # /core/api/mcp/<api> and the websocket API through the Supervisor proxy:
 # the app calls Home Assistant's MCP Server for the cells (ha.*).
 homeassistant_api: true
+# hassio.app_stdin: skill requests from automations and scripts (DOCS: Skills).
+stdin: true
 map:
   - share:rw
 discovery:
@@ -44,6 +46,7 @@ options:
   hab_deny: []
   skill_workflow: false
   skill_ai_task_entity: ""
+  plugins: []
 schema:
   idle_timeout_minutes: int(1,1440)
   max_sessions: int(1,10)
@@ -59,3 +62,6 @@ schema:
     - str?
   skill_workflow: bool
   skill_ai_task_entity: str?
+  plugins:
+    - name: str
+      access: list(all|admin)
