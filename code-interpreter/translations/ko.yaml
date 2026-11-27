@@ -60,10 +60,11 @@ configuration:
   plugins:
     name: 플러그인 (MCP 서버)
     description: >-
-      Home Assistant가 이미 연결한 MCP 서버(Model Context Protocol 통합) 중
-      스크립트가 plugins.<server>.<tool>()로 부를 수 있는 것. name은 통합
-      항목의 제목, access는 all(모든 Home Assistant 사용자) 또는
-      admin(관리자만)입니다.
+      Home Assistant가 이미 연결한 MCP 서버(Model Context Protocol 통합)와
+      다른 통합의 LLM API 중 스크립트가 plugins.<server>.<tool>()로 부를 수
+      있는 것. name은 MCP 통합 항목의 제목이고, 다른 통합의 API는 그 id를
+      api에 적습니다(예: wardrowbe__<항목 id>). access는 all(모든 Home
+      Assistant 사용자) 또는 admin(관리자만)입니다.
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는
