@@ -41,8 +41,8 @@ extra privileges.
    line with the Home Assistant tools it found, and
    `Announced MCP endpoint to Home Assistant.`
 2. Go to **Settings → Devices & services**. A discovered **Model Context
-   Protocol** entry appears; add it. (Discovery needs Home Assistant
-   2026.10 or newer.)
+   Protocol** entry appears; add it. (This needs Home Assistant 2026.12 or
+   newer: the discovery carries the token the app requires.)
 3. For `ha.*` in scripts, add the **Model Context Protocol Server**
    integration too (it is what the app calls). Without it, scripts still run
    but `ha.*` answers `HaUnavailable`.
@@ -51,14 +51,14 @@ extra privileges.
    **Assist** API off; with both on, it sees the same Home Assistant tools
    twice.
 
-If nothing is discovered, add the **Model Context Protocol** integration by
-hand. The app's log prints the URL to use when the announcement fails; it
-has the form `http://<app hostname>:8099/mcp`. Added by hand, Home
-Assistant does not tell the app who is speaking, so `ha.admin` is never
-available that way.
+The MCP endpoint answers only Home Assistant. The app announces a secret
+token with its discovery, and Home Assistant sends it with every request;
+requests without it are refused (`401`). Other apps on the same host, and
+an entry added by hand (it has no token), cannot call the app. If nothing is
+discovered, restart the app to announce it again.
 
-No port mapping is needed. Map port 8099 only for an MCP client outside the
-Home Assistant host.
+No port mapping is needed, and an MCP client outside Home Assistant cannot
+use the app.
 
 ## Tools
 
@@ -365,6 +365,9 @@ Inside a sandbox, code:
   size. Math libraries use 2 threads, and sandboxes run at a lower CPU
   priority. Under memory pressure the kernel ends sandboxes before the app.
 
+Who is speaking comes from Home Assistant: only it holds the app's token,
+so another app on the host cannot run code or claim to be an administrator.
+
 If the sandbox cannot be set up as described, the app refuses to run code
 (fail closed) and logs why at startup.
 
@@ -401,9 +404,12 @@ record also shows as a one-line `[audit]` summary in the app log.
   returns `sandbox_unavailable` until this is fixed; the log line says why.
 - **`HaUnavailable` from `ha.*`:** add the **Model Context Protocol
   Server** integration; the message says what failed.
-- **`ha.admin` is undefined for an administrator:** the Model Context
-  Protocol integration was added by hand instead of from discovery, or the
-  user is not in the Administrators group.
+- **The Model Context Protocol entry fails with an authentication error**
+  (or asks for OAuth): Home Assistant is older than 2026.12 and sends no
+  token, or the entry was added by hand. Update Home Assistant, delete the
+  entry and add the discovered one.
+- **`ha.admin` is undefined for an administrator:** the user is not in the
+  Administrators group.
 - **`NotAllowed` from `ha.admin.hab()`:** the command changes Home
   Assistant and no `hab_allow` rule matches it, or it is one no rule can
   allow; the message says which.

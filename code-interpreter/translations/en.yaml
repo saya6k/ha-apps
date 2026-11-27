@@ -67,5 +67,5 @@ configuration:
 network:
   8099/tcp: >-
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
-    reaches it over the internal network; map it only for external MCP
-    clients.
+    reaches it over the internal network, and only Home Assistant holds the
+    token it requires.

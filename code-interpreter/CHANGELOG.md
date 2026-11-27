@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.10.0)
+
+## What's Changed
+
+## ⚠️ Breaking changes
+
+* feat!: the MCP endpoint answers only Home Assistant (discovery token) (#20) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.9.0...v0.10.0
+
 ## [0.9.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.9.0)
 
 ## What's Changed

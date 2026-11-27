@@ -67,4 +67,4 @@ configuration:
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는
-    내부 네트워크로 접속합니다. 외부 MCP 클라이언트가 필요할 때만 매핑하세요.
+    내부 네트워크로 접속하며, 필요한 토큰은 Home Assistant만 갖고 있습니다.
