@@ -21,6 +21,18 @@ configuration:
       "Home Assistant" in the Claude app and claude.ai/code. The session is
       started at app boot, so it is reachable without opening the panel.
       Needs a full /login (a `claude setup-token` token is not enough).
+  packages:
+    name: Packages
+    description: >-
+      Alpine packages to install on every start, e.g. `nodejs` and `npm`
+      for MCP servers started with `npx`, or `uv` for `uvx`. The app
+      does not start if one cannot be installed.
+  init_commands:
+    name: Init commands
+    description: >-
+      Shell commands run in order on every start, after the packages and
+      before Claude starts (e.g. `npm install -g some-mcp-server`). The
+      app does not start if a command fails or runs over 10 minutes.
   claude_code_version:
     name: Claude Code version
     description: >-
