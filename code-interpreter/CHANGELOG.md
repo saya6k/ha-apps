@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.11.0)
+
+## What's Changed
+
+## New Features
+
+* feat: plugins take any LLM API; skills.request() asks for a skill in a conversation (#21) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.10.0...v0.11.0
+
 ## [0.10.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.10.0)
 
 ## What's Changed
