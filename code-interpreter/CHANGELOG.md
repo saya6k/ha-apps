@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.1](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.11.1)
+
+## What's Changed
+
+## Bug Fixes
+
+* fix: skill requests show each tool argument's type and allowed values (#22) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.11.0...v0.11.1
+
 ## [0.11.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.11.0)
 
 ## What's Changed

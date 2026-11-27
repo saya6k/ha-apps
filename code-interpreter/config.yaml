@@ -1,6 +1,6 @@
 ---
 name: Code Interpreter
-version: 0.11.0
+version: 0.11.1
 image: ghcr.io/saya6k/app-code-interpreter
 slug: code-interpreter
 description: >-
