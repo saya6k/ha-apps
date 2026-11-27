@@ -1,5 +1,5 @@
 ---
-version: 0.5.4
+version: 0.6.0
 image: ghcr.io/saya6k/app-claude-code
 slug: claude-code
 name: Claude Code
@@ -26,6 +26,8 @@ hassio_role: manager
 options:
   config_access: false
   enable_remote_control: false
+  packages: []
+  init_commands: []
   restart_guard: true
   statusline: true
   statusline_theme: tokyo-night
@@ -47,6 +49,12 @@ schema:
   config_access: bool
   enable_remote_control: bool
   experimental_code_mode: bool?
+  # Extra tools for MCP servers etc., set up on every start before Claude
+  # runs: Alpine packages, then shell commands in order.
+  packages:
+    - str
+  init_commands:
+    - str
   restart_guard: bool
   # Unset: install the latest release on every start. Set: pin that version.
   claude_code_version: match(^[0-9]+\.[0-9]+\.[0-9]+$)?
@@ -63,6 +71,8 @@ schema:
 # Downloaded Claude Code builds (~200 MB each) are re-fetched on demand.
 backup_exclude:
   - claude-code/**
+  # Caches of uvx and the like, under HOME (/data/home).
+  - home/.cache/**
 # homeassistant_config + app_config with explicit paths: the legacy `config`
 # type would make the Supervisor ignore app_config entirely. The HA config
 # is mounted at /homeassistant; init-claude links it to /config only when
