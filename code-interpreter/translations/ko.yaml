@@ -46,6 +46,17 @@ configuration:
     name: 거부할 hab 명령
     description: >-
       hab_allow에 맞아도 거부합니다(예: "automation update alarm_*").
+  skill_workflow:
+    name: 끝난 세션에서 스킬 제안
+    description: >-
+      사용자의 세션이 끝나면 실행된 코드를 AI Task 엔티티에 보내, 다시 쓸
+      스킬을 제안받습니다. 제안은 관리자가 패널에서 승인해야 쓸 수
+      있습니다. 끄면 아무것도 보내지 않습니다.
+  skill_ai_task_entity:
+    name: 스킬 검토에 쓸 AI Task 엔티티
+    description: >-
+      예: ai_task.claude_ai_task. 비우면 Home Assistant의 선호 AI Task
+      엔티티를 씁니다.
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는

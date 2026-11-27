@@ -87,6 +87,7 @@ session. When a session has expired, a call with its `session_id` returns
 | `` $`cmd ${x}` `` | Run `sh -c` in `/sandbox`; values are quoted. `.text()`, `.lines()`, `.json()`, `.nothrow()`, `.timeout(ms)`; a failing command throws `ShellError` |
 | `file(p)`, `write(p, s)` | Read (`.text()`, `.json()`, `.lines()`, `.exists()`) and write files; relative paths are under `/sandbox` |
 | `share.list(dir)`, `share.import(path, dest)`, `share.export(path)` | Home Assistant's `/share` (see [Files and /share](#files-and-share)) |
+| `skills.list()`, `skills.<name>(args)` | The speaker's saved skills (see [Skills](#skills)); only approved ones run |
 | `sleep(ms)`, `log(...)`, `require(name)` | Waiting, logging, Node's built-in modules |
 
 There is no npm: only Node's built-ins and the preinstalled Python packages
@@ -181,6 +182,33 @@ misunderstood request, or instructions planted in a device's name, acts on
 everything exposed at once. Expose to Assist only what the agent should
 control.
 
+## Skills
+
+With `skill_workflow` on, the app learns reusable functions from finished
+sessions:
+
+1. When a known user's session ends (idle, closed or replaced), the app
+   takes the code that ran without errors and did real work, at most the
+   last 8 runs, and sends it to an **AI Task** entity
+   (`skill_ai_task_entity`, or Home Assistant's preferred one) with the
+   user's existing skills.
+2. The AI Task decides whether one task is worth keeping and rewrites it as a
+   general function with parameters, for example `turn_off_lights_except({
+   except: "거실" })`.
+3. The proposal is stored **pending** for that user only. An administrator
+   reads the code in the panel's **Skills** section and approves or rejects
+   it. A new proposal for an existing skill waits beside the approved
+   version until it is approved.
+4. Scripts see their user's skills with `skills.list()` and run approved
+   ones as `skills.<name>(args)`, with the same permissions as any other
+   code.
+
+Calls with no user never propose skills. Nothing is sent while
+`skill_workflow` is off (the default). The AI Task reads code that came from
+conversations, so it can be misled like any model; that is why nothing runs
+before an administrator approves it. Proposals, reviews, approvals and uses
+are in the audit log (`skill.*`).
+
 ## Files and /share
 
 Each session has a private `/sandbox` (256 MB) and `/tmp` (64 MB). Both live
@@ -246,6 +274,8 @@ hosts.
 | `audit_retention_days` | `30` | Days of audit log to keep |
 | `hab_allow` | empty | `hab` commands that may change Home Assistant (see [Editing with hab](#editing-with-hab)) |
 | `hab_deny` | empty | `hab` commands refused even if `hab_allow` matches |
+| `skill_workflow` | `false` | Propose skills from finished sessions through an AI Task (see [Skills](#skills)) |
+| `skill_ai_task_entity` | empty | AI Task entity for the review; empty = Home Assistant's preferred one |
 
 ## Security model
 
