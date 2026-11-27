@@ -65,7 +65,6 @@ use the app.
 | Tool | What it does |
 |---|---|
 | `run_code` | Run a JavaScript script in the session's sandbox. Returns `result` (the last expression), `logs` (console output; error output marked `[stderr]`), `error` and `message` if it threw, `new_files` under `/sandbox`, and `kernel_restarted` |
-| `list_sessions` / `close_session` | See and end your own sessions |
 
 Top-level `await` works, and `const`, `let`, `function` and `class` declared
 at the top level stay defined for later calls. A call without `session_id`
@@ -75,6 +74,9 @@ does not pass the id back; `reset: true` starts clean. Calls with no user (a
 voice satellite, a client outside Home Assistant) always start a new
 session. When a session has expired, a call with its `session_id` returns
 `session_not_found`; the agent never silently continues in a fresh one.
+There are no tools to list or close sessions: they end on their own after
+`idle_timeout_minutes`, and administrators can see and close any of them in
+the panel.
 
 ### In a script
 
