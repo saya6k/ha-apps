@@ -46,6 +46,17 @@ configuration:
     name: hab commands to refuse
     description: >-
       Refused even when hab_allow matches, e.g. "automation update alarm_*".
+  skill_workflow:
+    name: Propose skills from finished sessions
+    description: >-
+      When a user's session ends, send the code that ran to an AI Task
+      entity, which may propose a reusable skill. Proposals wait for an
+      administrator's approval in the panel. Off: nothing is sent.
+  skill_ai_task_entity:
+    name: AI Task entity for skill review
+    description: >-
+      e.g. ai_task.claude_ai_task. Empty = Home Assistant's preferred AI Task
+      entity.
 network:
   8099/tcp: >-
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
