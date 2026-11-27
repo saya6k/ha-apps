@@ -20,6 +20,18 @@ configuration:
       "Home Assistant" 세션으로 이어서 쓸 수 있게 합니다. 앱 시작 시
       세션을 바로 띄우므로 패널을 열지 않아도 접속됩니다. /login 로그인이
       필요합니다(`claude setup-token` 토큰으로는 안 됩니다).
+  packages:
+    name: 패키지
+    description: >-
+      시작할 때마다 설치할 Alpine 패키지. 예를 들어 `npx`로 띄우는 MCP
+      서버에는 `nodejs`와 `npm`, `uvx`에는 `uv`. 하나라도 설치에
+      실패하면 앱이 시작되지 않습니다.
+  init_commands:
+    name: 초기화 명령
+    description: >-
+      시작할 때마다 패키지 설치 뒤, Claude 실행 전에 차례로 실행할 셸 명령
+      (예: `npm install -g some-mcp-server`). 명령이 실패하거나 10분을
+      넘기면 앱이 시작되지 않습니다.
   claude_code_version:
     name: Claude Code 버전
     description: >-

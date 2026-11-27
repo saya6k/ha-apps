@@ -79,6 +79,8 @@ Pick one:
 | `claude_code_version` | version | unset | Unset: latest release on every start. `2.1.300`: pin that version. |
 | `config_access` | bool | `false` | Links the HA config folder at `/config` and starts Claude there, for editing YAML directly. Off: Claude starts in `HOME` and is told to use `hab` and the API instead (see below). |
 | `enable_remote_control` | bool | `false` | Runs `claude --remote-control 'Home Assistant'` so the session can also be driven from the Claude app / claude.ai/code. The session starts at app boot, without opening the panel. Requires a `/login` session — a `claude setup-token` token cannot establish Remote Control. |
+| `packages` | list | `[]` | Alpine packages installed on every start, e.g. `nodejs` + `npm` (for `npx`) or `uv` (for `uvx`). See [Extra tools for MCP servers](#extra-tools-for-mcp-servers). |
+| `init_commands` | list | `[]` | Shell commands run in order on every start, after `packages` and before Claude starts. |
 | `experimental_code_mode` | bool | unset (off) | Sets `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE=1` for Claude Code's experimental Code Mode. A `"0"` in `settings.json`'s `env` still turns it off. Claude Code does not support Code Mode with Remote Control, so it has no effect while `enable_remote_control` is on (a warning is logged at startup). |
 | `restart_guard` | bool | `true` | Runs `ha core check` before Claude restarts Home Assistant and blocks the restart on an invalid config (a `PreToolUse` hook in `settings.json`). |
 | `statusline` | bool | `true` | Show the [claudebar][claudebar] statusline under the prompt (usage limits, context, cost). |
@@ -114,6 +116,29 @@ All of these are installed in the image:
 - **`gh`** — the GitHub CLI. Run `gh auth login` once in the terminal;
   the login is kept in `HOME`.
 - **`git`** and **`ssh`** — see [SSH](#ssh) for keys.
+
+### Extra tools for MCP servers
+
+Many MCP servers are started with `npx` or `uvx`, which the image does
+not include. List what they need in `packages` (Alpine package names,
+installed with `apk add`) and any further setup in `init_commands`:
+
+```yaml
+packages:
+  - nodejs
+  - npm
+  - uv
+init_commands:
+  - npm install -g @modelcontextprotocol/server-filesystem
+```
+
+The container is recreated on every start, so both run again each time,
+after the rest of the setup (including the Claude Code install) and before
+Claude starts; commands run with `bash -c` in `HOME`, each limited to 10
+minutes. If a package cannot be installed or a command exits non-zero or
+times out, the app stops with the error in its log. `npm install -g` goes
+into the container, so it is redone on each start. Caches under
+`HOME/.cache` (such as `uvx`'s) are left out of backups.
 
 ## SSH
 
