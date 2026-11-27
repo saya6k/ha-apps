@@ -2,19 +2,23 @@
 
 ![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield]
 
-Stateful Python code execution for Assist conversation agents over MCP. Each
-session runs in a bubblewrap sandbox inside the app, with no network by
-default, an analysis stack preinstalled (pandas, numpy, scikit-learn,
-matplotlib, …), files exchanged through `/share`, and a JSONL audit log.
-Runs with protection mode on.
+A sandboxed code runner for Assist conversation agents over MCP. The agent
+writes one JavaScript script per call that can read and control Home
+Assistant (only what the person speaking may use), run Python for analysis
+and charts (pandas, numpy, scikit-learn, matplotlib, …), and exchange files
+through `/share`. Each session runs in a bubblewrap sandbox with no network
+by default and a JSONL audit log. Runs with protection mode on.
 
 ## Quick start
 
 1. Install **Code Interpreter** from the app store and click **Start**.
 2. Add the discovered **Model Context Protocol** integration under
    **Settings → Devices & services**.
-3. Enable the tools for your Assist conversation agent and ask it to
-   calculate, analyze a file from `/share`, or draw a chart.
+3. Add the **Model Context Protocol Server** integration, so scripts can
+   reach Home Assistant.
+4. Enable the tools for your Assist conversation agent and ask it to turn
+   off every light but one room, analyze a file from `/share`, or chart
+   last week's energy use.
 
 See **[DOCS.md](DOCS.md)** for tools, limits, network access and the
 security model.

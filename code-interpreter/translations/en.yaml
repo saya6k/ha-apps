@@ -13,9 +13,9 @@ configuration:
   memory_limit_mb:
     name: Memory limit (MB)
     description: >-
-      Address-space limit per sandbox (minimum 768). It counts reserved
-      memory, so real use is lower. Code that goes beyond it gets a
-      MemoryError.
+      Address-space limit per sandbox process (minimum 1024). It counts
+      reserved memory, so real use is lower. Code that goes beyond it gets a
+      MemoryError (Python) or RangeError (JavaScript).
   network_allowlist:
     name: Network allowlist
     description: >-
@@ -26,17 +26,26 @@ configuration:
   max_file_mb:
     name: Maximum file size (MB)
     description: >-
-      Largest file for import from /share, export to /share and
-      write_file.
+      Largest file for share.import and share.export.
   export_dir:
     name: Export directory
     description: >-
-      Where export_to_share puts files, one subfolder per session. Must be
+      Where share.export puts files, one subfolder per session. Must be
       under /share.
   audit_retention_days:
     name: Audit log retention (days)
     description: >-
       Days of audit log (/data/audit) to keep.
+  hab_allow:
+    name: hab commands that may change Home Assistant
+    description: >-
+      For administrators' ha.admin.hab(): commands as typed, * for any rest,
+      e.g. "automation update *". Reading commands always run. Empty =
+      nothing is changed.
+  hab_deny:
+    name: hab commands to refuse
+    description: >-
+      Refused even when hab_allow matches, e.g. "automation update alarm_*".
 network:
   8099/tcp: >-
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
