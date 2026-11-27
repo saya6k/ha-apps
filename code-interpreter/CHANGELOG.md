@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.5.0)
+
+## What's Changed
+
+## ⚠️ Breaking changes
+
+* feat!: one run_code tool for scripts; docs and identity for Code Mode (#12) @saya6k
+* feat!: run_code runs JavaScript in a Node REPL (#8) @saya6k
+
+## New Features
+
+* feat: ha.admin.hab() for administrators, with Claude Code's dontAsk rules (#13) @saya6k
+* feat: ha.* in REPL cells through Home Assistant's MCP Server (#11) @saya6k
+* feat: share.list, share.import and share.export from REPL cells (#10) @saya6k
+* feat: $, file, write, sleep and log globals in the REPL (#9) @saya6k
+
+## Maintenance
+
+* chore: run local docker through socktainer, not linux-test (#7) @saya6k
+* chore: drop the experimental stage from the app config (#5) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.4.0...v0.5.0
+
 ## [0.4.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.4.0)
 
 ## What's Changed

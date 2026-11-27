@@ -13,8 +13,9 @@ configuration:
   memory_limit_mb:
     name: 메모리 한도(MB)
     description: >-
-      샌드박스마다 적용되는 주소 공간 한도(최소 768). 예약된 메모리까지
-      세므로 실제 사용량은 이보다 적습니다. 넘으면 MemoryError가 납니다.
+      샌드박스 프로세스마다 적용되는 주소 공간 한도(최소 1024). 예약된
+      메모리까지 세므로 실제 사용량은 이보다 적습니다. 넘으면 MemoryError
+      (Python)나 RangeError(JavaScript)가 납니다.
   network_allowlist:
     name: 네트워크 허용 목록
     description: >-
@@ -25,17 +26,26 @@ configuration:
   max_file_mb:
     name: 최대 파일 크기(MB)
     description: >-
-      /share에서 가져오기, /share로 내보내기, write_file에 허용하는 최대
-      파일 크기.
+      share.import와 share.export에 허용하는 최대 파일 크기.
   export_dir:
     name: 내보내기 폴더
     description: >-
-      export_to_share가 파일을 놓는 곳(세션마다 하위 폴더). /share 아래여야
+      share.export가 파일을 놓는 곳(세션마다 하위 폴더). /share 아래여야
       합니다.
   audit_retention_days:
     name: 감사 로그 보관 기간(일)
     description: >-
       감사 로그(/data/audit)를 보관할 일수.
+  hab_allow:
+    name: Home Assistant를 바꿀 수 있는 hab 명령
+    description: >-
+      관리자의 ha.admin.hab()에 적용. 입력하는 명령 그대로, 나머지는 *로
+      (예: "automation update *"). 읽기 명령은 항상 실행됩니다. 비우면 아무것도
+      바꾸지 않습니다.
+  hab_deny:
+    name: 거부할 hab 명령
+    description: >-
+      hab_allow에 맞아도 거부합니다(예: "automation update alarm_*").
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는
