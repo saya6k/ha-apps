@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.8.0)
+
+## What's Changed
+
+## New Features
+
+* feat: GetLiveContext results carry the entities parsed (#17) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.7.0...v0.8.0
+
 ## [0.7.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.7.0)
 
 ## What's Changed
