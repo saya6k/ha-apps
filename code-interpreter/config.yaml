@@ -1,14 +1,14 @@
 ---
 name: Code Interpreter
-version: 0.4.0
+version: 0.5.0
 image: ghcr.io/saya6k/app-code-interpreter
 slug: code-interpreter
 description: >-
-  Stateful Python code execution for Assist conversation agents over MCP.
-  Each session runs in a bubblewrap sandbox inside the app with no network
-  by default, files shared via /share, and a JSONL audit log.
+  Sandboxed JavaScript (and Python) for Assist conversation agents over MCP:
+  one script per call reads and controls Home Assistant, analyzes data and
+  exchanges files via /share. Bubblewrap sandbox, no network by default,
+  JSONL audit log.
 url: https://github.com/saya6k/ha-app-code-interpreter
-stage: experimental
 arch:
   - aarch64
   - amd64
@@ -16,8 +16,11 @@ init: false
 startup: services
 ingress: true
 ingress_port: 8098
-panel_icon: mdi:language-python
+panel_icon: mdi:code-tags
 panel_title: Code Interpreter
+# /core/api/mcp/<api> and the websocket API through the Supervisor proxy:
+# the app calls Home Assistant's MCP Server for the cells (ha.*).
+homeassistant_api: true
 map:
   - share:rw
 discovery:
@@ -37,12 +40,18 @@ options:
   max_file_mb: 20
   export_dir: /share/code-interpreter
   audit_retention_days: 30
+  hab_allow: []
+  hab_deny: []
 schema:
   idle_timeout_minutes: int(1,1440)
   max_sessions: int(1,10)
-  memory_limit_mb: int(768,8192)
+  memory_limit_mb: int(1024,8192)
   network_allowlist:
     - str?
   max_file_mb: int(1,500)
   export_dir: str
   audit_retention_days: int(1,365)
+  hab_allow:
+    - str?
+  hab_deny:
+    - str?
