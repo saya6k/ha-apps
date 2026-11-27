@@ -57,6 +57,13 @@ configuration:
     description: >-
       예: ai_task.claude_ai_task. 비우면 Home Assistant의 선호 AI Task
       엔티티를 씁니다.
+  plugins:
+    name: 플러그인 (MCP 서버)
+    description: >-
+      Home Assistant가 이미 연결한 MCP 서버(Model Context Protocol 통합) 중
+      스크립트가 plugins.<server>.<tool>()로 부를 수 있는 것. name은 통합
+      항목의 제목, access는 all(모든 Home Assistant 사용자) 또는
+      admin(관리자만)입니다.
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는

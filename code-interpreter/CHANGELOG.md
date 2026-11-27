@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.9.0)
+
+## What's Changed
+
+## New Features
+
+* feat: plugins — MCP servers Home Assistant reaches, per-server access (#19) @saya6k
+* feat: ask for a skill with hassio.app_stdin; skills carry a uses manifest (#18) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.8.0...v0.9.0
+
 ## [0.8.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.8.0)
 
 ## What's Changed

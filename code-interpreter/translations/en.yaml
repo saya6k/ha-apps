@@ -57,6 +57,13 @@ configuration:
     description: >-
       e.g. ai_task.claude_ai_task. Empty = Home Assistant's preferred AI Task
       entity.
+  plugins:
+    name: Plugins (MCP servers)
+    description: >-
+      MCP servers Home Assistant already connects to (Model Context Protocol
+      integration) that scripts may call as plugins.<server>.<tool>(). name
+      is the integration entry's title; access is all (every Home Assistant
+      user) or admin (administrators only).
 network:
   8099/tcp: >-
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
