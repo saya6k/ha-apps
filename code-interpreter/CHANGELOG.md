@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.12.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.12.0)
+
+## What's Changed
+
+## ⚠️ Breaking changes
+
+* feat!: drop list_sessions and close_session; point skill requests at skills.request() (#23) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.11.1...v0.12.0
+
 ## [0.11.1](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.11.1)
 
 ## What's Changed
