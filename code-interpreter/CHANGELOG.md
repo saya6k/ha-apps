@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.7.0)
+
+## What's Changed
+
+## New Features
+
+* feat: skills proposed from finished sessions by an AI Task, approved by an admin (#16) @saya6k
+
+## Bug Fixes
+
+* fix: one logo for light and dark themes; drop dark_logo.png (#15) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.6.0...v0.7.0
+
 ## [0.6.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.6.0)
 
 ## What's Changed

@@ -1,6 +1,6 @@
 ---
 name: Code Interpreter
-version: 0.6.0
+version: 0.7.0
 image: ghcr.io/saya6k/app-code-interpreter
 slug: code-interpreter
 description: >-
@@ -42,6 +42,8 @@ options:
   audit_retention_days: 30
   hab_allow: []
   hab_deny: []
+  skill_workflow: false
+  skill_ai_task_entity: ""
 schema:
   idle_timeout_minutes: int(1,1440)
   max_sessions: int(1,10)
@@ -55,3 +57,5 @@ schema:
     - str?
   hab_deny:
     - str?
+  skill_workflow: bool
+  skill_ai_task_entity: str?
