@@ -68,10 +68,13 @@ Home Assistant host.
 | `list_sessions` / `close_session` | See and end your own sessions |
 
 Top-level `await` works, and `const`, `let`, `function` and `class` declared
-at the top level stay defined for the next call with the same
-`session_id`. When a session has expired, a call with its `session_id`
-returns `session_not_found`; the agent then starts a new session. It never
-silently continues in a fresh one.
+at the top level stay defined for later calls. A call without `session_id`
+continues the speaker's latest open session (the result says
+`resumed: true`), so variables carry over between turns even when the agent
+does not pass the id back; `reset: true` starts clean. Calls with no user (a
+voice satellite, a client outside Home Assistant) always start a new
+session. When a session has expired, a call with its `session_id` returns
+`session_not_found`; the agent never silently continues in a fresh one.
 
 ### In a script
 
