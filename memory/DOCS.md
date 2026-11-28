@@ -77,8 +77,11 @@ float16).
 ## Connecting it to Assist
 
 The add-on announces its MCP endpoint to Home Assistant via Supervisor
-discovery on every start. If HA does not pick it up automatically, add it
-manually with the URL printed in the log:
+discovery on every start. Home Assistant reads an MCP server's tools when its
+entry loads and then only every 30 minutes, so on every start the add-on also
+reloads its entry (the MCP entry titled with the add-on's name): an update's
+tools reach the assistant at once. If HA does not pick it up automatically,
+add it manually with the URL printed in the log:
 
 ```text
 http://<add-on hostname>:8099/mcp

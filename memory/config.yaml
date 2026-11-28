@@ -1,6 +1,6 @@
 ---
 name: Memory
-version: 0.7.1
+version: 0.8.0
 image: ghcr.io/saya6k/app-memory
 slug: memory
 description: >-
