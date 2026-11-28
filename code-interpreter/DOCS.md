@@ -57,6 +57,10 @@ requests without it are refused (`401`). Other apps on the same host, and
 an entry added by hand (it has no token), cannot call the app. If nothing is
 discovered, restart the app to announce it again.
 
+Home Assistant reads an MCP server's tools when its entry loads and then
+only every 30 minutes. So that an update reaches the agent at once, the app
+reloads its own entry (the one discovery created) each time it starts.
+
 No port mapping is needed, and an MCP client outside Home Assistant cannot
 use the app.
 
@@ -90,9 +94,9 @@ the panel.
 | `file(p)`, `write(p, s)` | Read (`.text()`, `.json()`, `.lines()`, `.exists()`) and write files; relative paths are under `/sandbox` |
 | `share.list(dir)`, `share.import(path, dest)`, `share.export(path)` | Home Assistant's `/share` (see [Files and /share](#files-and-share)) |
 | `plugins.<server>.<tool>(args)` | MCP servers Home Assistant connects to, if the app allows this person any (see [Plugins](#plugins)); `plugins.tools()` and `plugins.find(text)` as above, `plugins.call(name, args)` takes a full name. Undefined otherwise |
-| `skills.list()`, `skills.find(text)`, `skills.<name>(args)` | The speaker's skills (see [Skills](#skills)): all of them, or the few that best match a request; run a routine or read a guide |
-| `skills.save(name, {description, code \| guide, params})`, `skills.delete(name)` | Save, replace or delete one of the speaker's skills, in force at once |
-| `skills.request(text)` | Have the AI Task write a routine for the speaker in the background |
+| `skills.list()`, `skills.find(text)`, `skills.<name>()` | The speaker's skills (see [Skills](#skills)): all of them, the few that best match a request, or one guide (`{guide}`) |
+| `skills.save(name, {description, guide})`, `skills.delete(name)` | Save, replace or delete one of the speaker's guides, in force at once |
+| `skills.request(text)` | Have the AI Task write a guide for the speaker in the background |
 | `sleep(ms)`, `log(...)`, `require(name)` | Waiting, logging, Node's built-in modules |
 
 There is no npm: only Node's built-ins and the preinstalled Python packages
@@ -189,43 +193,46 @@ control.
 
 ## Skills
 
-A skill is something a person's agent keeps for next time. There are two
-kinds:
-
-- **Routines** are code: an async function such as
-  `turn_off_lights_except({ except: "거실" })` that the agent runs as
-  `skills.<name>(args)`.
-- **Guides** are instructions: how the person wants something done from now
-  on ("when you suggest an outfit, always say whether to take an umbrella").
-  `skills.<name>()` returns `{guide}`, and the agent follows it.
+A skill is a **guide**: instructions a person's assistant keeps for a task
+they repeat, the way Claude Code keeps skills. It says when to use it, the
+steps, the tools to call with their arguments, what to say back, and a
+script the assistant can adapt ("when you suggest an outfit, check today's
+chance of rain and mention it"). `skills.<name>()` returns `{guide}`, and
+the assistant follows it in place of working the task out again.
 
 A skill belongs to one person, is **in force as soon as it is saved**, and
-runs with that person's rights, no more: what it calls goes through the same
-checks as any other script. Skills are saved in three ways:
+whatever the assistant does while following it goes through that person's
+rights and the same checks as any other script. Skills are saved in three
+ways:
 
-1. **By the agent**, when the person asks for a routine or says how
-   something should be done:
-   `skills.save(name, {description, code | guide, params})`. Saving the same
-   name again replaces it; `skills.delete(name)` removes it.
-2. **By a background writer**, when the agent calls `skills.request(text)`
-   instead: an **AI Task** entity (`skill_ai_task_entity`, or Home
-   Assistant's preferred one) writes a routine from the request and the
-   tools that person can call, in about a minute. One request per person is
-   written at a time.
+1. **By the assistant**, when the person wants a way of doing something kept,
+   or says how it should be done from now on:
+   `skills.save(name, {description, guide})`. Saving the same name again
+   replaces it; `skills.delete(name)` removes it.
+2. **By a background writer**, when the assistant calls
+   `skills.request(text)` instead: an **AI Task** entity
+   (`skill_ai_task_entity`, or Home Assistant's preferred one) writes the
+   guide from the request and the tools that person can call, in about a
+   minute. One request per person is written at a time.
 3. **From finished sessions**, with `skill_workflow` on: when a known user's
    session ends, the code that ran without errors and did real work (at most
-   the last 8 runs) goes to the AI Task, which keeps one repeatable task as a
-   routine, or nothing.
+   the last 8 runs) goes to the AI Task, which writes one repeatable task as
+   a guide, or nothing.
 
 The writer and the session review are off unless `skill_workflow` is on;
-the agent can always save skills itself. Every skill needs a description
-that says what it does and when to use it: that is how the agent finds it.
+the assistant can always save skills itself. Every skill needs a description
+that says what it does and when to use it: that is how the assistant finds
+it.
+
+Each time a skill is saved, Home Assistant shows a notification with the
+person's name and the skill's name (never its text: every user sees
+notifications). Deleting the skill clears it.
 
 ### How the agent finds skills
 
 The first result of a new conversation (a new session, or the latest one
 after five idle minutes, when Home Assistant ends a conversation) lists the
-person's skills in `skills`: name, kind and a one-line description, at most
+person's skills in `skills`: name and a one-line description, at most
 30, most recently used first (`skills_more` counts the rest). The tool
 description tells the agent to use a listed skill that covers the task
 before its own approach. `skills.find(text)` matches a request against each
@@ -234,7 +241,7 @@ returns all of them.
 
 ### Asking from an automation
 
-An administrator can have a routine written for anyone, from an
+An administrator can have a guide written for anyone, from an
 automation, a script or **Developer tools → Actions**:
 
 ```yaml
@@ -254,12 +261,12 @@ Requests are ignored while `skill_workflow` is off.
 
 ### What to keep in mind
 
-- A skill's code and a guide's text come from models that read
-  conversations, plugin answers and files, so they can be misled: a guide
-  in particular reaches the model again in later conversations. Every save
-  and deletion is in the audit log (`skill.saved`, `skill.deleted`), and
-  the panel's **Skills** section shows each skill's code or text, what the
-  code visibly calls, and a **Delete** button.
+- A guide comes from a model that read conversations, plugin answers and
+  files, so it can be misled, and it reaches the model again in later
+  conversations. Every save and deletion is in the audit log
+  (`skill.saved`, `skill.deleted`) and raises the notification above, and
+  the panel's **Skills** section shows each guide, what its code visibly
+  calls, and a **Delete** button.
 - Calls with no user (a voice satellite) have no skills.
 
 ## Plugins
