@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/saya6k/ha-app-memory/releases/tag/v0.8.0)
+
+## What's Changed
+
+## New Features
+
+* feat: reload the add-on's MCP entry on every start (#22) @saya6k
+
+## Maintenance
+
+* chore: run local docker through socktainer, not linux-test (#21) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-memory/compare/v0.7.1...v0.8.0
+
 ## [0.7.1](https://github.com/saya6k/ha-app-memory/releases/tag/v0.7.1)
 
 ## What's Changed
