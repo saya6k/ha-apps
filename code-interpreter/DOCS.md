@@ -90,7 +90,7 @@ the panel.
 | `file(p)`, `write(p, s)` | Read (`.text()`, `.json()`, `.lines()`, `.exists()`) and write files; relative paths are under `/sandbox` |
 | `share.list(dir)`, `share.import(path, dest)`, `share.export(path)` | Home Assistant's `/share` (see [Files and /share](#files-and-share)) |
 | `plugins.<server>.<tool>(args)` | MCP servers Home Assistant connects to, if the app allows this person any (see [Plugins](#plugins)); `plugins.tools()` lists them, `plugins.call(name, args)` takes a full name. Undefined otherwise |
-| `skills.list()`, `skills.<name>(args)` | The speaker's saved skills (see [Skills](#skills)); only approved ones run |
+| `skills.list()`, `skills.find(text)`, `skills.<name>(args)` | The speaker's saved skills (see [Skills](#skills)): all of them, or the few that best match a request, with descriptions and parameters; only approved ones run |
 | `skills.request(text)` | Ask for a new skill for the speaker; it waits for an administrator's approval |
 | `sleep(ms)`, `log(...)`, `require(name)` | Waiting, logging, Node's built-in modules |
 
@@ -205,9 +205,16 @@ sessions:
    panel's **Skills** section and approves or rejects it; that clears the
    notification. A new proposal for an existing skill waits beside the
    approved version until it is approved.
-4. Scripts see their user's skills with `skills.list()` and run approved
-   ones as `skills.<name>(args)`, with the same permissions as any other
-   code.
+4. Scripts see their user's skills with `skills.list()` or
+   `skills.find(text)` and run approved ones as `skills.<name>(args)`,
+   with the same permissions as any other code. The first result of a new
+   conversation (a new session, or the latest one after five idle minutes,
+   when Home Assistant ends a conversation) lists the names of the user's
+   approved skills (`skills`, at most
+   30, most recently used first; `skills_more` counts the rest), so the
+   agent knows what exists without reading every description.
+   `skills.find(text)` matches the request's words against each skill's
+   name and description and returns the best five.
 
 ### Asking for a skill
 
