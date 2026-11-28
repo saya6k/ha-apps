@@ -47,11 +47,12 @@ configuration:
     description: >-
       Refused even when hab_allow matches, e.g. "automation update alarm_*".
   skill_workflow:
-    name: Propose skills from finished sessions
+    name: Write skills with an AI Task
     description: >-
       When a user's session ends, send the code that ran to an AI Task
-      entity, which may propose a reusable skill. Proposals wait for an
-      administrator's approval in the panel. Off: nothing is sent.
+      entity, which may save a reusable skill for that user; skills.request()
+      and skill requests from automations use it too. Skills are in force
+      once saved. Off: nothing is sent (agents can still save skills).
   skill_ai_task_entity:
     name: AI Task entity for skill review
     description: >-
