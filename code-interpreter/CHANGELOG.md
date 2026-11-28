@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.15.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.15.0)
+
+## What's Changed
+
+## ⚠️ Breaking changes
+
+* feat!: skills are in force once saved; prompts follow Claude Code's (#28) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.14.0...v0.15.0
+
 ## [0.14.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.14.0)
 
 ## What's Changed

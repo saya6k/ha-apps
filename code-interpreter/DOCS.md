@@ -82,17 +82,17 @@ the panel.
 
 | Global | What it does |
 |---|---|
-| `ha.tools()`, `ha.find(text)` | The Home Assistant tools this person may use: all of them, or the few (at most 8) whose name and description best match a task. `ha.admin.find(text)` and `plugins.find(text)` do the same for those lists |
+| `ha.tools()`, `ha.find(text)` | The Home Assistant tools this person may use. `tools()` lists names and one-line descriptions; `find(text)` returns the few (at most 8) that best match a task, and `find("select:a,b")` the named ones, with their full input schema. `ha.admin` and `plugins` have the same pair |
 | `ha.<domain>.<tool>(args)` | Call one, e.g. `ha.intent.HassTurnOff({name: "Kitchen light"})`; `ha.call("light__HassLightSet", args)` takes the full name. `ha.homeassistant.GetLiveContext()` returns Home Assistant's text as `result` and the same entities parsed as `entities` (`names`, `domain`, `state`, `areas`, `attributes`), so scripts filter objects instead of matching text |
 | `ha.admin` | Administrators only: read-only Home Assistant tools (see below) |
 | `ha.admin.hab(argv, {stdin})` | Administrators only: the Home Assistant Builder CLI, for example `["automation", "get", "night"]`; changes need `hab_allow` (see [Editing with hab](#editing-with-hab)) |
 | `` $`cmd ${x}` `` | Run `sh -c` in `/sandbox`; values are quoted. `.text()`, `.lines()`, `.json()`, `.nothrow()`, `.timeout(ms)`; a failing command throws `ShellError` |
 | `file(p)`, `write(p, s)` | Read (`.text()`, `.json()`, `.lines()`, `.exists()`) and write files; relative paths are under `/sandbox` |
 | `share.list(dir)`, `share.import(path, dest)`, `share.export(path)` | Home Assistant's `/share` (see [Files and /share](#files-and-share)) |
-| `plugins.<server>.<tool>(args)` | MCP servers Home Assistant connects to, if the app allows this person any (see [Plugins](#plugins)); `plugins.tools()` lists them, `plugins.call(name, args)` takes a full name. Undefined otherwise |
-| `skills.list()`, `skills.find(text)`, `skills.<name>(args)` | The speaker's saved skills (see [Skills](#skills)): all of them, or the few that best match a request, with descriptions and parameters; only approved ones run |
-| `skills.request(text)` | Ask for a new skill for the speaker; it waits for an administrator's approval |
-| `skills.save(name, {description, guide})`, `skills.delete(name)` | Save, replace or delete one of the speaker's guides: instructions in force at once (see [Guides](#guides)) |
+| `plugins.<server>.<tool>(args)` | MCP servers Home Assistant connects to, if the app allows this person any (see [Plugins](#plugins)); `plugins.tools()` and `plugins.find(text)` as above, `plugins.call(name, args)` takes a full name. Undefined otherwise |
+| `skills.list()`, `skills.find(text)`, `skills.<name>(args)` | The speaker's skills (see [Skills](#skills)): all of them, or the few that best match a request; run a routine or read a guide |
+| `skills.save(name, {description, code \| guide, params})`, `skills.delete(name)` | Save, replace or delete one of the speaker's skills, in force at once |
+| `skills.request(text)` | Have the AI Task write a routine for the speaker in the background |
 | `sleep(ms)`, `log(...)`, `require(name)` | Waiting, logging, Node's built-in modules |
 
 There is no npm: only Node's built-ins and the preinstalled Python packages
@@ -189,67 +189,53 @@ control.
 
 ## Skills
 
-With `skill_workflow` on, the app learns reusable functions from finished
-sessions:
+A skill is something a person's agent keeps for next time. There are two
+kinds:
 
-1. When a known user's session ends (idle, closed or replaced), the app
-   takes the code that ran without errors and did real work, at most the
-   last 8 runs, and sends it to an **AI Task** entity
-   (`skill_ai_task_entity`, or Home Assistant's preferred one) with the
-   user's existing skills.
-2. The AI Task decides whether one task is worth keeping and rewrites it as a
-   general function with parameters, for example `turn_off_lights_except({
-   except: "거실" })`.
-3. The proposal is stored **pending** for that user only, and Home Assistant
-   shows a notification that a skill waits for approval (only the user and
-   the skill's name: every user sees notifications). An administrator reads the code in the
-   panel's **Skills** section and approves or rejects it; that clears the
-   notification. A new proposal for an existing skill waits beside the
-   approved version until it is approved.
-4. Scripts see their user's skills with `skills.list()` or
-   `skills.find(text)` and run approved ones as `skills.<name>(args)`,
-   with the same permissions as any other code. The first result of a new
-   conversation (a new session, or the latest one after five idle minutes,
-   when Home Assistant ends a conversation) lists the names of the user's
-   approved skills (`skills`, at most
-   30, most recently used first; `skills_more` counts the rest), so the
-   agent knows what exists without reading every description.
-   `skills.find(text)` matches the request's words against each skill's
-   name and description and returns the best five.
+- **Routines** are code: an async function such as
+  `turn_off_lights_except({ except: "거실" })` that the agent runs as
+  `skills.<name>(args)`.
+- **Guides** are instructions: how the person wants something done from now
+  on ("when you suggest an outfit, always say whether to take an umbrella").
+  `skills.<name>()` returns `{guide}`, and the agent follows it.
 
-### Guides
+A skill belongs to one person, is **in force as soon as it is saved**, and
+runs with that person's rights, no more: what it calls goes through the same
+checks as any other script. Skills are saved in three ways:
 
-A guide is a skill made of instructions instead of code: how the person
-wants something done from now on ("when you suggest an outfit, always say
-whether to take an umbrella"). The agent saves it with
-`skills.save(name, {description, guide})`. It is in force at once, with no
-approval: calling `skills.<name>()` returns `{guide}`, which the agent
-reads and follows, and `skills.find()` and the names at a conversation's
-start include it like any skill.
+1. **By the agent**, when the person asks for a routine or says how
+   something should be done:
+   `skills.save(name, {description, code | guide, params})`. Saving the same
+   name again replaces it; `skills.delete(name)` removes it.
+2. **By a background writer**, when the agent calls `skills.request(text)`
+   instead: an **AI Task** entity (`skill_ai_task_entity`, or Home
+   Assistant's preferred one) writes a routine from the request and the
+   tools that person can call, in about a minute. One request per person is
+   written at a time.
+3. **From finished sessions**, with `skill_workflow` on: when a known user's
+   session ends, the code that ran without errors and did real work (at most
+   the last 8 runs) goes to the AI Task, which keeps one repeatable task as a
+   routine, or nothing.
 
-- A guide belongs to one person and only reaches that person's agent. It
-  runs nothing itself, so whatever the agent does after reading it still
-  goes through that person's rights.
-- The person replaces it by saving the same name again and deletes it with
-  `skills.delete(name)`; administrators see and delete guides in the
-  panel too (`skill.saved` and `skill.deleted` in the audit log).
-- A guide is text that returns to the model in later conversations. Plugin
-  answers or files the agent read could talk it into saving one. Every save
-  is audited, and the panel shows each guide's text.
-- A guide never takes a code skill's name, and a code skill never takes a
-  guide's: saving a guide cannot replace approved code. `skills.delete()`
-  deletes guides only; code skills are deleted in the panel.
+The writer and the session review are off unless `skill_workflow` is on;
+the agent can always save skills itself. Every skill needs a description
+that says what it does and when to use it: that is how the agent finds it.
 
-### Asking for a skill
+### How the agent finds skills
 
-Anyone can ask the agent for a skill ("make a skill that suggests today's
-outfit"). The agent's script calls `skills.request(text)`; the skill is
-written for that person, from what they asked and the tools they can call,
-and is stored pending like any other proposal. It cannot run before an
-administrator approves it. One request per person is written at a time.
+The first result of a new conversation (a new session, or the latest one
+after five idle minutes, when Home Assistant ends a conversation) lists the
+person's skills in `skills`: name, kind and a one-line description, at most
+30, most recently used first (`skills_more` counts the rest). The tool
+description tells the agent to use a listed skill that covers the task
+before its own approach. `skills.find(text)` matches a request against each
+skill's name and description and returns the best five; `skills.list()`
+returns all of them.
 
-An administrator can also ask for a skill for anyone, from an automation, a
-script or **Developer tools → Actions**:
+### Asking from an automation
+
+An administrator can have a routine written for anyone, from an
+automation, a script or **Developer tools → Actions**:
 
 ```yaml
 action: hassio.app_stdin
@@ -261,28 +247,20 @@ data:
     request: Turn off every light except the living room's
 ```
 
-The AI Task writes the skill from the request, using only the Home Assistant
-tools that user can call, and it is stored pending like any other proposal.
 The action returns nothing; the outcome is in the audit log
-(`skill.requested`, then `skill.proposed` or `skill.review`). A name that
-matches no user or several users is refused: use the username then. Requests
-are ignored while `skill_workflow` is off.
+(`skill.requested`, then `skill.saved` or `skill.review`). A name that
+matches no user or several users is refused: use the username then.
+Requests are ignored while `skill_workflow` is off.
 
-### What a skill uses
+### What to keep in mind
 
-Each proposal lists what it calls (`uses`): Home Assistant tools, plugin
-tools, and hab commands for administrators. The panel shows the list, and warns about calls
-in the code that the list leaves out, or that go through a variable and
-cannot be read. The list helps you review; it is **not** a permission. An
-approved skill always runs with the rights of the person whose script runs
-it, no more.
-
-Calls with no user never propose skills. Nothing is sent while
-`skill_workflow` is off (the default). The AI Task reads code that came from
-conversations, and requests that anyone could have written, so it can be
-misled like any model; that is why nothing runs before an administrator
-approves it. Requests, proposals, reviews, approvals and uses are in the
-audit log (`skill.*`).
+- A skill's code and a guide's text come from models that read
+  conversations, plugin answers and files, so they can be misled: a guide
+  in particular reaches the model again in later conversations. Every save
+  and deletion is in the audit log (`skill.saved`, `skill.deleted`), and
+  the panel's **Skills** section shows each skill's code or text, what the
+  code visibly calls, and a **Delete** button.
+- Calls with no user (a voice satellite) have no skills.
 
 ## Plugins
 
@@ -403,7 +381,7 @@ hosts.
 | `audit_retention_days` | `30` | Days of audit log to keep |
 | `hab_allow` | empty | `hab` commands that may change Home Assistant (see [Editing with hab](#editing-with-hab)) |
 | `hab_deny` | empty | `hab` commands refused even if `hab_allow` matches |
-| `skill_workflow` | `false` | Propose skills from finished sessions through an AI Task (see [Skills](#skills)) |
+| `skill_workflow` | `false` | Let an AI Task write skills from finished sessions and from `skills.request()` (see [Skills](#skills)) |
 | `skill_ai_task_entity` | empty | AI Task entity for the review; empty = Home Assistant's preferred one |
 | `plugins` | empty | MCP servers and LLM APIs scripts may call, each with `access: all` or `admin` (see [Plugins](#plugins)) |
 
