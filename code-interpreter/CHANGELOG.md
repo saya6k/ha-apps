@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.14.0)
+
+## What's Changed
+
+## New Features
+
+* feat: guides, skills made of instructions the user saves and edits (#27) @saya6k
+* feat: plugins admin_tools keeps some of a server's tools for administrators (#26) @saya6k
+* feat: ha.find(text), ha.admin.find(text) and plugins.find(text) (#25) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.13.0...v0.14.0
+
 ## [0.13.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.13.0)
 
 ## What's Changed
