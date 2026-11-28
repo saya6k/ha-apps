@@ -64,7 +64,9 @@ configuration:
       다른 통합의 LLM API 중 스크립트가 plugins.<server>.<tool>()로 부를 수
       있는 것. name은 MCP 통합 항목의 제목이고, 다른 통합의 API는 그 id를
       api에 적습니다(예: wardrowbe__<항목 id>). access는 all(모든 Home
-      Assistant 사용자) 또는 admin(관리자만)입니다.
+      Assistant 사용자) 또는 admin(관리자만)입니다. admin_tools(선택,
+      쉼표로 구분한 패턴, 예: delete_*, save_*)에 맞는 도구는 all 서버라도
+      관리자만 씁니다.
 network:
   8099/tcp: >-
     MCP 엔드포인트(/mcp, streamable HTTP). 비워 두세요 — Home Assistant는
