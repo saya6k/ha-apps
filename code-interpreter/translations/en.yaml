@@ -65,7 +65,9 @@ configuration:
       plugins.<server>.<tool>(). name is the MCP integration entry's title;
       for another integration's API, give its id as api (e.g.
       wardrowbe__<entry id>). access is all (every Home Assistant user) or
-      admin (administrators only).
+      admin (administrators only). admin_tools (optional, comma-separated
+      patterns such as delete_*, save_*) keeps some of an all server's tools
+      for administrators.
 network:
   8099/tcp: >-
     MCP endpoint (streamable HTTP at /mcp). Leave unset — Home Assistant
