@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.16.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.16.0)
+
+## What's Changed
+
+## ⚠️ Breaking changes
+
+* feat!: a skill is a guide; every save raises a notification (#30) @saya6k
+
+## New Features
+
+* feat: the app reloads its own MCP entry when it starts (#29) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.15.0...v0.16.0
+
 ## [0.15.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.15.0)
 
 ## What's Changed
