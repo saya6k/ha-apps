@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.13.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.13.0)
+
+## What's Changed
+
+## New Features
+
+* feat: name the user's skills at a conversation's start; skills.find(text) (#24) @saya6k
+
+**Full Changelog**: https://github.com/saya6k/ha-app-code-interpreter/compare/v0.12.0...v0.13.0
+
 ## [0.12.0](https://github.com/saya6k/ha-app-code-interpreter/releases/tag/v0.12.0)
 
 ## What's Changed
